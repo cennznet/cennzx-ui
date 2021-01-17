@@ -1,0 +1,125 @@
+#!groovy
+pipeline {
+  agent {
+    label 'linux'
+  }
+
+  environment {
+    SERVICE_NAME = 'cennzx'
+    AWS_ACCESS_KEY  = credentials('TF_AWS_ACCESS_KEY')
+    AWS_SECRET_KEY = credentials('TF_AWS_SECRET_KEY')
+    SUBDOMAIN = 'cennzx'
+    SETTINGS = 'config.js'
+  }
+
+  stages {
+    stage('Build') {
+      environment {
+        GEMFURY_TOKEN = credentials('GEMFURY_TOKEN')
+        GEMFURY_MIRROR_URL = credentials('GEMFURY_MIRROR_URL')
+        GEMFURY_EXTERNAL_TOKEN = credentials('GEMFURY_EXTERNAL_TOKEN')
+      }
+      steps {
+        sh './ci/build.sh'
+      }
+    }
+
+    stage('Dev Deploy') {
+          environment {
+            ENV = 'dev'
+            SETTINGS = 'spotx-config.js'
+          }
+          steps {
+            sh 'SCRIPT="deploy-website" ./centrality.deploy/static-website/static-website-apply.sh'
+            sh './centrality.deploy/aws/settings.sh'
+          }
+    }
+
+    stage('Dev CF Invalidation') {
+          environment {
+            ENV = 'dev'
+            DISTRIBUTION_ID='E3VDJYGEJ2MT4Y'
+          }
+          steps {
+            sh 'SCRIPT="cf-invalidate" ./centrality.deploy/aws/exec-awscli.sh'
+          }
+    }
+
+    stage ('Confirm UAT deploy') {
+          steps {
+            timeout(time:1, unit:'HOURS') {
+              input "Confirm UAT deploy?"
+            }
+          }
+    }
+
+    stage('Build Prod & Deploy to Artifacts') {
+          environment {
+            ENV = 'prod'
+            GEMFURY_MIRROR_URL = credentials('GEMFURY_MIRROR_URL')
+            GEMFURY_TOKEN = credentials('GEMFURY_TOKEN')
+          }
+          steps {
+            sh './ci/build.sh'
+            sh './centrality.deploy/static-website/static-website-apply.sh'
+          }
+    }
+
+    stage('UAT Deploy') {
+          environment {
+            ENV = 'uat'
+            SETTINGS = 'spotx-config.js'
+          }
+          steps {
+            sh 'SCRIPT="deploy-website" ./centrality.deploy/static-website/static-website-apply.sh'
+            sh './centrality.deploy/aws/settings.sh'
+          }
+    }
+
+    stage('UAT CF Invalidation') {
+          environment {
+            ENV = 'uat'
+            DISTRIBUTION_ID='EJ9A3O9U69WTU'
+          }
+          steps {
+            sh 'SCRIPT="cf-invalidate" ./centrality.deploy/aws/exec-awscli.sh'
+          }
+    }
+
+    stage ('Confirm Prod deploy') {
+          steps {
+            timeout(time:1, unit:'HOURS') {
+              input "Confirm prod deploy?"
+            }
+          }
+    }
+
+    stage('Prod Deploy') {
+          environment {
+            ENV = 'prod'
+          }
+          steps {
+            sh 'SCRIPT="deploy-website" ./centrality.deploy/static-website/static-website-apply.sh'
+            sh './centrality.deploy/aws/settings.sh'
+          }
+    }
+
+    stage('PROD CF Invalidation') {
+          environment {
+            ENV = 'prod'
+            DISTRIBUTION_ID='E2FGRBIYXNWKX9'
+          }
+          steps {
+            sh 'SCRIPT="cf-invalidate" ./centrality.deploy/aws/exec-awscli.sh'
+          }
+    }
+  }
+
+  post {
+          always {
+              echo "Pipeline post always"
+              sh 'bash /mnt/jenkins/script/cleanup.sh'
+          }
+  }
+
+}
