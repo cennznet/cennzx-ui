@@ -1,6 +1,6 @@
 import {createAction} from 'redux-actions';
 import {BaseError} from '../../error/error';
-import {CennznetInjected, CennznetInjectedGlobal, IAccounts} from '../../typings';
+import {CennznetInjected, PolkadotInjectedGlobal, IAccounts} from '../../typings';
 
 export enum ExtensionActions {
     DETECTION_UPDATE = 'SS_EX/DETECTION_UPDATE',
@@ -12,7 +12,11 @@ export enum ExtensionActions {
 
 export const updateSSDetected = createAction(
     ExtensionActions.DETECTION_UPDATE,
-    (detected: boolean, cennznetInjected: CennznetInjectedGlobal) => ({detected, cennznetInjected})
+    (detected: boolean, polkadotInjected: PolkadotInjectedGlobal) => {
+        console.log('REached inside updateSSDetected:', detected);
+        console.log('polkadotInjected:', polkadotInjected);
+        return {detected, polkadotInjected};
+    }
 );
 
 export const updateSSConnected = createAction(

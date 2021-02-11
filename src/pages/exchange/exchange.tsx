@@ -20,7 +20,7 @@ import Select from 'components/Select';
 import TextInput from 'components/TextInput';
 import AdvancedSetting from 'components/AdvancedSetting';
 import {getAsset} from '../../util/assets';
-
+import keyring from '@polkadot/ui-keyring';
 export const DECIMALS = 5;
 const SWAP_OUTPUT = 'buyAsset';
 const SWAP_INPUT = 'sellAsset';
@@ -131,6 +131,16 @@ export type ExchangeProps = {
 export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
     const [state, setState] = useState({touched: false, assetDialogOpen: false});
     const {accounts, assets, fromAssetBalance, error, outputReserve, txFee, coreAsset} = props;
+    const addresses = keyring.getAccounts();
+    const accountlist = addresses.map(value => {
+        const name = value.meta.name ? value.meta.name : value.address;
+        const address = value.address;
+        const labelValue = `${name}: ${address}`;
+        return {
+            label: labelValue,
+            value: address,
+        };
+    });
     const {
         signingAccount,
         toAssetAmount,
@@ -168,7 +178,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     <AccountPicker
                         title="Choose account"
                         selected={signingAccount}
-                        options={accounts}
+                        options={accountlist}
                         onChange={(picked: {label: string; value: string}) => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({touched: true, assetDialogOpen: state.assetDialogOpen});

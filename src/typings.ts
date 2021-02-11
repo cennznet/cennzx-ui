@@ -85,11 +85,18 @@ export interface IFee {
     feeInCpay: Amount;
     feeInFeeAsset: Amount;
 }
-export interface CennznetInjectedGlobal {
-    [name: string]: {
-        version: string;
-        enable(): Promise<CennznetInjected>;
-    };
+export interface PolkadotInjectedGlobal {
+    enable: any;
+    // [name: string]: {
+    //     version: string;
+    //     enable(): Promise<CennznetInjected>;
+    // };
+    accounts: any;
+    metadata?: {};
+    name: string;
+    provider?: any;
+    signer: {};
+    version: string;
 }
 
 export interface CennznetInjected {

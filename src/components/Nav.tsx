@@ -14,6 +14,9 @@ export default ({active}) => (
         <Link style={getLinkStyle('liquidity', active)} to="/liquidity">
             Liquidity
         </Link>
+        <Link style={getLinkStyle('accounts', active)} to="/accounts">
+            Accounts
+        </Link>
     </NavContent>
 );
 

@@ -1,10 +1,10 @@
-import {Extrinsic} from '@cennznet/types';
+// import {Extrinsic} from '@cennznet/types';
 import BN from 'bn.js';
-import {SubmittableResult} from '@plugnet/api';
+import {SubmittableResult} from '@cennznet/api';
 import {Keyring} from '@polkadot/keyring';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
-import {combineLatest, EMPTY, Observable, of} from 'rxjs';
+import {combineLatest, EMPTY, from, Observable, of} from 'rxjs';
 import {catchError, switchMap, withLatestFrom} from 'rxjs/operators';
 import {ExtrinsicFailed} from '../../../error/error';
 import {IEpicDependency} from '../../../typings';
@@ -24,6 +24,14 @@ import {
 import {Amount} from '../../../util/Amount';
 import {AppState} from '../../reducers';
 import {Stages} from '../../reducers/ui/txDialog.reducer';
+import {
+    web3AccountsSubscribe,
+    web3Enable,
+    web3Accounts,
+    isWeb3Injected,
+    web3FromSource,
+} from '@polkadot/extension-dapp';
+import keyring from '@polkadot/ui-keyring';
 
 const DECIMALS = 5;
 export const submitTransactionEpic = (
@@ -34,6 +42,7 @@ export const submitTransactionEpic = (
     combineLatest([
         api$,
         action$.pipe(ofType<RequestSubmitTransaction>(types.ui.TxDialog.TRANSACTION_SUBMIT_REQUEST)),
+        // from(web3FromSource("polkadot-js"))
     ]).pipe(
         withLatestFrom(store$),
         switchMap(
@@ -41,8 +50,9 @@ export const submitTransactionEpic = (
                 [
                     api,
                     {
-                        payload: {extrinsic, buffer},
+                        payload: {extrinsic, signingAccount, buffer},
                     },
+                    // injector,
                 ],
                 store,
             ]): Observable<Action<any>> => {
@@ -60,9 +70,21 @@ export const submitTransactionEpic = (
                     const maxSale = new Amount(amount.muln(1 + buffer)).asString(DECIMALS);
                     tx = api.tx.cennzx.buyAsset(null, fromAsset, toAsset, +sellAmount, 1000000);
                 }
-                const keyring = new Keyring({type: 'sr25519'});
-                const account = keyring.addFromUri('//Alice');
-                return tx.signAndSend(account).pipe(
+                // alert(signingAccount);
+                // const keyring = new Keyring({type: 'sr25519'});
+                // const account = keyring.addFromUri('//Alice');
+                // console.log('Signing Account::::', account);
+                //import keyring from '@polkadot/ui-keyring';
+                // const password = 'test';
+                // const pair = keyring.getPair("5EYU7GzxsNkYY76qbdkbL2J1Z1HBstYKZt5ypDPSxdW4Mn8h");
+                // pair.decodePkcs8(password);
+                console.log('signingAccount::', signingAccount);
+                const pair = keyring.getPair(signingAccount);
+                if (pair.isLocked) {
+                    pair.decodePkcs8('test');
+                }
+                console.log('Signing pair::::', pair);
+                return tx.signAndSend(pair).pipe(
                     switchMap(({events, status}: SubmittableResult) => {
                         if (status.isBroadcast) {
                             return of(updateTxHash(tx.hash.toString()), updateStage(Stages.Broadcasted));
@@ -135,6 +157,7 @@ export const submitSendEpic = (
                 }
                 const keyring = new Keyring({type: 'sr25519'});
                 const account = keyring.addFromUri('//Alice');
+                // const pair = keyring.getPair(signingAccount);
                 return tx.signAndSend(account).pipe(
                     switchMap(({events, status}: SubmittableResult) => {
                         if (status.isBroadcast) {

@@ -3,6 +3,7 @@ import React from 'react'
 export default {
     entry: 'index.tsx',
     //maxThreads: 1,
+    crossOriginLoading: 'anonymous',
     productionSourceMaps: true,
     getSiteData: () => ({
         title: 'Best of CENNZX'
@@ -37,7 +38,10 @@ export default {
                     path: '/send',
                     template: 'src/pages/send',
                 },
-
+                {
+                    path: '/accounts',
+                    template: 'src/pages/accounts',
+                },
                 //  A 404 component
                 {
                     path: '404',
@@ -91,6 +95,40 @@ export default {
         alias: {
             config: 'settings',
         },
+    },
+    module: {
+        rules: [
+            {
+                test: /\.mjs$/,
+                include: /node_modules/,
+                type: "javascript/auto"
+            }
+        ]
+    },
+    optimization: {
+        runtimeChunk: 'single',
+        splitChunks: {
+            cacheGroups: {
+                vendorOther: {
+                    chunks: 'initial',
+                    enforce: true,
+                    name: 'vendor',
+                    test: /node_modules\/(asn1|bn\.js|buffer|cuint|elliptic|lodash|moment|readable-stream|rxjs)/
+                },
+                vendorReact: {
+                    chunks: 'initial',
+                    enforce: true,
+                    name: 'react',
+                    test: /node_modules\/(chart|i18next|react|semantic-ui)/
+                },
+                polkadotJs: {
+                    chunks: 'initial',
+                    enforce: true,
+                    name: 'polkadotjs',
+                    test: /node_modules\/(@polkadot\/wasm-(crypto|dalek-ed25519|schnorrkel))/
+                }
+            }
+        }
     },
     devServer: {
         contentBase: ['.'],

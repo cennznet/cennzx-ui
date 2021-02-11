@@ -12,20 +12,14 @@ const getDialogTitle = (detected: boolean, connected: boolean) => {
 };
 
 const getDialogBody = (detected: boolean, connected: boolean) => {
-    if (!detected) {
-        return (
-            <React.Fragment>
-                `To use CENNZX you need to install and connect to the SingleSource browser extension. If you don't have
-                the extension installed you can download it `;
-                <Link to="https://bitbucket.org/centralitydev/singlesourceextension/src/develop/">here</Link>
-            </React.Fragment>
-        );
-    } else if (!connected) {
-        return 'To use CENNZX you need to connect to the SingleSource browser extension.';
-    } else {
-        // 'Not detected and not  connected to extension. This should not occur';
-        return '';
-    }
+    return (
+        <React.Fragment>
+            <Line />
+            To use CENNZX you need to install and connect to the Polkadot browser extension. If you don't have the
+            extension installed you can download it
+            <Link to="https://polkadot.js.org/extension/"> here</Link>
+        </React.Fragment>
+    );
 };
 
 const getDialogFooter = setState => (
@@ -40,7 +34,7 @@ export type AppDialogProps = Pick<DialogProps, Exclude<keyof DialogProps, 'title
     extensionDetected: boolean;
 };
 
-const AppDialog: FC<AppDialogProps> = props => {
+const CreateAccountDialog: FC<AppDialogProps> = props => {
     const {extensionDetected, extensionConnected} = props;
     const [state, setState] = useState({isOpen: true});
     const isOpen = (!extensionDetected || !extensionConnected) && state.isOpen;

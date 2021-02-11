@@ -7,8 +7,19 @@ import actions from './actions';
 import {getDevToolsExt} from './devTools';
 import {hotReloadingEpic} from './epics/hotReloadingEpic';
 import reducer, {AppState} from './reducers';
+import keyring from '@polkadot/ui-keyring';
+import {cryptoWaitReady} from '@polkadot/util-crypto';
 
-const cennzNetApi = typeof window !== 'undefined' ? ApiRx.create({provider: window.config.ENDPOINT}) : EMPTY;
+cryptoWaitReady();
+const cennzNetApi = typeof window !== 'undefined' ? ApiRx.create() : EMPTY;
+cennzNetApi.toPromise().then(api => {
+    keyring.loadAll({
+        genesisHash: api.genesisHash,
+        isDevelopment: true,
+        ss58Format: 42,
+        type: 'ed25519',
+    });
+});
 const epicMiddleware = createEpicMiddleware<any, any, AppState, IEpicDependency>({
     dependencies: {api$: cennzNetApi},
 });

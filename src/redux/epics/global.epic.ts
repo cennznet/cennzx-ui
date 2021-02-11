@@ -5,7 +5,7 @@ import {map, switchMap, catchError} from 'rxjs/operators';
 import {IEpicDependency} from '../../typings';
 import {UpdateSSDetectedAction} from '../actions/extension.action';
 import {AppState} from '../reducers';
-import types, {updateCoreAsset, updateFeeRate} from './../actions/global.action';
+import types, {updateCoreAsset, updateFeeRate, updateGenesisHash} from './../actions/global.action';
 
 export const getCoreAsset = (action$: Observable<Action<any>>, store$: Observable<AppState>, {api$}: IEpicDependency) =>
     combineLatest([api$, action$.pipe(ofType(types.INIT_APP))]).pipe(
@@ -32,4 +32,12 @@ export const getFeeRate = (action$: Observable<Action<any>>, store$: Observable<
         )
     );
 
-export default combineEpics(getCoreAsset, getFeeRate);
+const getGenesisHash = (action$: Observable<Action<any>>, store$: Observable<AppState>, {api$}: IEpicDependency) =>
+    combineLatest([api$, action$.pipe(ofType(types.INIT_APP))]).pipe(
+        map(([api]) =>
+            // return api.query.cennzx.defaultFeeRate().pipe(map(feeRate => updateFeeRate(feeRate)));
+            updateGenesisHash(api.genesisHash)
+        )
+    );
+
+export default combineEpics(getCoreAsset, getFeeRate, getGenesisHash);
