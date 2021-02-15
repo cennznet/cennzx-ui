@@ -19,6 +19,7 @@ import {Amount} from '../../util/Amount';
 import getFormErrors from './validation';
 import TextInput from 'components/TextInput';
 import {curryN} from 'ramda';
+import keyring from '@polkadot/ui-keyring';
 
 export const DECIMALS = 5;
 const SWAP_OUTPUT = 'buyAsset';
@@ -139,7 +140,16 @@ export const Send: FC<SendProps & SendDispatchProps> = props => {
     };
     const [state, setState] = useState(initState);
     const {accounts, assets, fromAssetBalance, error, outputReserve, txFee, coreAsset} = props;
-
+    const addresses = keyring.getAccounts();
+    const accountlist = addresses.map(value => {
+        const name = value.meta.name ? value.meta.name : value.address;
+        const address = value.address;
+        const labelValue = `${name}: ${address}`;
+        return {
+            label: labelValue,
+            value: address,
+        };
+    });
     const {
         signingAccount,
         toAssetAmount,
@@ -162,7 +172,7 @@ export const Send: FC<SendProps & SendDispatchProps> = props => {
                     <AccountPicker
                         title="Choose account"
                         selected={signingAccount}
-                        options={accounts}
+                        options={accountlist}
                         onChange={(picked: {label: string; value: string}) => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({

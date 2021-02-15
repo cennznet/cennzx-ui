@@ -2,7 +2,7 @@ import React, {FC} from 'react';
 import {connect} from 'react-redux';
 import {Routes} from 'react-static';
 import styled from 'styled-components';
-import AppDialog from './Dialog/AppDialog';
+// import AppDialog from './Dialog/AppDialog';
 import TxDialog from './Dialog/TxDialog';
 import Header from './Header';
 
@@ -32,7 +32,8 @@ const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected}) => (
         <Header />
         <Content id="content">
             <TxDialog />
-            <AppDialog extensionConnected={extensionConnected} extensionDetected={extensionDetected} />
+            {/*Comment the extension pop up for now, we might want to re-introduce this after we support polkadot extension*/}
+            {/*<AppDialog extensionConnected={extensionConnected} extensionDetected={extensionDetected} />*/}
             <React.Suspense fallback={<em>Loading...</em>}>
                 <Routes path="*" />
             </React.Suspense>

@@ -10,141 +10,86 @@ import styled from 'styled-components';
 import PageInside from 'components/PageInside';
 import Nav from 'components/Nav';
 import Page from 'components/Page';
-import {SendDispatchProps, SendProps} from '../send/send';
+import {SendDispatchProps} from '../send/send';
 import {Button} from 'centrality-react-core';
 import keyring from '@polkadot/ui-keyring';
-import {isHex, isObject, u8aToString, hexToU8a} from '@polkadot/util';
-import {
-    cryptoWaitReady,
-    randomAsHex,
-    keyExtractSuri,
-    mnemonicGenerate,
-    mnemonicValidate,
-    randomAsU8a,
-} from '@polkadot/util-crypto';
-import {createType} from '@polkadot/types';
-import {defaults as addressDefaults} from '@polkadot/util-crypto/address/defaults';
-import {TypeRegistry} from '@cennznet/types';
-// import uiSettings from '@polkadot/ui-settings';
-import CreateModal from 'components/Dialog/CreateAccount';
-// import ImportModal from './modals/Import';
-
-import {SendFormData} from '../../typings';
-// import SUIModal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
+import {Icon} from 'semantic-ui-react';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faDownload} from '@fortawesome/free-solid-svg-icons';
+import CreateAccountDialog from 'components/Dialog/CreateAccount';
+import ImportAccountDialog from 'components/Dialog/ImportAccount';
+import BackUpAccountDialog from 'components/Dialog/BackupAccount';
 
 interface Props {
     genesisHash: any;
-    // address: string;
-    // className?: string;
-    // isFavorite: boolean;
-    // toggleFavorite: (address: string) => void;
 }
 
 export const Account: FC<Props & SendDispatchProps> = props => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const {genesisHash} = props;
-    const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
-    const [selectedFile, setSelectedFile] = useState(null);
-    // const [seed, setSeed] = useState(mnemonicGenerate());
-
-    // const seed = 'anc';
-    const DEFAULT_PAIR_TYPE = 'sr25519';
-    const seedType = 'bip';
-    // const seed = newSeed(_seed, seedType);
-    // const address =  keyring
-    //     .createFromUri(`${seed.trim()}`, {}, DEFAULT_PAIR_TYPE)
-    //     .address;
-    // console.log('Address:', address);
-    // const registry = new TypeRegistry();
-    // const DEFAULT_SS58 = createType(registry, 'u32', addressDefaults.prefix);
-    // console.log('********************* DEFAULT_SS58::', DEFAULT_SS58);
-    // const _enterPassword = (password):
-    const _toggleCreate = (): void => {
-        //setIsCreateOpen(!isCreateOpen);
-        // keyring.loadAll();
-        // const ss58Format = uiSettings.prefix === -1
-        //     ? properties.ss58Format.unwrapOr(DEFAULT_SS58).toNumber()
-        //     : uiSettings.prefix;
-        cryptoWaitReady().then(() => {
-            const seed = mnemonicGenerate();
-            const result = keyring.addUri(seed, password, {name: name});
-            const address = result.json.address;
-            alert(`${address} is created:`);
-            const addresses = keyring.getAccounts();
-        });
-    };
-    const onFileChange = (element): void => {
-        const fileReader = new FileReader();
-        fileReader.readAsText(element.target.files[0], 'UTF-8');
-        fileReader.onload = e => {
-            const json = JSON.parse(e.target.result);
-            const publicKey = keyring.decodeAddress(json.address, true);
-            const address = keyring.encodeAddress(publicKey);
-            const isFileValid =
-                publicKey.length === 32 &&
-                json.encoded &&
-                isObject(json.meta) &&
-                (Array.isArray(json.encoding.content)
-                    ? json.encoding.content[0] === 'pkcs8'
-                    : json.encoding.content === 'pkcs8');
-            setSelectedFile(json);
+    const [isImportOpen, setIsImportOpen] = useState(false);
+    const [isBackUpOpen, setIsBackUpOpen] = useState(false);
+    const [address, setAddress] = useState('');
+    const addresses = keyring.getAccounts();
+    const accountlist = addresses.map(value => {
+        const name = value.meta.name ? value.meta.name : value.address;
+        const address = value.address;
+        return {
+            name,
+            address,
         };
+    });
+
+    const _toggleCreate = (): void => setIsCreateOpen(!isCreateOpen);
+
+    const _toggleImport = (): void => setIsImportOpen(!isImportOpen);
+
+    const _toggleBackUp = (): void => setIsBackUpOpen(!isBackUpOpen);
+
+    const downloadAccount = (element): void => {
+        setAddress(element.currentTarget.value);
+        setIsBackUpOpen(true);
     };
 
-    const onFileUpload = (): void => {
-        try {
-            const pair = keyring.restoreAccount(selectedFile, password);
-            const {address} = pair;
-            // @ts-ignore
-            console.log('Restored address:', address);
-        } catch (e) {
-            console.log(e);
-        }
-    };
+    const iconBefore = <Icon name={'plus'} />;
 
-    const changeName = (element): void => {
-        const name = element.currentTarget.value;
-        setName(name);
-    };
-
-    const changePassword = (element): void => {
-        const pass = element.currentTarget.value;
-        setPassword(pass);
-    };
     return (
         <Page id={'page'}>
             <form>
                 <PageInside>
-                    <Nav active="exchange" />
+                    <Nav active="accounts" />
 
-                    <table>
+                    <CreateAccountDialog accountCreation={isCreateOpen} _toggleCreate={_toggleCreate} />
+                    <ImportAccountDialog accountImport={isImportOpen} _toggleImport={_toggleImport} />
+                    <BackUpAccountDialog address={address} accountBackUp={isBackUpOpen} _toggleBackUp={_toggleBackUp} />
+                    <table style={{width: '100%'}}>
                         <tbody>
-                            <tr /*className={className}*/>
+                            <tr>
                                 <td className="favorite">
-                                    Name: <input type={'text'} onChange={changeName} />
-                                    Password: <input type={'password'} onChange={changePassword} />
-                                    <Buttons id="buttons">
-                                        <Button flat primary onClick={_toggleCreate}>
-                                            Create account
-                                        </Button>
-                                    </Buttons>
-                                    <div>
-                                        <h1>Import accounts</h1>
-                                        <h4>
-                                            Select the JSON key file that was downloaded when you created the account.
-                                            This JSON file contains your private key encrypted with your password.
-                                        </h4>
-                                        <div>
-                                            <input type="file" onChange={onFileChange} />
-                                            Password: <input type={'password'} onChange={changePassword} />
-                                            <Button onClick={onFileUpload}>Import account</Button>
-                                        </div>
-                                    </div>
+                                    <Button iconBefore={iconBefore} onClick={_toggleCreate}>
+                                        Create account
+                                    </Button>
                                 </td>
-                                <td className="middle"></td>
-                                <td className="middle"></td>
-                                <td className="number middle"></td>
+                                <td>
+                                    <Button onClick={_toggleImport}>Import account</Button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <AccountTable>
+                                    <tbody>
+                                        {accountlist.map(
+                                            ({name, address}): React.ReactNode => (
+                                                <tr key={address.toString()}>
+                                                    <td className="address">{name}</td>
+                                                    <td className="address">
+                                                        <Button value={address} onClick={downloadAccount}>
+                                                            <FontAwesomeIcon icon={faDownload} size="1x" />
+                                                        </Button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        )}
+                                    </tbody>
+                                </AccountTable>
                             </tr>
                         </tbody>
                     </table>
@@ -154,25 +99,43 @@ export const Account: FC<Props & SendDispatchProps> = props => {
     );
 };
 
-// export default styled(Account)`
-//   .accounts--Account-buttons {
-//     text-align: right;
-//   }
-//
-//   .tags--toggle {
-//     cursor: pointer;
-//     width: 100%;
-//     min-height: 1.5rem;
-//
-//     label {
-//       cursor: pointer;
-//     }
-//   }
-//
-//   .name--input {
-//     width: 16rem;
-//   }
-// `;
+const AccountTable = styled.table`
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    
+    thead tr {
+        background-color: #009879;
+        color: #ffffff;
+        text-align: left;
+    }
+    
+    td {
+        padding: 12px 15px;
+    }
+    
+    tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+    
+    
+}
+    
+`;
+
+const Line = styled.div`
+    border-bottom: 1px solid rgba(17, 48, 255, 0.3);
+    height: 1px;
+    margin-top: 20px;
+`;
+
 const Buttons = styled.div`
     display: flex;
     flex-direction: row;

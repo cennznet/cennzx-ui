@@ -19,6 +19,7 @@ const isTxSuccessSelector = createSelector(
 
 const mapStateToProps = (state: AppState) => ({
     signingAccount: state.ui.txDialog.signingAccount,
+    isAccountLocked: state.ui.txDialog.isAccountLocked,
     coreAsset: state.global.coreAsset,
     title: state.ui.txDialog.title,
     error: state.ui.txDialog.error,
@@ -42,7 +43,15 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     handleClose: () => {
         dispatch(closeDialog());
     },
-    handleExchangeSubmit: ({extrinsic, signingAccount, feeAssetId, feeInFeeAsset, recipientAddress, buffer}) => {
+    handleExchangeSubmit: ({
+        extrinsic,
+        signingAccount,
+        feeAssetId,
+        feeInFeeAsset,
+        password,
+        recipientAddress,
+        buffer,
+    }) => {
         dispatch(
             requestSubmitTransaction({
                 extrinsic,
@@ -50,6 +59,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
                 feeAssetId,
                 feeInFeeAsset,
                 buffer,
+                password,
             })
         );
     },
@@ -66,6 +76,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         coreAsset,
         fromAssetBalance,
         buffer,
+        password,
     }) => {
         dispatch(
             requestSubmitSend({
@@ -80,6 +91,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
                 buffer,
                 fromAssetAmount,
                 fromAssetBalance,
+                password,
             })
         );
     },
@@ -96,6 +108,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         feeInFeeAsset,
         add1Reserve,
         buffer,
+        password,
     }) => {
         dispatch(
             requestSubmitLiquidity({
@@ -110,6 +123,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
                 buffer,
                 feeInFeeAsset,
                 add1Reserve,
+                password,
             })
         );
     },

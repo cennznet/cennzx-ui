@@ -26,8 +26,6 @@ export class Amount extends BN {
                 const val = new BigNumber(value.toString());
                 super(val.multipliedBy(Math.pow(10, DECIMAL)).toString(10));
             } catch (e) {
-                console.log(e);
-                console.log(`Value::${value}`);
                 super(1);
             }
         }

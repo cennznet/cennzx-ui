@@ -50,7 +50,7 @@ export const submitTransactionEpic = (
                 [
                     api,
                     {
-                        payload: {extrinsic, signingAccount, buffer},
+                        payload: {extrinsic, signingAccount, buffer, password},
                     },
                     // injector,
                 ],
@@ -70,20 +70,10 @@ export const submitTransactionEpic = (
                     const maxSale = new Amount(amount.muln(1 + buffer)).asString(DECIMALS);
                     tx = api.tx.cennzx.buyAsset(null, fromAsset, toAsset, +sellAmount, 1000000);
                 }
-                // alert(signingAccount);
-                // const keyring = new Keyring({type: 'sr25519'});
-                // const account = keyring.addFromUri('//Alice');
-                // console.log('Signing Account::::', account);
-                //import keyring from '@polkadot/ui-keyring';
-                // const password = 'test';
-                // const pair = keyring.getPair("5EYU7GzxsNkYY76qbdkbL2J1Z1HBstYKZt5ypDPSxdW4Mn8h");
-                // pair.decodePkcs8(password);
-                console.log('signingAccount::', signingAccount);
                 const pair = keyring.getPair(signingAccount);
                 if (pair.isLocked) {
-                    pair.decodePkcs8('test');
+                    pair.decodePkcs8(password);
                 }
-                console.log('Signing pair::::', pair);
                 return tx.signAndSend(pair).pipe(
                     switchMap(({events, status}: SubmittableResult) => {
                         if (status.isBroadcast) {
@@ -140,7 +130,7 @@ export const submitSendEpic = (
                 [
                     api,
                     {
-                        payload: {extrinsic, recipientAddress, buffer},
+                        payload: {extrinsic, signingAccount, recipientAddress, buffer, password},
                     },
                 ],
                 store,
@@ -155,10 +145,11 @@ export const submitSendEpic = (
                     const maxSale = new Amount(amount.muln(1 + buffer)).asString(DECIMALS);
                     tx = api.tx.cennzx.buyAsset(recipientAddress, fromAsset, toAsset, +sellAmount, 1000000);
                 }
-                const keyring = new Keyring({type: 'sr25519'});
-                const account = keyring.addFromUri('//Alice');
-                // const pair = keyring.getPair(signingAccount);
-                return tx.signAndSend(account).pipe(
+                const pair = keyring.getPair(signingAccount);
+                if (pair.isLocked) {
+                    pair.decodePkcs8(password);
+                }
+                return tx.signAndSend(pair).pipe(
                     switchMap(({events, status}: SubmittableResult) => {
                         if (status.isBroadcast) {
                             return of(updateTxHash(tx.hash.toString()), updateStage(Stages.Broadcasted));
@@ -217,7 +208,7 @@ export const submitLiquidityEpic = (
                 [
                     api,
                     {
-                        payload: {extrinsic, add1Asset, add1Amount, add2Amount, buffer},
+                        payload: {extrinsic, signingAccount, add1Asset, add1Amount, add2Amount, buffer, password},
                     },
                 ],
                 store,
@@ -226,15 +217,18 @@ export const submitLiquidityEpic = (
                 if (extrinsic.method === 'addLiquidity') {
                     const min_liquidity = new Amount(add1Amount.muln(1 - buffer));
                     const max_asset_amount = new Amount(add1Amount.muln(1 + buffer));
-                    tx = api.tx.cennzx.addLiquidity(add1Asset, 0.00001, 100000000, add2Amount);
+                    // tx = api.tx.cennzx.addLiquidity(add1Asset, 0.00001, 100000000, add2Amount);
+                    tx = api.tx.cennzx.addLiquidity(add1Asset, 0.00001, add1Amount, add2Amount);
                 } else {
                     const min_asset_withdraw = new Amount(add1Amount.muln(1 - buffer));
                     const min_core_withdraw = new Amount(add2Amount.muln(1 - buffer));
                     tx = api.tx.cennzx.removeLiquidity(add1Asset, add1Amount, 0.00001, 0.00001);
                 }
-                const keyring = new Keyring({type: 'sr25519'});
-                const account = keyring.addFromUri('//Alice');
-                return tx.signAndSend(account).pipe(
+                const pair = keyring.getPair(signingAccount);
+                if (pair.isLocked) {
+                    pair.decodePkcs8(password);
+                }
+                return tx.signAndSend(pair).pipe(
                     switchMap(({events, status}) => {
                         if (status.isBroadcast) {
                             return of(updateTxHash(tx.hash.toString()), updateStage(Stages.Broadcasted));
@@ -251,7 +245,6 @@ export const submitLiquidityEpic = (
                         }
                     }),
                     catchError((err: Error) => {
-                        console.log('err', err);
                         let extrinsicErr;
                         if (err.message) extrinsicErr = new ExtrinsicFailed(err.message);
                         return of(setDailogError(extrinsicErr));

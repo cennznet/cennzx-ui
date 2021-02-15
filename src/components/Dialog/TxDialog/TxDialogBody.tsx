@@ -1,6 +1,6 @@
 import {EventRecord} from '@cennznet/types/polkadot';
 import ExternalLink from 'components/ExternalLink';
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {Stages} from '../../../redux/reducers/ui/txDialog.reducer';
 import {IExtrinsic, IFee} from '../../../typings';
 import {Amount} from '../../../util/Amount';

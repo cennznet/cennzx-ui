@@ -21,6 +21,7 @@ import TextInput from 'components/TextInput';
 import AdvancedSetting from 'components/AdvancedSetting';
 import {getAsset} from '../../util/assets';
 import {setNewAmount} from '../../util/newAmount';
+import keyring from '@polkadot/ui-keyring';
 
 export const DECIMALS = 5;
 const SWAP_OUTPUT = 'buyAsset';
@@ -306,6 +307,17 @@ export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
     const pool2 = coreAssetBalance && coreAssetBalance.asString && coreAssetBalance.asString(DECIMALS);
     const coreBalance = coreAssetUserBalance && coreAssetUserBalance.asString(DECIMALS);
     const add1Balance = add1AssetBalance && add1AssetBalance.asString(DECIMALS);
+    const addresses = keyring.getAccounts();
+    const accountlist = addresses.map(value => {
+        const name = value.meta.name ? value.meta.name : value.address;
+        const address = value.address;
+        const labelValue = `${name}: ${address}`;
+        return {
+            label: labelValue,
+            value: address,
+        };
+    });
+
     return (
         <Page id={'page'}>
             <form>
@@ -314,7 +326,7 @@ export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
                     <AccountPicker
                         title="Choose account"
                         selected={signingAccount}
-                        options={accounts}
+                        options={accountlist}
                         onChange={(picked: {label: string; value: string}) => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({

@@ -26,6 +26,7 @@ export const getActualFee = (
                     }),
                     takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),
                     catchError((err: any) => {
+                        console.log(err);
                         return of(setDailogError(err));
                     })
                 );

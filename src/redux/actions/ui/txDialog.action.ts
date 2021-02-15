@@ -84,12 +84,13 @@ export const updateActualFee = createAction(TxDialogActions.TX_ACTUAL_FEE_UPDATE
 
 export const requestSubmitTransaction = createAction(
     TxDialogActions.TRANSACTION_SUBMIT_REQUEST,
-    ({extrinsic, signingAccount, feeAssetId, feeInFeeAsset, buffer}) => ({
+    ({extrinsic, signingAccount, feeAssetId, feeInFeeAsset, buffer, password}) => ({
         extrinsic,
         signingAccount,
         feeAssetId,
         feeInFeeAsset,
         buffer,
+        password,
     })
 );
 export const requestSubmitSend = createAction(
@@ -105,6 +106,7 @@ export const requestSubmitSend = createAction(
         fromAssetAmount,
         fromAssetBalance,
         buffer,
+        password,
     }: OpenDialog) => ({
         extrinsic,
         signingAccount,
@@ -116,6 +118,7 @@ export const requestSubmitSend = createAction(
         fromAssetAmount,
         fromAssetBalance,
         buffer,
+        password,
     })
 );
 
@@ -133,6 +136,7 @@ export const requestSubmitLiquidity = createAction(
         add2Amount,
         add1Reserve,
         buffer,
+        password,
     }: SubmitLiquidity) => ({
         type,
         extrinsic,
@@ -145,6 +149,7 @@ export const requestSubmitLiquidity = createAction(
         add2Amount,
         add1Reserve,
         buffer,
+        password,
     })
 );
 
