@@ -1,5 +1,3 @@
-import {SubmittableResult} from '@cennznet/api/polkadot';
-import {ICennznetExtrinsic} from '@cennznet/api/types';
 import {createAction} from 'redux-actions';
 import {Observable} from 'rxjs/index';
 

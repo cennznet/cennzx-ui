@@ -135,8 +135,8 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                         {state.spinner && (
                             <>
                                 <TextInput
-                                    title={'Buffer'}
-                                    placeholder={'Enter buffer'}
+                                    title={'Slippage'}
+                                    placeholder={'Maximum slippage percent'}
                                     value={buffer}
                                     onChange={e => {
                                         onBufferChange(Number(e.target.value));
@@ -154,7 +154,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                         recipientAddress={recipientAddress}
                                     />
                                 </P>
-                                <Top>
+                                {/* <Top>
                                     <span>
                                         <h2>{selectTitle}</h2>
                                     </span>
@@ -167,7 +167,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                         onAssetChange(asset.id);
                                     }}
                                     showBorder={true}
-                                />
+                                /> */}
                                 <SummaryBody>
                                     <SummaryFee txFee={txFee} coreAsset={coreAsset} feeAssetId={feeAssetId} />
                                 </SummaryBody>

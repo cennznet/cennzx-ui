@@ -20,14 +20,7 @@ import {ExchangeFormData, IAccounts, IExtrinsic, IFee} from '../../typings';
 import {Amount} from '../../util/Amount';
 import {prepareExchangeExtrinsicParamsWithBuffer, SWAP_INPUT, SWAP_OUTPUT} from '../../util/extrinsicUtil';
 import {Exchange, ExchangeProps} from './exchange';
-import {
-    getAssets,
-    getExchangeRateMsg,
-    getFromAssetUserBalance,
-    getOutputReserve,
-    getTxFeeMessage,
-    getCoreAssetUserBalance,
-} from './selectors';
+import {getAssets, getExchangeRateMsg, getFromAssetUserBalance, getOutputReserve, getTxFeeMessage} from './selectors';
 
 const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
     let errInstance = null;
@@ -44,7 +37,7 @@ const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
 
 const mapStateToProps = (state: AppState): ExchangeProps => ({
     ...state.ui.exchange,
-    coreAsset: state.global.coreAsset,
+    coreAssetId: state.global.coreAssetId,
     feeRate: state.global.feeRate,
     fromAssetBalance: getFromAssetUserBalance(state),
     accounts: state.extension.accounts.map((account: IAccounts) => ({

@@ -20,7 +20,7 @@ const isTxSuccessSelector = createSelector(
 const mapStateToProps = (state: AppState) => ({
     signingAccount: state.ui.txDialog.signingAccount,
     isAccountLocked: state.ui.txDialog.isAccountLocked,
-    coreAsset: state.global.coreAsset,
+    coreAssetId: state.global.coreAssetId,
     title: state.ui.txDialog.title,
     error: state.ui.txDialog.error,
     extrinsic: state.ui.txDialog.extrinsic,

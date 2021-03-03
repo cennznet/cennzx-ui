@@ -8,9 +8,6 @@ export default ({active}) => (
         <Link style={getLinkStyle('exchange', active)} to="/exchange">
             Exchange
         </Link>
-        <Link style={getLinkStyle('send', active)} to="/send">
-            Send
-        </Link>
         <Link style={getLinkStyle('liquidity', active)} to="/liquidity">
             Liquidity
         </Link>
@@ -31,6 +28,7 @@ const NavContent = styled.nav`
         background-color: #ffffff;
         justify-content: center;
         display: flex;
+        margin-bottom: 2rem;
 
         a {
             border-bottom: 2px rgba(17, 48, 255, 0.3) solid;

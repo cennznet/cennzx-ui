@@ -62,7 +62,7 @@ export const setToAssetAmount = createAction(
 );
 export const updateSelectedAdd1Asset = createAction(
     LiquidityActions.SELECTED_ADD1_ASSET_UPDATE,
-    (add1Asset: number) => add1Asset
+    (assetId: number) => assetId
 );
 export const updateSelectedAdd2Asset = createAction(
     LiquidityActions.SELECTED_ADD2_ASSET_UPDATE,

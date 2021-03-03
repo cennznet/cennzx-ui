@@ -11,7 +11,9 @@ type AssetDropDownStyledProps = SelectProps<any> & {
 
 const StyledSelect = styled(Select)<AssetDropDownStyledProps>`
     flex: 1;
-    min-width: 112px;
+    min-width: calc(32px + 4rem);
+    transition: min-width 0.3s ease 0.1s;
+
     > div {
         border-width: ${props => (props.showBorder.toString() === 'true' ? '1px' : '0px')};
     }
@@ -24,7 +26,7 @@ const StyledSelect = styled(Select)<AssetDropDownStyledProps>`
     // add border to left of select 
     .react-select__value-container {
         border-left: ${props => (props.showInterval.toString() === 'true' ? '1px solid #b5babd;' : 'none')}; !important;
-        min-height: 28px;
+        min-height: 32px;
     }
 
     // drop down indicator hover color
@@ -54,12 +56,20 @@ const StyledSelect = styled(Select)<AssetDropDownStyledProps>`
         padding-top: 0px;
         padding-bottom: 0px;
     }
+
+    // expand on hover, contract on exit
+    :hover {
+        cursor: pointer;
+        min-width: calc(32px + 7.1rem);
+    }
 `;
 
 const Icon = styled.img`
     margin-top: auto;
     margin-bottom: auto;
     margin-right: 0.5em;
+    max-height: 32px;
+    max-width: 32px;
 `;
 
 const Text = styled.span`

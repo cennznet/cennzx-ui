@@ -8,7 +8,7 @@ import styled from 'styled-components';
 export interface SummaryFeeProps {
     txFee: IFee;
     feeAssetId: number;
-    coreAsset: BN;
+    coreAsset: number;
 }
 
 const Em = styled.span`

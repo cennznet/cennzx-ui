@@ -1,4 +1,5 @@
 import {FeeRate} from '@cennznet/types/runtime/cennzX';
+import AssetDropDown from 'components/AssetDropDown';
 import BN from 'bn.js';
 import {Button} from 'centrality-react-core';
 import AccountPicker from 'components/AccountPicker';
@@ -8,8 +9,7 @@ import ExchangeIcon from 'components/ExchangeIcon';
 import Nav from 'components/Nav';
 import Page from 'components/Page';
 import PageInside from 'components/PageInside';
-import AssetDropDown from 'components/AssetDropDown';
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
 import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
@@ -21,7 +21,8 @@ import TextInput from 'components/TextInput';
 import AdvancedSetting from 'components/AdvancedSetting';
 import {getAsset} from '../../util/assets';
 import keyring from '@polkadot/ui-keyring';
-export const DECIMALS = 5;
+import {propSatisfies} from 'ramda';
+export const DECIMALS = 4;
 const SWAP_OUTPUT = 'buyAsset';
 const SWAP_INPUT = 'sellAsset';
 
@@ -124,15 +125,15 @@ export type ExchangeProps = {
     outputReserve: Amount;
     exchangeRateMsg: string;
     txFeeMsg: string;
-    coreAsset: BN;
+    coreAssetId: number;
     feeRate: FeeRate;
 } & ExchangeState;
 
 export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
     const [state, setState] = useState({touched: false, assetDialogOpen: false});
-    const {accounts, assets, fromAssetBalance, error, outputReserve, txFee, coreAsset} = props;
+    const {accounts, assets, fromAssetBalance, error, outputReserve, txFee, coreAssetId} = props;
     const addresses = keyring.getAccounts();
-    const accountlist = addresses.map(value => {
+    const accountList = addresses.map(value => {
         const name = value.meta.name ? value.meta.name : value.address;
         const address = value.address;
         const labelValue = `${name}: ${address}`;
@@ -142,9 +143,9 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
         };
     });
     const {
-        signingAccount,
-        toAssetAmount,
         toAsset,
+        toAssetAmount,
+        signingAccount,
         extrinsic,
         fromAsset,
         fromAssetAmount,
@@ -155,9 +156,9 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
     const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
     let fee;
     let assetSymbol;
-    if (coreAsset && coreAsset.eqn) {
+    if (coreAssetId && coreAssetId.eqn) {
         assetSymbol = getAsset(feeAssetId).symbol;
-        if (coreAsset.eqn(feeAssetId) && txFee) {
+        if (coreAssetId.eqn(feeAssetId) && txFee) {
             // If fee asset is CPAY use cpayFee
             fee = txFee.feeInCpay.asString(DECIMALS);
         } else if (txFee && txFee.feeInFeeAsset) {
@@ -170,6 +171,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
             // );
         }
     }
+
     return (
         <Page id={'page'}>
             <form>
@@ -178,7 +180,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     <AccountPicker
                         title="Choose account"
                         selected={signingAccount}
-                        options={accountlist}
+                        options={accountList}
                         onChange={(picked: {label: string; value: string}) => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({touched: true, assetDialogOpen: state.assetDialogOpen});
@@ -186,9 +188,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         message=""
                     />
                     <ErrorMessage errors={formErrors} field={FormSection.account} />
-
                     <Line />
-
                     <AssetInput
                         disableAmount={!!assetForEmptyPool}
                         max={outputReserve}
@@ -208,10 +208,8 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         }}
                         title="Buy"
                         secondaryTitle={extrinsic === SWAP_INPUT ? ESTIMATED_LABEL : null}
-                        /*Exchange rate: 1 CPAY = 29 CENNZ*/
                         message={props.exchangeRateMsg}
                     />
-
                     <ErrorMessage errors={formErrors} field={FormSection.toAssetInput} />
 
                     <ExchangeIcon
@@ -242,6 +240,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         secondaryTitle={extrinsic === SWAP_OUTPUT ? ESTIMATED_LABEL : null}
                         message={fromAssetBalance ? `Balance: ${fromAssetBalance.asString(DECIMALS)}` : ''}
                     />
+                    <ErrorMessage errors={formErrors} field={FormSection.fromAssetInput} />
                 </PageInside>
                 <AdvancedSetting
                     show={!!(toAsset && fromAsset)}
@@ -256,7 +255,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     summaryProps={{
                         extrinsic,
                         feeAssetId,
-                        coreAsset,
+                        coreAssetId,
                         txFee,
                         toAssetAmount,
                         toAsset,
@@ -272,7 +271,6 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     selectValue={feeAssetId}
                 />
                 <PageInside>
-                    <ErrorMessage errors={formErrors} field={FormSection.fromAssetInput} />
                     <SectionColumn>
                         <Bottom id="bottom">
                             <FullWidthContainer>

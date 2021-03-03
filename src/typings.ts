@@ -181,16 +181,12 @@ export interface SendFormData {
 }
 
 export interface LiquidityFormData {
-    fromAsset: number;
-    toAsset: number;
-    fromAssetAmount: Amount;
-    toAssetAmount: Amount;
-    add1Amount: Amount;
-    add2Amount: Amount;
-    add1Asset: number;
-    add2Asset: number;
+    assetId: number;
+    assetAmount: Amount;
+    coreAsset: number;
+    coreAmount: Amount;
     signingAccount: string;
-    extrinsic: string; //'buyAsset' | 'sellAsset'
+    extrinsic: string;
     feeAssetId: number;
     buffer: number;
     type: string;

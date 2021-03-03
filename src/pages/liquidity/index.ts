@@ -1,10 +1,9 @@
+import {stat} from 'fs';
 import {connect} from 'react-redux';
 import {Dispatch} from 'redux';
 import {BaseError, EmptyPool} from '../../error/error';
 
 import {
-    setAdd1Amount,
-    setAdd2Amount,
     resetTrade,
     setFromAssetAmount,
     swapAsset,
@@ -27,16 +26,16 @@ import {AppState} from '../../redux/reducers';
 import {LiquidityFormData, IAccounts, IExtrinsic, IFee} from '../../typings';
 import {Amount} from '../../util/Amount';
 import {prepareExchangeExtrinsicParamsWithBuffer, ADD_LIQUIDITY, REMOVE_LIQUIDITY} from '../../util/extrinsicUtil';
-import {Liquidity, LiquidityProps} from './liquidity';
+import {Liquidity, LiquidityAction, LiquidityProps} from './liquidity';
 import {
     getAssets,
     getExchangeRateMsg,
     getFee,
-    getAdd1AssetUserBalance,
-    getAdd1Reserve,
-    getCoreAssetBalance,
+    getAccountAssetBalance,
+    getAssetReserve,
+    getCoreReserve,
     getTxFeeMessage,
-    getCoreAssetUserBalance,
+    getAccountCoreBalance,
 } from './selectors';
 
 const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
@@ -54,30 +53,29 @@ const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
 
 const mapStateToProps = (state: AppState): LiquidityProps => ({
     ...state.ui.liquidity,
-    coreAsset: state.global.coreAsset,
+    coreAssetId: state.global.coreAssetId,
     feeRate: state.global.feeRate,
-    add1AssetBalance: getAdd1AssetUserBalance(state),
+    assetReserve: getAssetReserve(state),
+    accountAssetBalance: getAccountAssetBalance(state),
+    accountCoreBalance: getAccountCoreBalance(state),
+    coreReserve: getCoreReserve(state),
     accounts: state.extension.accounts.map((account: IAccounts) => ({
         label: `${account.name}: ${account.address}`,
         value: account.address,
     })),
-    // outputReserve: getOutputReserve(state),
-    add1Reserve: getAdd1Reserve(state),
-    coreAssetBalance: getCoreAssetBalance(state),
     assets: getAssets(),
     fee: getFee(state),
     exchangeRateMsg: getExchangeRateMsg(state),
     txFeeMsg: getTxFeeMessage(state),
-    coreAssetUserBalance: getCoreAssetUserBalance(state),
     // isDialogOpen: state.ui.txDialog.stage ? true : false,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    handleAdd1AmountChange: (amount: Amount) => {
+    handleAssetAmountChange: (amount: Amount) => {
         dispatch(setAdd1AssetAmount(amount));
         dispatch(requestTransactionFee());
     },
-    handleAdd2AmountChange: (amount: Amount) => {
+    handleCoreAmountChange: (amount: Amount) => {
         dispatch(setAdd2AssetAmount(amount));
         dispatch(requestTransactionFee());
     },
@@ -85,9 +83,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         dispatch(updateSelectedAccount(account));
     },
 
-    handleLiquidityType: (type: string) => {
+    handleLiquidityAction: (type: string) => {
         dispatch(setLiquidityAction(type));
-        dispatch(updateExtrinsic(type === 'add' ? ADD_LIQUIDITY : REMOVE_LIQUIDITY));
+        dispatch(updateExtrinsic(type === LiquidityAction.ADD ? ADD_LIQUIDITY : REMOVE_LIQUIDITY));
     },
 
     handleBuyAssetAmountChange: (amount: Amount) => {
@@ -100,8 +98,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     handleWithAssetAmountChange: (amount: Amount) => {
         dispatch(setFromAssetAmount(amount));
     },
-    handleAddLiquidityChange: (assetId: number, {fromAsset, toAsset}: LiquidityFormData, error: BaseError[]) => {
-        if (fromAsset === assetId) {
+    handleAddLiquidityChange: (assetId: number, {asset, coreAsset}: LiquidityFormData, error: BaseError[]) => {
+        if (asset === assetId) {
             dispatch(addLiquidity());
         }
         // else {
@@ -112,36 +110,23 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         //     dispatch(updateSelectedToAsset(assetId));
         // }
     },
-    handleAdd1IdChange: (assetId: number, {add1Asset, toAsset}: LiquidityFormData, error: BaseError[]) => {
-        if (add1Asset === assetId) {
+    handleAssetIdChange: (newAssetId: number, {assetId, coreAmount}: LiquidityFormData, error: BaseError[]) => {
+        console.log('asset id change', newAssetId, assetId);
+        if (newAssetId === assetId) {
             dispatch(swapAsset());
         } else {
-            const errorToRemove = errorInstanceForPreviousEmptyPool(error, toAsset);
+            const errorToRemove = errorInstanceForPreviousEmptyPool(error, newAssetId);
             if (errorToRemove) {
                 dispatch(removeLiquidityError(errorToRemove));
             }
-            dispatch(updateSelectedAdd1Asset(assetId));
+            dispatch(updateSelectedAdd1Asset(newAssetId));
         }
     },
-    handleAdd2IdChange: (assetId: number) => {
+    handleCoreIdChange: (assetId: number) => {
         dispatch(updateSelectedAdd2Asset(assetId));
-    },
-    handleBuyAssetIdChange: (assetId: number, {fromAsset, toAsset}: LiquidityFormData, error: BaseError[]) => {
-        if (fromAsset === assetId) {
-            dispatch(swapAsset());
-        } else {
-            const errorToRemove = errorInstanceForPreviousEmptyPool(error, toAsset);
-            if (errorToRemove) {
-                dispatch(removeLiquidityError(errorToRemove));
-            }
-            dispatch(updateSelectedToAsset(assetId));
-        }
     },
     handleExtrinsicChange: (Extrinsic: string) => {
         dispatch(updateExtrinsic(Extrinsic));
-    },
-    handleFeeAssetChange: (assetId: number) => {
-        dispatch(updateFeeAsset(assetId));
     },
     handleSwap: () => {
         dispatch(swapAsset());
@@ -154,10 +139,10 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
             extrinsic,
             signingAccount,
             feeAssetId,
-            add1Amount,
-            add2Amount,
-            add1Asset,
-            add2Asset,
+            assetAmount,
+            coreAmount,
+            asset,
+            coreAsset,
             buffer,
             type,
         }: LiquidityFormData,
@@ -165,23 +150,19 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     ) => {
         const paramList = prepareExchangeExtrinsicParamsWithBuffer(extrinsic, {
             extrinsic,
-            fromAsset: add2Asset,
-            toAsset: add1Asset,
-            toAssetAmount: add1Amount,
-            fromAssetAmount: add2Amount,
             signingAccount,
             feeAssetId,
-            add1Amount,
-            add2Amount,
-            add1Asset,
-            add2Asset,
+            assetAmount,
+            coreAmount,
+            asset,
+            coreAsset,
             buffer,
             type,
         });
         const extrinsicForDialog: IExtrinsic = {
             method: extrinsic || ADD_LIQUIDITY,
             params: paramList,
-            price: extrinsic === ADD_LIQUIDITY ? add1Amount : add2Amount,
+            price: extrinsic === ADD_LIQUIDITY ? assetAmount : coreAmount,
         };
         dispatch(
             openDialog({

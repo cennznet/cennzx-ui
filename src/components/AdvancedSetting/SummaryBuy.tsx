@@ -95,7 +95,7 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                 </div>
             );
 
-        case 'removeLiquidity':
+        case 'remove':
             return (
                 <div>
                     <p>
@@ -114,7 +114,7 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                         <Em>
                             {getAsset(assetA).symbol} or {getAsset(assetB).symbol}
                         </Em>{' '}
-                        will receive sit outside{' '}
+                        received sits outside{' '}
                         <Em>
                             {buffer}% ({new Amount(amountA.muln(1 - buffer)).asString(DECIMALS)}-
                             {new Amount(amountA.muln(1 + buffer)).asString(DECIMALS)} {getAsset(assetA).symbol}, or{' '}
@@ -125,11 +125,12 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                     </p>
                 </div>
             );
-        case 'addLiquidity':
+
+        case 'add':
             return (
                 <div>
                     <p>
-                        You are sending{' '}
+                        You are depositing{' '}
                         <Em>
                             {amountA.asString(DECIMALS, Amount.ROUND_UP)} {getAsset(assetA).symbol}
                         </Em>{' '}
@@ -144,7 +145,7 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                         <Em>
                             {getAsset(assetA).symbol} or {getAsset(assetB).symbol}
                         </Em>{' '}
-                        sent sit outside{' '}
+                        deposited sits outside{' '}
                         <Em>
                             {buffer}% ({new Amount(amountA.muln(1 - buffer)).asString(DECIMALS)}-
                             {new Amount(amountA.muln(1 + buffer)).asString(DECIMALS)} {getAsset(assetA).symbol},{' '}

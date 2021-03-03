@@ -33,7 +33,7 @@ import {
 } from '@polkadot/extension-dapp';
 import keyring from '@polkadot/ui-keyring';
 
-const DECIMALS = 5;
+const DECIMALS = 4;
 export const submitTransactionEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,

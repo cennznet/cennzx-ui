@@ -35,10 +35,6 @@ export default {
                     template: 'src/pages/liquidity',
                 },
                 {
-                    path: '/send',
-                    template: 'src/pages/send',
-                },
-                {
                     path: '/accounts',
                     template: 'src/pages/accounts',
                 },

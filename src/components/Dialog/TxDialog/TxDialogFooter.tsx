@@ -5,8 +5,13 @@ import {Stages} from '../../../redux/reducers/ui/txDialog.reducer';
 import styled from 'styled-components';
 import ClipLoader from 'react-spinners/ClipLoader';
 
-const FooterForSigning: FC<{isAccountLocked?: string; error?: Error; onClose(): void; onSubmit(): void}> = ({
-    isAccountLocked,
+const Loading = styled(ClipLoader)`
+    border-color: white !important;
+    min-width: 10rem !important;
+`;
+
+const FooterForSigning: FC<{isAccountLocked: boolean; error?: Error; onClose(): void; onSubmit(): void}> = ({
+    isAccountLocked = false,
     error,
     onClose,
     onSubmit,
@@ -31,18 +36,15 @@ const FooterForSigning: FC<{isAccountLocked?: string; error?: Error; onClose(): 
                 </p>
             )}
             <p>
-                <div>
-                    <ClipLoader loading={loading} size={25} />
-                </div>
                 <TransparentButton onClick={onClose}>Cancel</TransparentButton>
                 <BlueButton
                     disabled={isAccountLocked === true && password === ''}
                     onClick={element => {
                         setLoading(true);
-                        onSubmit(password);
+                        onSubmit();
                     }}
                 >
-                    Authorise Transaction
+                    {loading ? <Loading loading={loading} size={25} /> : 'Authorise Transaction'}
                 </BlueButton>
             </p>
         </>

@@ -31,7 +31,7 @@ export interface TxSummaryProps {
     buffer: number;
     txFee: IFee;
     feeAssetId: number;
-    coreAsset: BN;
+    coreAssetId: number;
     extrinsic: string;
 }
 

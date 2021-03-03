@@ -13,7 +13,7 @@ export const SWAP_OUTPUT = 'buyAsset';
 export const SWAP_INPUT = 'sellAsset';
 export const ADD_LIQUIDITY = 'addLiquidity';
 export const REMOVE_LIQUIDITY = 'removeLiquidity';
-export type liquidityPARAMSOutput = [number, string];
+export type liquidityPARAMSOutput = [number, Amount, Amount, Amount];
 export type exchangePARAMSOutput = [number, number, Amount, Amount];
 
 export function prepareExchangeExtrinsicParamsWithBuffer(
@@ -27,9 +27,19 @@ export function prepareExchangeExtrinsicParamsWithBuffer(
 ): liquidityPARAMSOutput | exchangePARAMSOutput | [] {
     switch (extrinsic) {
         case ADD_LIQUIDITY:
-            return [params.fromAsset, params.toAsset, params.fromAssetAmount, params.toAssetAmount];
+            return [
+                (params as AddLiquidityFormData).asset,
+                (params as AddLiquidityFormData).liquidity,
+                (params as AddLiquidityFormData).maxAssetDeposit,
+                (params as AddLiquidityFormData).coreAssetDeposit,
+            ];
         case REMOVE_LIQUIDITY:
-            return [params.fromAsset, params.toAsset, params.fromAssetAmount, params.toAssetAmount];
+            return [
+                (params as RemoveLiquidityFormData).asset,
+                (params as RemoveLiquidityFormData).liquidity,
+                (params as RemoveLiquidityFormData).minAssetYield,
+                (params as RemoveLiquidityFormData).minCoreYield,
+            ];
         case SWAP_OUTPUT:
             return [
                 (params as ExchangeFormData).fromAsset,
