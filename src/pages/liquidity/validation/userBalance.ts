@@ -7,15 +7,15 @@ import {existErrors, FormErrors, mergeError} from './index';
 
 function checkUserBalance(props: LiquidityProps, errors: FormErrors): void {
     const {
-        form: {assetAmount, asset},
-        assetUserBalance,
+        form: {assetAmount, assetId},
+        accountAssetBalance,
     } = props;
-    //skip when any error exists on assetInput
+    // skip when any error exists on assetInput
     if (existErrors(() => true, errors, FormSection.assetInput)) return;
-    if (assetAmount && assetUserBalance && assetAmount.gt(assetUserBalance)) {
+    if (assetAmount && accountAssetBalance && assetAmount.gt(accountAssetBalance)) {
         mergeError(
             FormSection.assetInput,
-            new UserBalanceNotEnough(getAsset(asset), assetAmount, assetUserBalance),
+            new UserBalanceNotEnough(getAsset(assetId), assetAmount, accountAssetBalance),
             errors
         );
     }
@@ -23,19 +23,19 @@ function checkUserBalance(props: LiquidityProps, errors: FormErrors): void {
 
 function checkUserBalanceForFee(props: LiquidityProps, errors: FormErrors): string {
     const {
-        form: {assetAmount, asset, feeAssetId, signingAccount},
+        form: {assetAmount, assetId, feeAssetId, signingAccount},
         txFee,
-        coreAsset,
-        assetUserBalance,
+        coreAssetId,
+        userAssetBalance,
     } = props;
-    if (!assetAmount || !asset || !txFee) return;
-    const feeAmount = coreAsset.eqn(feeAssetId) ? txFee.feeInCpay : txFee.feeInFeeAsset;
+    if (!assetAmount || !assetId || !txFee) return;
+    const feeAmount = coreAssetId === feeAssetId ? txFee.feeInCpay : txFee.feeInFeeAsset;
     let balRequired = feeAmount;
 
-    if (asset === feeAssetId && balRequired) {
+    if (assetId === feeAssetId && balRequired) {
         balRequired = new Amount(balRequired.add(assetAmount));
     }
-    const assetBalance = assetUserBalance.find(
+    const assetBalance = userAssetBalance.find(
         (assetBal: IAssetBalance) => assetBal.assetId === feeAssetId && assetBal.account === signingAccount
     );
 

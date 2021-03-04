@@ -10,7 +10,6 @@ export enum LiquidityActions {
     SELECTED_ACCOUNT_UPDATE = 'LIQUIDITY/SELECTED_ACCOUNT_UPDATE',
     TO_ASSET_AMOUNT_SET = 'LIQUIDITY/TO_ASSET_AMOUNT_SET',
     SELECTED_ADD1_ASSET_UPDATE = 'LIQUIDITY/SELECTED_ADD1_ASSET_UPDATE',
-    SELECTED_ADD2_ASSET_UPDATE = 'LIQUIDITY/SELECTED_ADD2_ASSET_UPDATE',
     ADD1_ASSET_AMOUNT_SET = 'LIQUIDITY/ADD1_ASSET_AMOUNT_SET',
     ADD2_ASSET_AMOUNT_SET = 'LIQUIDITY/ADD2_ASSET_AMOUNT_SET',
     ADD1_ASSET_AMOUNT_UPDATE = 'LIQUIDITY/ADD1_ASSET_AMOUNT_UPDATE',
@@ -56,25 +55,17 @@ export const updateSelectedAccount = createAction(
     LiquidityActions.SELECTED_ACCOUNT_UPDATE,
     (account: string) => account
 );
-export const setToAssetAmount = createAction(
-    LiquidityActions.TO_ASSET_AMOUNT_SET,
-    (toAssetAmount: Amount) => toAssetAmount
-);
 export const updateSelectedAdd1Asset = createAction(
     LiquidityActions.SELECTED_ADD1_ASSET_UPDATE,
     (assetId: number) => assetId
 );
-export const updateSelectedAdd2Asset = createAction(
-    LiquidityActions.SELECTED_ADD2_ASSET_UPDATE,
-    (add2Asset: number) => add2Asset
-);
 export const setAdd1AssetAmount = createAction(
     LiquidityActions.ADD1_ASSET_AMOUNT_SET,
-    (fromAssetAmount: Amount) => fromAssetAmount
+    (assetAmount: Amount) => assetAmount
 );
 export const updateAdd1AssetAmount = createAction(
     LiquidityActions.ADD1_ASSET_AMOUNT_UPDATE,
-    (fromAssetAmount: Amount) => fromAssetAmount
+    (assetAmount: Amount) => assetAmount
 );
 export const setAdd2AssetAmount = createAction(
     LiquidityActions.ADD2_ASSET_AMOUNT_SET,
@@ -160,7 +151,6 @@ export type RequestTransactionFeeAction = ReturnType<typeof requestTransactionFe
 export type UpdateTxFeeParameterAction = ReturnType<typeof updateTxFeeParameter>;
 export type UpdateTransactionFeeAction = ReturnType<typeof updateTransactionFee>;
 export type ResetTradeAction = ReturnType<typeof resetTrade>;
-export type SetFromAssetAmountAction = ReturnType<typeof setFromAssetAmount>;
 export type SwapAssetAction = ReturnType<typeof swapAsset>;
 export type SwapPayTransactionAssetAction = ReturnType<typeof swapPayTransactionAsset>;
 export type UpdateFeeAssetAction = ReturnType<typeof updateFeeAsset>;
@@ -172,9 +162,7 @@ export type SetAdd1Action = ReturnType<typeof setAdd1Amount>;
 export type SetAdd2Action = ReturnType<typeof setAdd2Amount>;
 export type UpdateExtrinsicAction = ReturnType<typeof updateExtrinsic>;
 export type UpdateSelectedAccountAction = ReturnType<typeof updateSelectedAccount>;
-export type SetToAssetAmountAction = ReturnType<typeof setToAssetAmount>;
 export type UpdateSelectedAdd1AssetAction = ReturnType<typeof updateSelectedAdd1Asset>;
-export type UpdateSelectedAdd2AssetAction = ReturnType<typeof updateSelectedAdd2Asset>;
 export type UpdateAdd1AssetAmountAction = ReturnType<typeof updateAdd1AssetAmount>;
 export type UpdateAdd2AssetAmountAction = ReturnType<typeof updateAdd2AssetAmount>;
 export type SetAdd1AssetAmountAction = ReturnType<typeof setAdd1AssetAmount>;

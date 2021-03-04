@@ -25,37 +25,37 @@ export const calculateTxFeeEpic = (
                     extrinsic,
                     signingAccount,
                     feeAssetId,
-                    add1Asset,
-                    add2Amount,
+                    assetId,
+                    coreAmount,
                     buffer,
-                    add1Amount,
+                    assetAmount,
                 } = store.ui.liquidity.form;
-                if (!add2Amount || !add1Amount) return EMPTY;
+                if (!coreAmount || !assetAmount) return EMPTY;
                 // const minSale = new Amount(amount.muln(1 - buffer)).asString(DECIMALS)
                 let tx;
                 if (extrinsic === 'addLiquidity') {
-                    const min_liquidity = new Amount(add1Amount.muln(1 - buffer));
-                    const max_asset_amount = new Amount(add1Amount.muln(1 + buffer));
+                    const min_liquidity = new Amount(assetAmount.muln(1 - buffer));
+                    const max_asset_amount = new Amount(assetAmount.muln(1 + buffer));
                     // ### addLiquidity(asset_id: `Compact<AssetId>`, min_liquidity: `Compact<BalanceOf>`,
                     // max_asset_amount: `Compact<BalanceOf>`, core_amount: `Compact<BalanceOf>`)
                     // .addLiquidity(CENNZ, minLiquidity, amount, coreAmount)
 
                     // {"asset_id":"Compact<AssetId>","min_liquidity":"Compact<BalanceOf>","max_asset_amount":"Compact<BalanceOf>","core_amount":"Compact<BalanceOf>"}:: Struct: failed on min_liquidity: Compact<BalanceOf>:: Balance: Negative number passed to unsigned type
 
-                    tx = api.tx.cennzx.addLiquidity(add1Asset, min_liquidity, max_asset_amount, add2Amount);
+                    tx = api.tx.cennzx.addLiquidity(assetId, min_liquidity, max_asset_amount, coreAmount);
                 } else {
-                    const min_asset_withdraw = new Amount(add1Amount.muln(1 - buffer));
-                    const min_core_withdraw = new Amount(add2Amount.muln(1 - buffer));
+                    const min_asset_withdraw = new Amount(assetAmount.muln(1 - buffer));
+                    const min_core_withdraw = new Amount(coreAmount.muln(1 - buffer));
                     // ### removeLiquidity(asset_id: `Compact<AssetId>`, liquidity_to_withdraw: `Compact<BalanceOf>`,
                     // min_asset_withdraw: `Compact<BalanceOf>`, min_core_withdraw: `Compact<BalanceOf>`)
                     // .removeLiquidity(assetA, removeLiquidity, minAssetWithdraw, minCoreWithdraw)
-                    tx = api.tx.cennzx.removeLiquidity(add1Asset, add1Amount, min_asset_withdraw, min_core_withdraw);
+                    tx = api.tx.cennzx.removeLiquidity(assetId, assetAmount, min_asset_withdraw, min_core_withdraw);
                 }
                 return observableEstimatedFee(tx, signingAccount, feeAssetId, api).pipe(
                     switchMap(([cpayFee, feeAssetFee]) => {
                         const feeInCpay = new Amount(cpayFee.toString(), AmountUnit.UN);
                         const feeInFeeAsset = feeAssetFee ? new Amount(feeAssetFee.toString(), AmountUnit.UN) : null;
-                        const fee = {feeInCpay: feeInCpay, feeInFeeAsset: feeInFeeAsset};
+                        const fee = {feeInCpay, feeInFeeAsset};
                         if (
                             !txFee ||
                             !fee.feeInCpay.eq(txFee.feeInCpay) ||

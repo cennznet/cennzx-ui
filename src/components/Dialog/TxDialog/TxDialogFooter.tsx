@@ -10,6 +10,10 @@ const Loading = styled(ClipLoader)`
     min-width: 10rem !important;
 `;
 
+const CancelButton = styled(TransparentButton)`
+    margin-bottom: 0.2rem;
+`;
+
 const FooterForSigning: FC<{isAccountLocked: boolean; error?: Error; onClose(): void; onSubmit(): void}> = ({
     isAccountLocked = false,
     error,
@@ -36,7 +40,7 @@ const FooterForSigning: FC<{isAccountLocked: boolean; error?: Error; onClose(): 
                 </p>
             )}
             <p>
-                <TransparentButton onClick={onClose}>Cancel</TransparentButton>
+                <CancelButton onClick={onClose}>Cancel</CancelButton>
                 <BlueButton
                     disabled={isAccountLocked === true && password === ''}
                     onClick={element => {
@@ -44,7 +48,7 @@ const FooterForSigning: FC<{isAccountLocked: boolean; error?: Error; onClose(): 
                         onSubmit();
                     }}
                 >
-                    {loading ? <Loading loading={loading} size={25} /> : 'Authorise Transaction'}
+                    {loading ? <Loading size={25} /> : 'Authorise Transaction'}
                 </BlueButton>
             </p>
         </>

@@ -8,7 +8,7 @@ import styled from 'styled-components';
 export interface SummaryFeeProps {
     txFee: IFee;
     feeAssetId: number;
-    coreAsset: number;
+    coreAssetId: number;
 }
 
 const Em = styled.span`
@@ -16,11 +16,11 @@ const Em = styled.span`
     font-weight: 300;
 `;
 
-const getFeeMsg = ({txFee, feeAssetId, coreAsset}: SummaryFeeProps) => {
+const getFeeMsg = ({txFee, feeAssetId, coreAssetId}: SummaryFeeProps) => {
     let fee;
     const assetSymbol = getAsset(feeAssetId).symbol;
 
-    if (coreAsset && coreAsset.eqn && coreAsset.eqn(feeAssetId) && txFee) {
+    if (coreAssetId && coreAssetId == feeAssetId && txFee) {
         // If fee asset is CPAY use cpayFee
         fee = txFee.feeInCpay.asString(DECIMALS);
         return (

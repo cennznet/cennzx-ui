@@ -1,4 +1,3 @@
-import React from 'react';
 import {createSelector} from 'reselect';
 import {AppState} from '../../redux/reducers';
 import {Asset, IAssetBalance, IExchangePool} from '../../typings';
@@ -7,7 +6,7 @@ import {DECIMALS} from './liquidity';
 import {getAsset as getAsset_} from '../../util/assets';
 
 const getBuffer = (state: AppState) => state.ui.liquidity.form.buffer;
-const getAsset = (state: AppState) => state.ui.liquidity.form.asset;
+const getAsset = (state: AppState) => state.ui.liquidity.form.assetId;
 const getSigningAccount = (state: AppState) => state.ui.liquidity.form.signingAccount;
 const getAssetAmount = (state: AppState) => state.ui.liquidity.form.assetAmount;
 const getCoreAmount = (state: AppState) => state.ui.liquidity.form.coreAmount;
@@ -15,7 +14,7 @@ const getExchangePool = (state: AppState) => state.ui.liquidity.exchangePool;
 const getExchangeRate = (state: AppState) => state.ui.liquidity.exchangeRate;
 const getTxFee = (state: AppState) => state.ui.liquidity.txFee;
 const getFeeAssetId = (state: AppState) => state.ui.liquidity.form.feeAssetId;
-const getCoreAsset = (state: AppState) => state.global.coreAsset;
+const getCoreAsset = (state: AppState) => state.global.coreAssetId;
 const getUserAssetBalance = (state: AppState) => state.ui.liquidity.userAssetBalance;
 
 export const getAssets = () => (typeof window !== 'undefined' ? window.config.ASSETS : []);
@@ -28,14 +27,14 @@ export const getLiquidityExchangeRate = createSelector(
 
 export const getAccountAssetBalance = createSelector(
     [getAsset, getUserAssetBalance, getSigningAccount],
-    (asset, userBalance, signingAccount) => {
-        if (!asset) return null;
+    (assetId, userBalance, signingAccount) => {
+        if (!assetId) return null;
         if (!userBalance.length) return null;
-        const fromAssetBalance = userBalance.find(
-            (bal: IAssetBalance) => bal.assetId === asset && bal.account === signingAccount
+        const accountAssetBalance = userBalance.find(
+            (bal: IAssetBalance) => bal.assetId === assetId && bal.account === signingAccount
         );
-        if (fromAssetBalance) {
-            return fromAssetBalance.balance;
+        if (accountAssetBalance) {
+            return accountAssetBalance.balance;
         }
         return null;
     }
@@ -44,6 +43,7 @@ export const getAccountAssetBalance = createSelector(
 export const getAccountCoreBalance = createSelector(
     [getCoreAsset, getUserAssetBalance, getSigningAccount],
     (coreAsset, userBalance, signingAccount) => {
+        console.log(userBalance);
         if (!coreAsset) return null;
         const coreAssetId = +coreAsset.toString();
         if (!userBalance.length) return null;

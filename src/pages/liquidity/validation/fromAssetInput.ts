@@ -1,4 +1,9 @@
-import {FieldNotReady, FromAssetAmountRequired, FromAssetNotSelected} from '../../../error/error';
+import {
+    FieldNotReady,
+    FieldNotReadyForLiquidity,
+    FromAssetAmountRequired,
+    FromAssetNotSelected,
+} from '../../../error/error';
 import {LiquidityProps, FormSection} from '../liquidity';
 import {existErrors, FormErrors, mergeError} from './index';
 
@@ -12,7 +17,7 @@ function checkFromAssetAmount(props: LiquidityProps, errors: FormErrors): void {
 
     if (!coreAmount) {
         if (assetAmount) {
-            mergeError(FormSection.assetAmount, new FieldNotReady(FormSection.coreAmount), errors);
+            mergeError(FormSection.assetAmount, new FieldNotReadyForLiquidity(FormSection.coreAmount), errors);
         } else {
             mergeError(FormSection.assetAmount, new FromAssetAmountRequired(), errors);
         }

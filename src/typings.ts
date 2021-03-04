@@ -183,7 +183,7 @@ export interface SendFormData {
 export interface LiquidityFormData {
     assetId: number;
     assetAmount: Amount;
-    coreAsset: number;
+    coreAssetId: number;
     coreAmount: Amount;
     signingAccount: string;
     extrinsic: string;

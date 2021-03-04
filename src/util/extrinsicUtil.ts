@@ -29,9 +29,9 @@ export function prepareExchangeExtrinsicParamsWithBuffer(
         case ADD_LIQUIDITY:
             return [
                 (params as AddLiquidityFormData).asset,
-                (params as AddLiquidityFormData).liquidity,
-                (params as AddLiquidityFormData).maxAssetDeposit,
-                (params as AddLiquidityFormData).coreAssetDeposit,
+                (params as AddLiquidityFormData).coreAmount, // # of pool liquidity shares to mint
+                (params as AddLiquidityFormData).assetAmount, // max asset deposit
+                (params as AddLiquidityFormData).coreAmount, // core amount
             ];
         case REMOVE_LIQUIDITY:
             return [

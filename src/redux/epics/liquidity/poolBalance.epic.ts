@@ -26,8 +26,7 @@ export const getAssetPoolBalanceEpic = (
         api$,
         action$.pipe(
             ofType<UpdateSelectedAdd1AssetAction | UpdateSelectedAdd2AssetAction>(
-                types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE,
-                types.ui.Liquidity.SELECTED_ADD2_ASSET_UPDATE
+                types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE
             )
         ),
     ]).pipe(

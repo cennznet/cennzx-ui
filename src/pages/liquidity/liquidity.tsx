@@ -1,4 +1,4 @@
-import {FeeRate} from '@cennznet/types/runtime/interfaces/cennzx';
+import {FeeRate} from '@cennznet/types/interfaces/cennzx';
 import BN from 'bn.js';
 import {Button} from 'centrality-react-core';
 import AccountPicker from 'components/AccountPicker';
@@ -19,10 +19,10 @@ import getFormErrors from './validation';
 import Select from 'components/Select';
 import TextInput from 'components/TextInput';
 import AdvancedSetting from 'components/AdvancedSetting';
-import {getAsset} from '../../util/assets';
 import {setNewAmount} from '../../util/newAmount';
 import keyring from '@polkadot/ui-keyring';
 import liquidity from '.';
+import {values} from 'ramda';
 
 export const DECIMALS = 4;
 
@@ -32,11 +32,13 @@ const Line = styled.div`
     margin-top: 20px;
 `;
 const AddIcon = styled.span`
-    display: inline-block;
     color: #1130ff;
     font-size: 20px;
     font-weight: 700;
-    margin: 46px 10px;
+    margin-left auto;
+    margin-right: auto;
+    text-align: center;
+    justify-content: center;
 `;
 
 const Bottom = styled.div`
@@ -173,6 +175,7 @@ export enum FormSection {
     assetAmount = 'assetAmount',
     assetInput = 'assetInput',
     coreAmount = 'coreAmount',
+    form = 'generalError',
 }
 
 // The liquidity action to take
@@ -185,7 +188,6 @@ export type LiquidityDispatchProps = {
     handleAssetAmountChange(amount: Amount): void;
     handleCoreAmountChange(amount: Amount): void;
     handleAssetIdChange(assetId: number, form: LiquidityFormData, error: BaseError[]): void;
-    handleCoreIdChange(assetId: number): void;
     handleSelectedAccountChange(account: string): void;
     handleFeeBufferChange(feeBuffer: number): void;
     handleReset(): void;
@@ -273,9 +275,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const [state, setState] = useState(initState);
     useEffect((): void => {
         if (!type) {
-            props.handleSelectedAccountChange(accountList[0].value);
             props.handleLiquidityAction(initState.liquidityAction);
-            props.handleCoreIdChange(coreAssetId);
             props.handleExtrinsicChange(initState.liquidityAction);
         }
     }, []);
@@ -371,6 +371,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             message={assetBalance ? `Balance: ${assetBalance}` : ''}
                         />
                         <ErrorMessage errors={formErrors} field={FormSection.assetInput} />
+                        <ErrorMessage errors={formErrors} field={FormSection.assetAmount} />
                         <div>
                             <AddIcon>+</AddIcon>
                         </div>

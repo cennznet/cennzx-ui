@@ -9,7 +9,8 @@ import {Amount} from '../../util/Amount';
 import {DECIMALS, FormSection} from '../../pages/exchange/exchange';
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {FormErrors} from './../../pages/exchange/validation';
+import {FormErrors as ExchangeFormErrors} from './../../pages/exchange/validation';
+import {FormErrors as LiquidityFormErrors} from './../../pages/liquidity/validation';
 import {getAsset} from '../../util/assets';
 import {SummaryBuy} from './SummaryBuy';
 import SummaryFee from './SummaryFee';
@@ -78,7 +79,7 @@ const P = styled.p`
 `;
 
 type SummaryOrErrorProps = {
-    formErrors: FormErrors;
+    formErrors: LiquidityFormErrors & ExchangeFormErrors;
     summaryProps?: TxSummaryProps;
     onAssetChange: (assetId: number) => void;
     onBufferChange: (buffer: number) => void;
@@ -115,7 +116,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
         buffer,
         txFee,
         feeAssetId,
-        coreAsset,
+        coreAssetId,
         extrinsic,
     } = summaryProps;
     const [state, setState] = useState({spinner});
@@ -169,7 +170,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                     showBorder={true}
                                 /> */}
                                 <SummaryBody>
-                                    <SummaryFee txFee={txFee} coreAsset={coreAsset} feeAssetId={feeAssetId} />
+                                    <SummaryFee txFee={txFee} coreAssetId={coreAssetId} feeAssetId={feeAssetId} />
                                 </SummaryBody>
                             </>
                         )}

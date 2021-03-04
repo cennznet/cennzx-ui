@@ -26,11 +26,11 @@ export interface SubmitLiquidity {
     signingAccount: string;
     feeAssetId: number;
     feeInFeeAsset: IFee;
-    add1Asset: number;
-    add1Amount: Amount;
-    add2Asset: number;
-    add2Amount: Amount;
-    add1Reserve: Amount;
+    assetAmount: Amount;
+    assetId: number;
+    assetReserve: Amount;
+    coreAmount: Amount;
+    coreAssetId: number;
     buffer: number;
 }
 export interface OpenDialog {

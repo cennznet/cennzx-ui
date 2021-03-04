@@ -5,18 +5,14 @@ import {BaseError, EmptyPool} from '../../error/error';
 
 import {
     resetTrade,
-    setFromAssetAmount,
     swapAsset,
-    updateFeeAsset,
     updateTransactionBuffer,
     addLiquidity,
-    setToAssetAmount,
     removeLiquidityError,
     updateExtrinsic,
     updateSelectedAccount,
     setLiquidityAction,
     updateSelectedAdd1Asset,
-    updateSelectedAdd2Asset,
     setAdd1AssetAmount,
     setAdd2AssetAmount,
     requestTransactionFee,
@@ -29,13 +25,13 @@ import {prepareExchangeExtrinsicParamsWithBuffer, ADD_LIQUIDITY, REMOVE_LIQUIDIT
 import {Liquidity, LiquidityAction, LiquidityProps} from './liquidity';
 import {
     getAssets,
-    getExchangeRateMsg,
-    getFee,
     getAccountAssetBalance,
+    getAccountCoreBalance,
     getAssetReserve,
     getCoreReserve,
+    getExchangeRateMsg,
+    getFee,
     getTxFeeMessage,
-    getAccountCoreBalance,
 } from './selectors';
 
 const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
@@ -82,36 +78,25 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     handleSelectedAccountChange: (account: string) => {
         dispatch(updateSelectedAccount(account));
     },
-
     handleLiquidityAction: (type: string) => {
         dispatch(setLiquidityAction(type));
         dispatch(updateExtrinsic(type === LiquidityAction.ADD ? ADD_LIQUIDITY : REMOVE_LIQUIDITY));
     },
 
-    handleBuyAssetAmountChange: (amount: Amount) => {
-        dispatch(setToAssetAmount(amount));
-    },
-
     handleFeeBufferChange: (buffer: number) => {
         dispatch(updateTransactionBuffer(buffer));
     },
-    handleWithAssetAmountChange: (amount: Amount) => {
-        dispatch(setFromAssetAmount(amount));
-    },
-    handleAddLiquidityChange: (assetId: number, {asset, coreAsset}: LiquidityFormData, error: BaseError[]) => {
+    handleAddLiquidityChange: (asset: number, {assetId, coreAssetId}: LiquidityFormData, error: BaseError[]) => {
         if (asset === assetId) {
             dispatch(addLiquidity());
+        } else {
+            const errorToRemove = errorInstanceForPreviousEmptyPool(error, assetId);
+            if (errorToRemove) {
+                dispatch(removeLiquidityError(errorToRemove));
+            }
         }
-        // else {
-        //     const errorToRemove = errorInstanceForPreviousEmptyPool(error, toAsset);
-        //     if (errorToRemove) {
-        //         dispatch(removeLiquidityError(errorToRemove));
-        //     }
-        //     dispatch(updateSelectedToAsset(assetId));
-        // }
     },
     handleAssetIdChange: (newAssetId: number, {assetId, coreAmount}: LiquidityFormData, error: BaseError[]) => {
-        console.log('asset id change', newAssetId, assetId);
         if (newAssetId === assetId) {
             dispatch(swapAsset());
         } else {
@@ -122,14 +107,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
             dispatch(updateSelectedAdd1Asset(newAssetId));
         }
     },
-    handleCoreIdChange: (assetId: number) => {
-        dispatch(updateSelectedAdd2Asset(assetId));
-    },
     handleExtrinsicChange: (Extrinsic: string) => {
         dispatch(updateExtrinsic(Extrinsic));
-    },
-    handleSwap: () => {
-        dispatch(swapAsset());
     },
     handleReset: () => {
         dispatch(resetTrade());
@@ -141,23 +120,17 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
             feeAssetId,
             assetAmount,
             coreAmount,
-            asset,
-            coreAsset,
+            assetId,
+            coreAssetId,
             buffer,
             type,
         }: LiquidityFormData,
         txFee: IFee
     ) => {
         const paramList = prepareExchangeExtrinsicParamsWithBuffer(extrinsic, {
-            extrinsic,
-            signingAccount,
-            feeAssetId,
-            assetAmount,
+            assetId,
             coreAmount,
-            asset,
-            coreAsset,
-            buffer,
-            type,
+            assetAmount,
         });
         const extrinsicForDialog: IExtrinsic = {
             method: extrinsic || ADD_LIQUIDITY,

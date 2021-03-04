@@ -51,7 +51,7 @@ const FullWidthContainer = styled.div`
 const Buttons = styled.div`
     display: flex;
     flex-direction: row;
-    margintop: 20px;
+    margin-top: 20px;
     justify-content: center;
     min-width: 224px;
 

@@ -1,4 +1,4 @@
-import {Balance} from '@cennznet/types/polkadot';
+import {Balance} from '@cennznet/types';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';
@@ -36,13 +36,13 @@ export const updateAssetsBalanceEpic = (
                 return api.query.genericAsset.freeBalance(assetId, signingAccount).pipe(
                     switchMap((balance: Balance) => {
                         const userBal = new Amount(balance);
-                        const newAssetBalance = {assetId: assetId, account: signingAccount, balance: userBal};
+                        const newAssetBalance = {assetId, account: signingAccount, balance: userBal};
                         const {userAssetBalance} = store.ui.liquidity;
-                        const fromAssetBalance = userAssetBalance.find(
+                        const assetBalance = userAssetBalance.find(
                             (bal: IAssetBalance) =>
                                 bal.assetId === assetId && bal.account === signingAccount && bal.balance.eq(userBal)
                         );
-                        if (!fromAssetBalance) {
+                        if (!assetBalance) {
                             return of(updateUserAssetBalance(newAssetBalance));
                         }
                         return EMPTY;
@@ -98,7 +98,7 @@ export const updateAdd1AssetsBalanceEpic = (
                 return api.query.genericAsset.freeBalance(assetId, signingAccount).pipe(
                     switchMap((balance: Balance) => {
                         const userBal = new Amount(balance);
-                        const newAssetBalance = {assetId: assetId, account: signingAccount, balance: userBal};
+                        const newAssetBalance = {assetId, account: signingAccount, balance: userBal};
                         const {userAssetBalance} = store.ui.liquidity;
                         const fromAssetBalance = userAssetBalance.find(
                             (bal: IAssetBalance) =>
@@ -122,11 +122,11 @@ export const prepareBalanceParamsForAdd1AssetEpic = (
 ): Observable<Action<any>> =>
     combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE))]).pipe(
         withLatestFrom(store$),
-        filter(([, store]) => store.ui.liquidity.form.add1Asset && !!store.ui.liquidity.form.signingAccount),
+        filter(([, store]) => store.ui.liquidity.form.assetId && !!store.ui.liquidity.form.signingAccount),
         switchMap(
             ([[api], store]): Observable<Action<any>> => {
-                const {add1Asset, signingAccount} = store.ui.liquidity.form;
-                return of(requestAdd1AssetBalance(add1Asset, signingAccount));
+                const {assetId, signingAccount} = store.ui.liquidity.form;
+                return of(requestAdd1AssetBalance(assetId, signingAccount));
             }
         )
     );
