@@ -74,14 +74,7 @@ export default handleActions<LiquidityState, any>(
         }),
         [LiquidityActions.USER_ASSET_BALANCE_UPDATE]: produce(
             (draft: LiquidityState, action: UpdateUserAssetBalanceAction) => {
-                const index = draft.userAssetBalance.findIndex(
-                    (assetData: IAssetBalance) =>
-                        assetData.assetId === draft.form.feeAssetId && assetData.account === draft.form.signingAccount
-                );
-                if (index === -1) {
-                    draft.userAssetBalance.push(action.payload);
-                }
-                draft.userAssetBalance[index] = action.payload;
+                draft.userAssetBalance.push(action.payload);
             }
         ),
         [LiquidityActions.USER_ADD1_ASSET_BALANCE_UPDATE]: produce(

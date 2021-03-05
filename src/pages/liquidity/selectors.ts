@@ -43,9 +43,9 @@ export const getAccountAssetBalance = createSelector(
 export const getAccountCoreBalance = createSelector(
     [getCoreAsset, getUserAssetBalance, getSigningAccount],
     (coreAsset, userBalance, signingAccount) => {
-        console.log(userBalance);
         if (!coreAsset) return null;
         const coreAssetId = +coreAsset.toString();
+        console.log('core balance', userBalance);
         if (!userBalance.length) return null;
         const coreAssetBalance = userBalance.find(
             (bal: IAssetBalance) => bal.assetId === coreAssetId && bal.account === signingAccount

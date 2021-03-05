@@ -97,15 +97,11 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         }
     },
     handleAssetIdChange: (newAssetId: number, {assetId, coreAmount}: LiquidityFormData, error: BaseError[]) => {
-        if (newAssetId === assetId) {
-            dispatch(swapAsset());
-        } else {
             const errorToRemove = errorInstanceForPreviousEmptyPool(error, newAssetId);
             if (errorToRemove) {
                 dispatch(removeLiquidityError(errorToRemove));
             }
             dispatch(updateSelectedAdd1Asset(newAssetId));
-        }
     },
     handleExtrinsicChange: (Extrinsic: string) => {
         dispatch(updateExtrinsic(Extrinsic));

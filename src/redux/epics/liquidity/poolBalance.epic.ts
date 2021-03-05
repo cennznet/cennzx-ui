@@ -10,7 +10,6 @@ import types from '../../actions';
 
 import {
     UpdateSelectedAdd1AssetAction,
-    UpdateSelectedAdd2AssetAction,
     UpdatePoolBalanceAction,
     setLiquidityError,
     updatePoolBalance,
@@ -25,7 +24,7 @@ export const getAssetPoolBalanceEpic = (
     combineLatest([
         api$,
         action$.pipe(
-            ofType<UpdateSelectedAdd1AssetAction | UpdateSelectedAdd2AssetAction>(
+            ofType<UpdateSelectedAdd1AssetAction>(
                 types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE
             )
         ),
