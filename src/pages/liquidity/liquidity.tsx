@@ -14,15 +14,19 @@ import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
 import {LiquidityState} from '../../redux/reducers/ui/liquidity.reducer';
 import {AmountParams, Asset, LiquidityFormData, IFee, IOption} from '../../typings';
 import ReactSlider from 'react-slider';
+import {faExchangeAlt} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Amount} from '../../util/Amount';
 import getFormErrors from './validation';
 import Select from 'components/Select';
 import TextInput from 'components/TextInput';
 import AdvancedSetting from 'components/AdvancedSetting';
-import {setNewAmount} from '../../util/newAmount';
 import keyring from '@polkadot/ui-keyring';
 import liquidity from '.';
-import {values} from 'ramda';
+import {add, values} from 'ramda';
+import Toggle from 'components/Toggle';
+import {Icon} from 'semantic-ui-react';
+import ExchangeIconClass from 'components/ExchangeIcon';
 
 export const DECIMALS = 4;
 
@@ -30,15 +34,17 @@ const Line = styled.div`
     border-bottom: 1px solid rgba(17, 48, 255, 0.3);
     height: 1px;
     margin-top: 20px;
+    margin-bottom: 20px;
 `;
+
 const AddIcon = styled.span`
     color: #1130ff;
     font-size: 20px;
     font-weight: 700;
-    margin-left auto;
-    margin-right: auto;
-    text-align: center;
-    justify-content: center;
+    margin-top: auto;
+    margin-right: 2px;
+    margin-left: 2px;
+    margin-bottom: auto;
 `;
 
 const Bottom = styled.div`
@@ -54,7 +60,15 @@ const Bottom = styled.div`
 `;
 
 const Flex = styled.div`
-    display: box;
+    align-items: center;
+    display: inline-flex;
+`;
+
+const Flex2 = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 1rem;
 `;
 
 const FullWidthContainer = styled.div`
@@ -64,15 +78,13 @@ const FullWidthContainer = styled.div`
 const Buttons = styled.div`
     display: flex;
     flex-direction: row;
-    margintop: 20px;
+    margin-top: 20px;
     justify-content: center;
-    min-width: 224px;
 
     button {
         border: 2px solid #1130ff;
         color: #1130ff;
         border-radius: 3px;
-        margin-right: 4px;
 
         :disabled {
             background-color: #ebeced;
@@ -103,12 +115,24 @@ const SectionColumn = styled.div`
     margin-top: 20px;
 `;
 
+const SwapButton = styled(Button)`
+    background-color: white;
+    color: #f7941d;
+    border: 1px solid #f7941d;
+    border-radius: 5px;
+    margin-right: 0.5rem;
+
+    :hover {
+        color: white;
+        background-color: #f7941d;
+        border: 1px solid #f7941d;
+    }
+`;
+
 const Label = styled.div`
     color: #4e5458;
     font-weight: 600;
     font-size: 16px;
-    line-height: 20px;
-    margin: 20px 0 0;
 `;
 const LabelDetail = styled.p`
     font-weight: normal;
@@ -166,6 +190,10 @@ const SliderContainer = styled.div<FontAwesomeIconProps>`
         padding: 5px 0;
         text-align: center;
     }
+`;
+
+const SwapIcon = styled(FontAwesomeIcon)`
+    font-size: 16px;
 `;
 
 const ESTIMATED_LABEL = '(estimated)';
@@ -227,7 +255,7 @@ const selectOption = [
         value: LiquidityAction.ADD,
     },
     {
-        label: 'Remove liquidity',
+        label: 'Withdraw liquidity',
         value: LiquidityAction.REMOVE,
     },
 ];
@@ -310,41 +338,29 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                         message=""
                     />
                     <ErrorMessage errors={formErrors} field={FormSection.account} />
-
                     <Line />
-                    <Select
-                        value={state.liquidityAction}
-                        options={selectOption}
-                        onChange={(action: LiquidityAction) => {
-                            props.handleExtrinsicChange(action);
-                            setState({
-                                ...state,
-                                liquidityAction: action,
-                            });
-                        }}
-                    />
-                    {state.liquidityAction === LiquidityAction.ADD ? (
-                        <div>
-                            <Label>Deposit amount</Label>
-                            {coreName && (
-                                <LabelDetail>
-                                    To keep the liquidity pool functional, deposit requires an equal value of{' '}
-                                    {assetName || ' your token'} and {coreName} at the current exchange rate.
-                                </LabelDetail>
-                            )}
-                        </div>
-                    ) : (
-                        <div>
-                            <Label>Withdraw amount</Label>
-                            {coreName && (
-                                <LabelDetail>
-                                    To keep the liquidity pool functional, withdraw returns an equal value of{' '}
-                                    {assetName || ' your token'} and {coreName} at the current exchange rate.
-                                </LabelDetail>
-                            )}
-                        </div>
-                    )}
                     <Flex>
+                        <SwapButton
+                            onClick={() => {
+                                // just flip the action
+                                let action =
+                                    state.liquidityAction === LiquidityAction.REMOVE
+                                        ? LiquidityAction.ADD
+                                        : LiquidityAction.REMOVE;
+                                props.handleExtrinsicChange(action);
+                                setState({
+                                    ...state,
+                                    liquidityAction: action,
+                                });
+                            }}
+                        >
+                            <SwapIcon icon={faExchangeAlt} />
+                        </SwapButton>
+                        <Label>
+                            {state.liquidityAction === LiquidityAction.REMOVE ? 'Withdraw liquidity' : 'Add liquidity'}
+                        </Label>
+                    </Flex>
+                    <Flex2>
                         <AssetInputForAdd
                             max={accountAssetBalance}
                             value={{amount: assetAmount, assetId}}
@@ -368,13 +384,10 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             }}
                             title=""
                             secondaryTitle={null}
-                            message={assetBalance ? `Balance: ${assetBalance}` : ''}
+                            message={`Balance: ${assetBalance || 0}`}
+                            errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetInput} />}
                         />
-                        <ErrorMessage errors={formErrors} field={FormSection.assetInput} />
-                        <ErrorMessage errors={formErrors} field={FormSection.assetAmount} />
-                        <div>
-                            <AddIcon>+</AddIcon>
-                        </div>
+                        <AddIcon></AddIcon>
                         <AssetInputForAdd
                             max={accountCoreBalance}
                             value={{amount: coreAmount, assetId: coreAssetId}}
@@ -392,10 +405,25 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             }}
                             title=""
                             secondaryTitle={null}
-                            message={coreBalance ? `Balance: ${coreBalance}` : ''}
+                            message={`Balance: ${coreBalance || 0}`}
                         />
-                    </Flex>
-                    {state.liquidityAction === LiquidityAction.REMOVE && coreAssetId && assetId && (
+                    </Flex2>
+                    <div>
+                        {state.liquidityAction === LiquidityAction.ADD
+                            ? coreName && (
+                                  <LabelDetail>
+                                      To keep the liquidity pool functional, deposits require an equal value of{' '}
+                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
+                                  </LabelDetail>
+                              )
+                            : coreName && (
+                                  <LabelDetail>
+                                      To keep the liquidity pool functional, withdrawals will return an equal value of{' '}
+                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
+                                  </LabelDetail>
+                              )}
+                    </div>
+                    {/* {state.liquidityAction === LiquidityAction.REMOVE && coreAssetId && assetId && (
                         <SliderContainer spinner={state.slider.toString()}>
                             <ReactSlider
                                 className="horizontal-slider"
@@ -431,7 +459,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                                 )}
                             />
                         </SliderContainer>
-                    )}
+                    )} */}
                     {assetPool &&
                         corePool &&
                         (state.liquidityAction === LiquidityAction.ADD ? (
@@ -460,6 +488,16 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             </Summary>
                         ))}
                 </PageInside>
+                <Buttons id="buttons">
+                    <Button
+                        flat
+                        primary
+                        // disabled={formErrors.size > 0 || !txFee}
+                        onClick={() => props.openTxDialog(props.form as LiquidityFormData, props.txFee)}
+                    >
+                        {state.liquidityAction === LiquidityAction.ADD ? 'Add' : 'Withdraw'}
+                    </Button>
+                </Buttons>
                 <AdvancedSetting
                     show={!!(assetId && coreAssetId)}
                     assets={assets}
@@ -485,40 +523,6 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     selectOptions={assets}
                     selectValue={feeAssetId}
                 />
-                <PageInside>
-                    <SectionColumn>
-                        <Bottom id="bottom">
-                            <FullWidthContainer>
-                                <Buttons id="buttons">
-                                    <Button
-                                        flat
-                                        primary
-                                        onClick={() => {
-                                            props.handleReset();
-                                            setState({
-                                                ...state,
-                                                touched: false,
-                                                assetDialogOpen: state.assetDialogOpen,
-                                            });
-                                        }}
-                                    >
-                                        Clear From
-                                    </Button>
-                                    <Button
-                                        flat
-                                        primary
-                                        // disabled={formErrors.size > 0 || !txFee}
-                                        onClick={() => props.openTxDialog(props.form as LiquidityFormData, props.txFee)}
-                                    >
-                                        {state.liquidityAction === LiquidityAction.ADD
-                                            ? 'Add liquidity'
-                                            : 'Remove liquidity'}
-                                    </Button>
-                                </Buttons>
-                            </FullWidthContainer>
-                        </Bottom>
-                    </SectionColumn>
-                </PageInside>
             </form>
         </Page>
     );

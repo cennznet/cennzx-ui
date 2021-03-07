@@ -9,8 +9,9 @@ import FlexDiv from './FlexDiv';
 import MessageBox from './MessageBox';
 
 const Trade = styled.div`
-    margin-top: 20px;
     flex-direction: row;
+    flex-shrink: 1;
+    max-width: 600px !important;
 
     h2 {
         font-size: 16px;
@@ -19,11 +20,27 @@ const Trade = styled.div`
     }
 `;
 
+const MaxButton = styled(TransparentButton)`
+    margin-top: auto;
+    margin-bottom: auto;
+    border: 1px solid white;
+    margin-right: 4px;
+    height: 1.5rem;
+
+    :hover {
+        color: blue;
+        background-color: white;
+        border: 1px solid blue;
+    }
+`;
+
 const InputAndSelect = styled(FlexDiv)`
     height: 48px;
     background-color: transparent;
     border: 1px solid #b5babd;
     border-radius: 3px;
+    margin-top: 12px;
+    margin-bottom: 12px;
 
     :hover {
         border: 1px solid #1130ff;
@@ -38,6 +55,7 @@ interface AssetInputProps {
     onChange: (newVal: AmountParams) => void;
     title: string;
     message: string;
+    errorBox?: JSX.Element;
     max?: Amount;
     secondaryTitle?: string;
     disableAmount?: boolean;
@@ -46,9 +64,7 @@ interface AssetInputProps {
 const Top = styled.div`
     display: flex;
     flex-direction: row;
-    margintop: 20px;
     justify-content: space-between;
-    min-width: 224px;
 `;
 
 const getAmountParams = (amount: Amount, assetId: number, amountChange: boolean): AmountParams => ({
@@ -64,6 +80,7 @@ const AssetInputForAdd: FC<AssetInputProps> = ({
     onChange,
     title,
     message,
+    errorBox,
     secondaryTitle,
     disableAmount,
 }) => {
@@ -84,6 +101,9 @@ const AssetInputForAdd: FC<AssetInputProps> = ({
                     value={amount}
                     onChange={value => onChange(getAmountParams(value, assetId, true))}
                 />
+                <MaxButton onClick={() => onChange(getAmountParams(max || new Amount(0), assetId, true))}>
+                    Max
+                </MaxButton>
                 <AssetDropDown
                     isSearchable={false}
                     value={assetId}
@@ -93,6 +113,7 @@ const AssetInputForAdd: FC<AssetInputProps> = ({
                 />
             </InputAndSelect>
             <MessageBox>{message}</MessageBox>
+            {errorBox}
         </Trade>
     );
 };

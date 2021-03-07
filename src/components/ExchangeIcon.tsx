@@ -34,7 +34,6 @@ const Container = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin-top: 32px;
 `;
 
 const ExchangeIconClass: FC<ExchangeIconProps> = ({onClick}) => {

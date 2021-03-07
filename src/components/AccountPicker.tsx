@@ -17,7 +17,7 @@ interface AccountPickerProps {
 const AccountWrapper = styled.div`
     max-height: 1rem;
     display: block;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 
     .select {
         max-width: calc(100% - 2.5rem);
@@ -40,6 +40,7 @@ const AccountPicker: FC<AccountPickerProps> = ({title, selected, options, onChan
                 value={getOptionByValue(options, selected)}
                 options={options}
                 onChange={picked => onChange(picked)}
+                help={getOptionByValue(options, selected)}
             />
         </AccountWrapper>
         <MessageBox>{message}</MessageBox>

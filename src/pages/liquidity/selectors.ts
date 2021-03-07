@@ -45,7 +45,6 @@ export const getAccountCoreBalance = createSelector(
     (coreAsset, userBalance, signingAccount) => {
         if (!coreAsset) return null;
         const coreAssetId = +coreAsset.toString();
-        console.log('core balance', userBalance);
         if (!userBalance.length) return null;
         const coreAssetBalance = userBalance.find(
             (bal: IAssetBalance) => bal.assetId === coreAssetId && bal.account === signingAccount
@@ -66,7 +65,7 @@ export const getAssetReserve = createSelector(
         if (poolBalanceForBuyAsset) {
             return poolBalanceForBuyAsset.assetBalance;
         } else if (asset.toString() === coreAsset.toString()) {
-            return exchangePool[0].coreAssetBalance; // core asset is selected as TO asset.
+            return exchangePool[0].coreAssetBalance;
         }
     }
 );

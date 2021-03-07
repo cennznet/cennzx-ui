@@ -10,12 +10,17 @@ type AssetDropDownStyledProps = SelectProps<any> & {
 };
 
 const StyledSelect = styled(Select)<AssetDropDownStyledProps>`
-    flex: 1;
-    min-width: calc(32px + 4rem);
+    min-width: calc(32px + 2em);
+    max-width: calc(32px + 1em);
     transition: min-width 0.3s ease 0.1s;
 
     > div {
         border-width: ${props => (props.showBorder.toString() === 'true' ? '1px' : '0px')};
+    }
+
+    .react-select__indicators {
+        padding: 0px;
+        display: none;
     }
 
     // remove border from right of select 
@@ -59,8 +64,7 @@ const StyledSelect = styled(Select)<AssetDropDownStyledProps>`
 
     // expand on hover, contract on exit
     :hover {
-        cursor: pointer;
-        min-width: calc(32px + 7.1rem);
+        min-width: calc(32px + 5.5rem);
     }
 `;
 
@@ -74,12 +78,13 @@ const Icon = styled.img`
 
 const Text = styled.span`
     font-size: 14px;
+    margin-left: 0.5rem;
 `;
 
 const Container = styled.div`
     color: #4e5458;
-    padding: 8px 12px;
     align-items: center;
+    padding: 4px;
     display: flex;
     :hover {
         color: #1130ff;
@@ -91,7 +96,7 @@ const Container = styled.div`
 const getLabel = ({symbol}) => (
     <Container>
         <Icon src={require(`./../images/${symbol.toLowerCase()}.png`)} />
-        <Text>{symbol}</Text>
+        <Text className="symbol">{symbol}</Text>
     </Container>
 );
 
