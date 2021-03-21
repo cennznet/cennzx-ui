@@ -3,14 +3,12 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import {DeriveAccountInfo} from '@polkadot/api-derive/types';
-// import { ActionStatus } from '@polkadot/react-components/Status/types';
 
 import React, {useState, useEffect, FC} from 'react';
 import styled from 'styled-components';
 import PageInside from 'components/PageInside';
 import Nav from 'components/Nav';
 import Page from 'components/Page';
-import {SendDispatchProps} from '../send/send';
 import {Button} from 'centrality-react-core';
 import keyring from '@polkadot/ui-keyring';
 import {Icon} from 'semantic-ui-react';
@@ -24,13 +22,13 @@ interface Props {
     genesisHash: any;
 }
 
-export const Account: FC<Props & SendDispatchProps> = props => {
+export const Account: FC<Props> = props => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isImportOpen, setIsImportOpen] = useState(false);
     const [isBackUpOpen, setIsBackUpOpen] = useState(false);
     const [address, setAddress] = useState('');
     const addresses = keyring.getAccounts();
-    const accountlist = addresses.map(value => {
+    const accountList = addresses.map(value => {
         const name = value.meta.name ? value.meta.name : value.address;
         const address = value.address;
         return {
@@ -76,7 +74,7 @@ export const Account: FC<Props & SendDispatchProps> = props => {
                             <tr>
                                 <AccountTable>
                                     <tbody>
-                                        {accountlist.map(
+                                        {accountList.map(
                                             ({name, address}): React.ReactNode => (
                                                 <tr key={address.toString()}>
                                                     <td className="address">{name}</td>

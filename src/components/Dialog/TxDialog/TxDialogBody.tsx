@@ -189,7 +189,7 @@ export interface TxDialogBodyProps {
     buffer: number;
     recipientAddress: string;
     events: EventRecord[];
-    coreAsset: BN;
+    coreAssetId: number;
     feeAssetId: number;
 }
 
@@ -201,7 +201,7 @@ export const TxDialogBody: FC<TxDialogBodyProps> = ({
     estimatedTxFee,
     txHash,
     buffer,
-    coreAsset,
+    coreAssetId,
     events,
     recipientAddress,
     actualTxFee,
@@ -227,7 +227,7 @@ export const TxDialogBody: FC<TxDialogBodyProps> = ({
                         method={method}
                         recipientAddress={recipientAddress}
                     />
-                    <SummaryFee txFee={estimatedTxFee} coreAsset={coreAsset} feeAssetId={feeAssetId} />
+                    <SummaryFee txFee={estimatedTxFee} coreAssetId={coreAssetId} feeAssetId={feeAssetId} />
                 </>
             );
         case Stages.Broadcasted:

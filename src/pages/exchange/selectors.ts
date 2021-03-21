@@ -16,7 +16,7 @@ const getExchangePool = (state: AppState) => state.ui.exchange.exchangePool;
 const getExchangeRate = (state: AppState) => state.ui.exchange.exchangeRate;
 const getTxFee = (state: AppState) => state.ui.exchange.txFee;
 const getFeeAssetId = (state: AppState) => state.ui.exchange.form.feeAssetId;
-const getCoreAsset = (state: AppState) => state.global.coreAsset;
+const getCoreAsset = (state: AppState) => state.global.coreAssetId;
 const getUserAssetBalance = (state: AppState) => state.ui.exchange.userAssetBalance;
 export const getAssets = () => (typeof window !== 'undefined' ? window.config.ASSETS : []);
 

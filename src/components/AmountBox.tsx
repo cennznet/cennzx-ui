@@ -11,10 +11,15 @@ export type StyledInputProps = InputProps & {
 
 const StyledInput = styled(Input)<StyledInputProps>`
     background-color: ${props => (props.readOnly ? '#EBECED' : 'white')};
+    flex: 1;
     color: black;
     height: 100%;
     border: none;
     caret-color: #1130ff;
+    margin-top: auto;
+    margin-bottom: auto;
+    min-width: 0px !important;
+    max-width: 160px;
 
     :hover {
         border: none;
@@ -26,7 +31,7 @@ const StyledInput = styled(Input)<StyledInputProps>`
 `;
 
 const StyledInputParent = styled.div`
-    flex: 4;
+    min-width: 0px !important;
     div {
         margin-top: 0px;
         height: 100%;

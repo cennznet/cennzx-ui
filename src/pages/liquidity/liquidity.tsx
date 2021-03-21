@@ -1,4 +1,4 @@
-import {FeeRate} from '@cennznet/types/runtime/cennzX';
+import {FeeRate} from '@cennznet/types/interfaces/cennzx';
 import BN from 'bn.js';
 import {Button} from 'centrality-react-core';
 import AccountPicker from 'components/AccountPicker';
@@ -14,30 +14,37 @@ import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
 import {LiquidityState} from '../../redux/reducers/ui/liquidity.reducer';
 import {AmountParams, Asset, LiquidityFormData, IFee, IOption} from '../../typings';
 import ReactSlider from 'react-slider';
+import {faExchangeAlt} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Amount} from '../../util/Amount';
 import getFormErrors from './validation';
 import Select from 'components/Select';
 import TextInput from 'components/TextInput';
 import AdvancedSetting from 'components/AdvancedSetting';
-import {getAsset} from '../../util/assets';
-import {setNewAmount} from '../../util/newAmount';
 import keyring from '@polkadot/ui-keyring';
+import liquidity from '.';
+import {add, values} from 'ramda';
+import Toggle from 'components/Toggle';
+import {Icon} from 'semantic-ui-react';
+import ExchangeIconClass from 'components/ExchangeIcon';
 
-export const DECIMALS = 5;
-const SWAP_OUTPUT = 'buyAsset';
-const SWAP_INPUT = 'sellAsset';
+export const DECIMALS = 4;
 
 const Line = styled.div`
     border-bottom: 1px solid rgba(17, 48, 255, 0.3);
     height: 1px;
     margin-top: 20px;
+    margin-bottom: 20px;
 `;
+
 const AddIcon = styled.span`
-    display: inline-block;
     color: #1130ff;
     font-size: 20px;
     font-weight: 700;
-    margin: 46px 10px;
+    margin-top: auto;
+    margin-right: 2px;
+    margin-left: 2px;
+    margin-bottom: auto;
 `;
 
 const Bottom = styled.div`
@@ -53,14 +60,15 @@ const Bottom = styled.div`
 `;
 
 const Flex = styled.div`
+    align-items: center;
+    display: inline-flex;
+`;
+
+const Flex2 = styled.div`
     display: flex;
-    flex-direction: row;
-    > div {
-        flex: 1;
-    }
-    > div:nth-child(2) {
-        flex: 0;
-    }
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 1rem;
 `;
 
 const FullWidthContainer = styled.div`
@@ -70,15 +78,13 @@ const FullWidthContainer = styled.div`
 const Buttons = styled.div`
     display: flex;
     flex-direction: row;
-    margintop: 20px;
+    margin-top: 20px;
     justify-content: center;
-    min-width: 224px;
 
     button {
         border: 2px solid #1130ff;
         color: #1130ff;
         border-radius: 3px;
-        margin-right: 4px;
 
         :disabled {
             background-color: #ebeced;
@@ -109,12 +115,24 @@ const SectionColumn = styled.div`
     margin-top: 20px;
 `;
 
+const SwapButton = styled(Button)`
+    background-color: white;
+    color: #f7941d;
+    border: 1px solid #f7941d;
+    border-radius: 5px;
+    margin-right: 0.5rem;
+
+    :hover {
+        color: white;
+        background-color: #f7941d;
+        border: 1px solid #f7941d;
+    }
+`;
+
 const Label = styled.div`
     color: #4e5458;
     font-weight: 600;
     font-size: 16px;
-    line-height: 20px;
-    margin: 20px 0 0;
 `;
 const LabelDetail = styled.p`
     font-weight: normal;
@@ -174,55 +192,55 @@ const SliderContainer = styled.div<FontAwesomeIconProps>`
     }
 `;
 
+const SwapIcon = styled(FontAwesomeIcon)`
+    font-size: 16px;
+`;
+
 const ESTIMATED_LABEL = '(estimated)';
 
 export enum FormSection {
     account = 'account',
-    add1Amount = 'add1Amount',
-    add2Amount = 'add2Amount',
+    assetAmount = 'assetAmount',
+    assetInput = 'assetInput',
+    coreAmount = 'coreAmount',
+    form = 'generalError',
 }
 
-export enum LiquidityType {
+// The liquidity action to take
+export enum LiquidityAction {
     ADD = 'add',
     REMOVE = 'remove',
 }
 
-export type ExchangeDispatchProps = {
-    handleAdd1AmountChange(amount: Amount): void;
-    handleAdd2AmountChange(amount: Amount): void;
-    handleAdd1IdChange(assetId: number, form: LiquidityFormData, error: BaseError[]): void;
-    handleAdd2IdChange(assetId: number): void;
+export type LiquidityDispatchProps = {
+    handleAssetAmountChange(amount: Amount): void;
+    handleCoreAmountChange(amount: Amount): void;
+    handleAssetIdChange(assetId: number, form: LiquidityFormData, error: BaseError[]): void;
     handleSelectedAccountChange(account: string): void;
-    handleBuyAssetAmountChange(amount: Amount): void;
-    handleWithAssetAmountChange(amount: Amount): void;
-    handlePayTransactionFeeAssetIdChange(assetId: number, form: LiquidityFormData, error: BaseError[]): void;
-    handleAddLiquidityChange(assetId: number, form: LiquidityFormData, error: BaseError[]): void;
-    handleFeeAssetChange(assetId: number): void;
     handleFeeBufferChange(feeBuffer: number): void;
-    handleSwap(): void;
     handleReset(): void;
     handleExtrinsicChange(type: string): void;
-    handleLiquidityType(type: string): void;
+    handleLiquidityAction(type: LiquidityAction): void;
     openTxDialog(form: LiquidityFormData, estimatedFee: IFee): void;
 };
 
 export type LiquidityProps = {
     accounts: IOption[];
-    /**
-     * user's balance of fromAsset
-     * TODO: merge this with userAssetBalance
-     */
-    add1AssetBalance: Amount;
+    // the registered onchain assets
     assets: Asset[];
-    // TODO: merge this with exchangePool
-    add1Reserve: Amount;
-    coreAssetBalance: Amount;
+    // balance of selected asset in the exchange
+    assetReserve: Amount;
+    // balance of core asset in the exchange
+    coreReserve: Amount;
+    // current account's balance of the selected asset
+    accountAssetBalance: Amount;
+    // current account's balance of the core asset
+    accountCoreBalance: Amount;
     exchangeRateMsg?: string;
     txFeeMsg: string;
-    coreAsset: BN;
+    coreAssetId: number;
     fee: any;
     feeRate: FeeRate;
-    coreAssetUserBalance: Amount;
 } & LiquidityState;
 
 const getAssetName = (options, id) => {
@@ -234,81 +252,45 @@ const getAssetName = (options, id) => {
 const selectOption = [
     {
         label: 'Add liquidity',
-        value: 'addLiquidity',
+        value: LiquidityAction.ADD,
     },
     {
-        label: 'Remove liquidity',
-        value: 'removeLiquidity',
+        label: 'Withdraw liquidity',
+        value: LiquidityAction.REMOVE,
     },
 ];
 
-export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
+export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const {
         accounts,
+        accountAssetBalance,
+        accountCoreBalance,
         assets,
-        add1AssetBalance,
+        assetReserve,
+        coreAssetId,
+        coreReserve,
         error,
-        add1Reserve,
-        coreAssetBalance,
-        txFee,
-        fee,
-        coreAsset,
         exchangeRateMsg,
-        coreAssetUserBalance,
+        fee,
+        txFee,
     } = props;
-    const {
-        signingAccount,
-        toAssetAmount,
-        toAsset,
-        extrinsic,
-        fromAsset,
-        type,
-        fromAssetAmount,
-        add1Amount,
-        add2Amount,
-        add1Asset,
-        add2Asset,
-        feeAssetId,
-        buffer,
-    } = props.form;
+
+    const {assetId, assetAmount, buffer, coreAmount, extrinsic, feeAssetId, signingAccount, type} = props.form;
+
+    // local component state
     const initState = {
         touched: false,
         assetDialogOpen: false,
         address: '',
-        buffer: 1,
+        buffer: 0.05,
         transactionAssetId: null,
-        liquidityType: selectOption[0].value,
+        liquidityAction: LiquidityAction.ADD,
         slider: true,
         sliderP: 0,
     };
-    const [state, setState] = useState(initState);
-    useEffect((): void => {
-        if (!type) {
-            props.handleLiquidityType(initState.liquidityType);
-            props.handleAdd2IdChange(Number(coreAsset));
-            props.handleExtrinsicChange(selectOption[0].value);
-        }
-    }, []);
 
-    const assetForEmptyPool = error.find(err => err instanceof EmptyPool);
-    const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
-    // let fee;
-    // if (coreAsset && coreAsset.eqn) {
-    //     const assetSymbol = getAsset(feeAssetId).symbol;
-    //     if (coreAsset.eqn(feeAssetId) && txFee) {
-    //         fee = txFee.feeInCpay.asString(DECIMALS);
-    //     } else if (txFee && txFee.feeInFeeAsset) {
-    //         fee = txFee.feeInFeeAsset.asString(DECIMALS);
-    //     }
-    // }
-    const asset1Name = getAssetName(assets, add1Asset);
-    const asset2Name = getAssetName(assets, add2Asset);
-    const pool1 = add1Reserve && add1Reserve.asString && add1Reserve.asString(DECIMALS);
-    const pool2 = coreAssetBalance && coreAssetBalance.asString && coreAssetBalance.asString(DECIMALS);
-    const coreBalance = coreAssetUserBalance && coreAssetUserBalance.asString(DECIMALS);
-    const add1Balance = add1AssetBalance && add1AssetBalance.asString(DECIMALS);
     const addresses = keyring.getAccounts();
-    const accountlist = addresses.map(value => {
+    const accountList = addresses.map(value => {
         const name = value.meta.name ? value.meta.name : value.address;
         const address = value.address;
         const labelValue = `${name}: ${address}`;
@@ -318,6 +300,24 @@ export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
         };
     });
 
+    const [state, setState] = useState(initState);
+    useEffect((): void => {
+        if (!type) {
+            props.handleLiquidityAction(initState.liquidityAction);
+            props.handleExtrinsicChange(initState.liquidityAction);
+        }
+    }, []);
+
+    const assetBalance = accountAssetBalance && accountAssetBalance.asString(DECIMALS);
+    const assetName = getAssetName(assets, assetId);
+    const assetPool = assetReserve && assetReserve.asString && assetReserve.asString(DECIMALS);
+
+    const coreBalance = accountCoreBalance && accountCoreBalance.asString(DECIMALS);
+    const coreName = getAssetName(assets, coreAssetId);
+    const corePool = coreReserve && coreReserve.asString && coreReserve.asString(DECIMALS);
+
+    const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
+
     return (
         <Page id={'page'}>
             <form>
@@ -326,7 +326,7 @@ export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
                     <AccountPicker
                         title="Choose account"
                         selected={signingAccount}
-                        options={accountlist}
+                        options={accountList}
                         onChange={(picked: {label: string; value: string}) => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({
@@ -338,104 +338,92 @@ export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
                         message=""
                     />
                     <ErrorMessage errors={formErrors} field={FormSection.account} />
-
                     <Line />
-                    <Select
-                        value={state.liquidityType}
-                        options={selectOption}
-                        onChange={(value: string) => {
-                            props.handleExtrinsicChange(value);
-                            setState({
-                                ...state,
-                                liquidityType: value,
-                            });
-                        }}
-                    />
-                    {state.liquidityType === 'add' ? (
-                        <div>
-                            <Label>Deposit amount</Label>
-                            {asset2Name && (
-                                <LabelDetail>
-                                    To keep the liquidity pool functional, we require you to deposit a equal value of
-                                    the token and {asset2Name} in the pool.
-                                </LabelDetail>
-                            )}
-                        </div>
-                    ) : (
-                        <div>
-                            <Label>Withdraw amount</Label>
-                            {asset2Name && (
-                                <LabelDetail>
-                                    To keep the liquidity pool functional, we require you to withdraw a equal value of
-                                    the token you choose and {asset2Name} from the pool.
-                                </LabelDetail>
-                            )}
-                        </div>
-                    )}
                     <Flex>
-                        <div>
-                            <AssetInputForAdd
-                                disableAmount={!!assetForEmptyPool}
-                                max={add1Reserve}
-                                value={{amount: add1Amount, assetId: add1Asset}}
-                                options={assets}
-                                onChange={(amountParams: AmountParams) => {
-                                    if (amountParams.amountChange) {
-                                        props.handleAdd1AmountChange(amountParams.amount);
-                                    } else {
-                                        props.handleAdd1IdChange(
-                                            amountParams.assetId,
-                                            props.form as LiquidityFormData,
-                                            props.error
-                                        );
-                                    }
+                        <SwapButton
+                            onClick={() => {
+                                // just flip the action
+                                let action =
+                                    state.liquidityAction === LiquidityAction.REMOVE
+                                        ? LiquidityAction.ADD
+                                        : LiquidityAction.REMOVE;
+                                props.handleExtrinsicChange(action);
+                                setState({
+                                    ...state,
+                                    liquidityAction: action,
+                                });
+                            }}
+                        >
+                            <SwapIcon icon={faExchangeAlt} />
+                        </SwapButton>
+                        <Label>
+                            {state.liquidityAction === LiquidityAction.REMOVE ? 'Withdraw liquidity' : 'Add liquidity'}
+                        </Label>
+                    </Flex>
+                    <Flex2>
+                        <AssetInputForAdd
+                            max={accountAssetBalance}
+                            value={{amount: assetAmount, assetId}}
+                            options={assets.filter(a => a.id !== coreAssetId)}
+                            onChange={(amountParams: AmountParams) => {
+                                if (amountParams.amountChange) {
+                                    props.handleAssetAmountChange(amountParams.amount);
+                                } else {
+                                    props.handleAssetIdChange(
+                                        amountParams.assetId,
+                                        props.form as LiquidityFormData,
+                                        props.error
+                                    );
+                                }
+                                setState({
+                                    ...state,
+                                    touched: true,
+                                    slider: !amountParams.amountChange,
+                                    assetDialogOpen: state.assetDialogOpen,
+                                });
+                            }}
+                            title=""
+                            secondaryTitle={null}
+                            message={`Balance: ${assetBalance || 0}`}
+                            errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetInput} />}
+                        />
+                        <AddIcon></AddIcon>
+                        <AssetInputForAdd
+                            max={accountCoreBalance}
+                            value={{amount: coreAmount, assetId: coreAssetId}}
+                            options={assets.filter(a => a.id === coreAssetId)}
+                            onChange={amountParams => {
+                                if (amountParams.amountChange) {
+                                    props.handleCoreAmountChange(amountParams.amount);
                                     setState({
                                         ...state,
                                         touched: true,
-                                        slider: !amountParams.amountChange,
+                                        slider: false,
                                         assetDialogOpen: state.assetDialogOpen,
                                     });
-                                }}
-                                title=""
-                                secondaryTitle={null}
-                                message={
-                                    state.liquidityType === selectOption[0].value
-                                        ? `Balance: ${add1Balance}`
-                                        : `Balance: ${pool1}`
                                 }
-                            />
-                        </div>
-                        <div>
-                            <AddIcon>+</AddIcon>
-                        </div>
-                        <div>
-                            <AssetInputForAdd
-                                disableAmount={!!assetForEmptyPool}
-                                max={coreAssetBalance}
-                                value={{amount: add2Amount, assetId: Number(coreAsset)}}
-                                options={assets.filter(i => i.id === Number(coreAsset))}
-                                onChange={amountParams => {
-                                    if (amountParams.amountChange) {
-                                        props.handleAdd2AmountChange(amountParams.amount);
-                                        setState({
-                                            ...state,
-                                            touched: true,
-                                            slider: false,
-                                            assetDialogOpen: state.assetDialogOpen,
-                                        });
-                                    }
-                                }}
-                                title=""
-                                secondaryTitle={null}
-                                message={
-                                    state.liquidityType === selectOption[0].value
-                                        ? `Balance: ${coreBalance}`
-                                        : `Balance: ${pool2}`
-                                }
-                            />
-                        </div>
-                    </Flex>
-                    {state.liquidityType === selectOption[1].value && add2Asset && add1Asset && (
+                            }}
+                            title=""
+                            secondaryTitle={null}
+                            message={`Balance: ${coreBalance || 0}`}
+                        />
+                    </Flex2>
+                    <div>
+                        {state.liquidityAction === LiquidityAction.ADD
+                            ? coreName && (
+                                  <LabelDetail>
+                                      To keep the liquidity pool functional, deposits require an equal value of{' '}
+                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
+                                  </LabelDetail>
+                              )
+                            : coreName && (
+                                  <LabelDetail>
+                                      To keep the liquidity pool functional, withdrawals will return an equal value of{' '}
+                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
+                                  </LabelDetail>
+                              )}
+                    </div>
+                    {/* {state.liquidityAction === LiquidityAction.REMOVE && coreAssetId && assetId && (
                         <SliderContainer spinner={state.slider.toString()}>
                             <ReactSlider
                                 className="horizontal-slider"
@@ -447,14 +435,17 @@ export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
                                 trackClassName="example-track"
                                 onChange={value => {
                                     const percent = value / 100;
-                                    let value1 = +pool1 * percent;
+
+                                    let value1 = +assetPool * percent;
                                     value1 = Math.round(value1 * 10000) / 10000 + '';
-                                    let value2 = Number(coreAssetBalance.asString(DECIMALS)) * percent;
+
+                                    let value2 = Number(coreReserve.asString(DECIMALS)) * percent;
                                     value2 = Math.round(value2 * 10000) / 10000 + '';
-                                    const setNewAmount1 = setNewAmount(value1, add1Amount, add1Asset);
-                                    const setNewAmount2 = setNewAmount(value2, add2Amount, add2Asset);
-                                    props.handleAdd1AmountChange(setNewAmount1.amount);
-                                    props.handleAdd2AmountChange(setNewAmount2.amount);
+                                    const setNewAmount1 = setNewAmount(value1, assetAmount, assetId);
+                                    const setNewAmount2 = setNewAmount(value2, coreAmount, coreAssetId);
+                                    props.handleAssetAmountChange(setNewAmount1.amount);
+                                    props.handleCoreAmountChange(setNewAmount2.amount);
+
                                     setState({
                                         ...state,
                                         slider: true,
@@ -468,18 +459,14 @@ export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
                                 )}
                             />
                         </SliderContainer>
-                    )}
-                    {pool1 &&
-                        pool2 &&
-                        (state.liquidityType === selectOption[0].value ? (
+                    )} */}
+                    {assetPool &&
+                        corePool &&
+                        (state.liquidityAction === LiquidityAction.ADD ? (
                             <Summary>
-                                Your pool share ({buffer}%): {pool1} {asset1Name} + {pool2} {asset2Name}
+                                Your pool share: {assetPool} {assetName} + {corePool} {coreName}
                                 <br />
-                                {add1Amount &&
-                                    add2Amount &&
-                                    `Current pool size: ${add1Amount.asString(
-                                        DECIMALS
-                                    )} ${asset1Name} + ${add2Amount.asString(DECIMALS)} ${asset2Name}`}
+                                `Current pool size: ${assetPool} ${assetName} + ${corePool} ${coreName}`
                                 <br />
                                 {exchangeRateMsg}
                                 <br />
@@ -487,13 +474,13 @@ export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
                             </Summary>
                         ) : (
                             <Summary>
-                                Current pool size: {pool1} {asset1Name} + {pool2} {asset2Name}
-                                <br />
-                                {add1Amount &&
-                                    add2Amount &&
-                                    `Your pool share (${state.sliderP * 100}%): ${add1Amount.asString(
+                                {assetAmount &&
+                                    coreAmount &&
+                                    `Your pool share (${state.sliderP * 100}%): ${assetAmount.asString(
                                         DECIMALS
-                                    )} ${asset1Name} + ${add2Amount.asString(DECIMALS)} ${asset2Name}`}
+                                    )} ${assetName} + ${coreAmount.asString(DECIMALS)} ${coreName}`}
+                                <br />
+                                Current pool size: {assetPool} {assetName} + {corePool} {coreName}
                                 <br />
                                 {exchangeRateMsg}
                                 <br />
@@ -501,25 +488,32 @@ export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
                             </Summary>
                         ))}
                 </PageInside>
+                <Buttons id="buttons">
+                    <Button
+                        flat
+                        primary
+                        // disabled={formErrors.size > 0 || !txFee}
+                        onClick={() => props.openTxDialog(props.form as LiquidityFormData, props.txFee)}
+                    >
+                        {state.liquidityAction === LiquidityAction.ADD ? 'Add' : 'Withdraw'}
+                    </Button>
+                </Buttons>
                 <AdvancedSetting
-                    show={!!(add1Asset && add2Asset)}
+                    show={!!(assetId && coreAssetId)}
                     assets={assets}
-                    onAssetChange={(assetId: number) => {
-                        props.handleFeeAssetChange(assetId);
-                    }}
                     onBufferChange={(buffer: number) => {
                         props.handleFeeBufferChange(buffer);
                     }}
                     formErrors={formErrors}
                     summaryProps={{
                         extrinsic,
-                        feeAssetId,
-                        coreAsset,
+                        feeAssetId: coreAssetId,
+                        coreAssetId,
                         txFee,
-                        toAssetAmount: add1Amount,
-                        toAsset: add1Asset,
-                        fromAssetAmount: add2Amount,
-                        fromAsset: add2Asset,
+                        toAssetAmount: assetAmount,
+                        toAsset: assetId,
+                        fromAssetAmount: coreAmount,
+                        fromAsset: coreAssetId,
                         buffer,
                     }}
                     title={'Advanced settings'}
@@ -529,40 +523,6 @@ export const Liquidity: FC<LiquidityProps & ExchangeDispatchProps> = props => {
                     selectOptions={assets}
                     selectValue={feeAssetId}
                 />
-                <PageInside>
-                    <SectionColumn>
-                        <Bottom id="bottom">
-                            <FullWidthContainer>
-                                <Buttons id="buttons">
-                                    <Button
-                                        flat
-                                        primary
-                                        onClick={() => {
-                                            props.handleReset();
-                                            setState({
-                                                ...state,
-                                                touched: false,
-                                                assetDialogOpen: state.assetDialogOpen,
-                                            });
-                                        }}
-                                    >
-                                        Clear From
-                                    </Button>
-                                    <Button
-                                        flat
-                                        primary
-                                        // disabled={formErrors.size > 0 || !txFee}
-                                        onClick={() => props.openTxDialog(props.form as LiquidityFormData, props.txFee)}
-                                    >
-                                        {state.liquidityType === selectOption[0].value
-                                            ? 'Add liquidity'
-                                            : 'Remove liquidity'}
-                                    </Button>
-                                </Buttons>
-                            </FullWidthContainer>
-                        </Bottom>
-                    </SectionColumn>
-                </PageInside>
             </form>
         </Page>
     );

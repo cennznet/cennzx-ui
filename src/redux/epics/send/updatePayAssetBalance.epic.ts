@@ -1,4 +1,4 @@
-import {Balance} from '@cennznet/types/polkadot';
+import {Balance} from '@cennznet/types';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';
@@ -30,7 +30,7 @@ export const updateAssetsBalanceEpic = (
                 return api.query.genericAsset.freeBalance(assetId, signingAccount).pipe(
                     switchMap((balance: Balance) => {
                         const userBal = new Amount(balance);
-                        const newAssetBalance = {assetId: assetId, account: signingAccount, balance: userBal};
+                        const newAssetBalance = {assetId, account: signingAccount, balance: userBal};
                         const {userAssetBalance} = store.ui.exchange;
                         const fromAssetBalance = userAssetBalance.find(
                             (bal: IAssetBalance) =>

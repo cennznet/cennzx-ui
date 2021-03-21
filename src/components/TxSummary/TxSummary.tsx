@@ -31,7 +31,7 @@ export interface TxSummaryProps {
     buffer: number;
     txFee: IFee;
     feeAssetId: number;
-    coreAsset: BN;
+    coreAssetId: number;
     extrinsic: string;
 }
 
@@ -57,7 +57,7 @@ const TxSummary: FC<TxSummaryPropsAndEvent> = ({
     buffer,
     txFee,
     feeAssetId,
-    coreAsset,
+    coreAssetId,
     extrinsic,
     assets,
     onAssetChange,
@@ -114,7 +114,7 @@ const TxSummary: FC<TxSummaryPropsAndEvent> = ({
             {extrinsic === SWAP_OUTPUT ? (
                 <TxSummaryBodyForBuy
                     feeAssetId={feeAssetId}
-                    coreAsset={coreAsset}
+                    coreAssetId={coreAssetId}
                     txFee={txFee}
                     toAssetAmount={toAssetAmount}
                     toAsset={toAsset}
@@ -137,7 +137,7 @@ const TxSummary: FC<TxSummaryPropsAndEvent> = ({
             ) : (
                 <TxSummaryBodyForWith
                     feeAssetId={feeAssetId}
-                    coreAsset={coreAsset}
+                    coreAssetId={coreAssetId}
                     txFee={txFee}
                     toAssetAmount={toAssetAmount}
                     toAsset={toAsset}

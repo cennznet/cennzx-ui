@@ -1,4 +1,4 @@
-import {FeeRate} from '@cennznet/types/runtime/cennzX';
+import {FeeRate} from '@cennznet/types/interfaces/cennzx';
 import produce from 'immer';
 import {handleActions} from 'redux-actions';
 import GlobalActions, {
@@ -8,7 +8,7 @@ import GlobalActions, {
 } from '../actions/global.action';
 
 export interface GlobalState {
-    coreAsset?: any;
+    coreAssetId?: any;
     feeRate?: FeeRate;
     genesisHash?: any;
 }
@@ -18,7 +18,7 @@ export const initialState: GlobalState = {};
 export default handleActions(
     {
         [GlobalActions.CORE_ASSET_UPDATE]: produce((draft: GlobalState, action: UpdateCoreAssetAction) => {
-            draft.coreAsset = action.payload;
+            draft.coreAssetId = action.payload;
         }),
         [GlobalActions.DEFAULT_FEE_RATE_UPDATE]: produce((draft: GlobalState, action: UpdateFeeRateAction) => {
             draft.feeRate = action.payload;

@@ -20,7 +20,7 @@ const TxSummaryBodyForBuy: FC<TxSummaryBodyForWithAndBodyForBuyProps> = ({
     buffer,
     txFee,
     feeAssetId,
-    coreAsset,
+    coreAssetId,
     feeAssetClick,
     feeBufferClick,
 }) => (
@@ -39,7 +39,7 @@ const TxSummaryBodyForBuy: FC<TxSummaryBodyForWithAndBodyForBuyProps> = ({
             {buffer}% {new Amount(fromAssetAmount.muln(1 + buffer)).asString(DECIMALS)} {getAsset(fromAsset).symbol}
         </Em>
         ) then the transaction will fail
-        <TxSummaryEstimatedTxFeeForBody txFee={txFee} coreAsset={coreAsset} feeAssetId={feeAssetId} />
+        <TxSummaryEstimatedTxFeeForBody txFee={txFee} coreAssetId={coreAssetId} feeAssetId={feeAssetId} />
     </div>
 );
 

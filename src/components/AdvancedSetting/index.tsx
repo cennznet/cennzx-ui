@@ -9,7 +9,8 @@ import {Amount} from '../../util/Amount';
 import {DECIMALS, FormSection} from '../../pages/exchange/exchange';
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {FormErrors} from './../../pages/exchange/validation';
+import {FormErrors as ExchangeFormErrors} from './../../pages/exchange/validation';
+import {FormErrors as LiquidityFormErrors} from './../../pages/liquidity/validation';
 import {getAsset} from '../../util/assets';
 import {SummaryBuy} from './SummaryBuy';
 import SummaryFee from './SummaryFee';
@@ -78,7 +79,7 @@ const P = styled.p`
 `;
 
 type SummaryOrErrorProps = {
-    formErrors: FormErrors;
+    formErrors: LiquidityFormErrors & ExchangeFormErrors;
     summaryProps?: TxSummaryProps;
     onAssetChange: (assetId: number) => void;
     onBufferChange: (buffer: number) => void;
@@ -115,7 +116,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
         buffer,
         txFee,
         feeAssetId,
-        coreAsset,
+        coreAssetId,
         extrinsic,
     } = summaryProps;
     const [state, setState] = useState({spinner});
@@ -135,8 +136,8 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                         {state.spinner && (
                             <>
                                 <TextInput
-                                    title={'Buffer'}
-                                    placeholder={'Enter buffer'}
+                                    title={'Slippage'}
+                                    placeholder={'Maximum slippage percent'}
                                     value={buffer}
                                     onChange={e => {
                                         onBufferChange(Number(e.target.value));
@@ -154,7 +155,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                         recipientAddress={recipientAddress}
                                     />
                                 </P>
-                                <Top>
+                                {/* <Top>
                                     <span>
                                         <h2>{selectTitle}</h2>
                                     </span>
@@ -167,9 +168,9 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                         onAssetChange(asset.id);
                                     }}
                                     showBorder={true}
-                                />
+                                /> */}
                                 <SummaryBody>
-                                    <SummaryFee txFee={txFee} coreAsset={coreAsset} feeAssetId={feeAssetId} />
+                                    <SummaryFee txFee={txFee} coreAssetId={coreAssetId} feeAssetId={feeAssetId} />
                                 </SummaryBody>
                             </>
                         )}

@@ -7,6 +7,7 @@ import {SubmitType} from '../../../redux/actions/ui/txDialog.action';
 import Dialog from '../Dialog';
 
 export type TxDialogProps = {
+    coreAssetId: number;
     method: string;
     signingAccount: string;
     success?: boolean;
@@ -35,7 +36,7 @@ export const TxDialog: FC<TxDialogProps> = ({
     method,
     success,
     buffer,
-    coreAsset,
+    coreAssetId,
     txHash,
     events,
     fromAssetBalance,
@@ -56,11 +57,11 @@ export const TxDialog: FC<TxDialogProps> = ({
                 <TxDialogBody
                     stage={stage}
                     extrinsic={extrinsic}
-                    coreAsset={coreAsset}
+                    coreAssetId={coreAssetId}
                     error={error}
                     success={success}
                     recipientAddress={title === 'send' && send.recipientAddress}
-                    buffer={title === 'exchange' ? exchange.buffer : title === 'send' ? send.buffer : liquidity.buffer}
+                    buffer={title === 'exchange' ? exchange.buffer : liquidity.buffer}
                     estimatedTxFee={estimatedTxFee}
                     txHash={txHash}
                     feeAssetId={feeAssetId}
@@ -80,14 +81,6 @@ export const TxDialog: FC<TxDialogProps> = ({
                                 ...exchange,
                                 extrinsic,
                                 feeInFeeAsset: estimatedTxFee.feeInFeeAsset,
-                                password: pass,
-                            });
-                        } else if (title === 'send') {
-                            handleSendSubmit({
-                                ...send,
-                                extrinsic,
-                                feeInFeeAsset: estimatedTxFee.feeInFeeAsset,
-                                fromAssetBalance,
                                 password: pass,
                             });
                         } else if (title === 'liquidity') {

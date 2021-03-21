@@ -17,18 +17,18 @@ export const prepareBalanceParamsEpic = (
         api$,
         action$.pipe(
             ofType(
-                types.ui.Liquidity.SELECTED_FROM_ASSET_UPDATE,
+                types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE,
                 types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE,
                 types.ui.Liquidity.ASSET_SWAP
             )
         ),
     ]).pipe(
         withLatestFrom(store$),
-        filter(([, store]) => store.ui.liquidity.form.add1Asset && !!store.ui.liquidity.form.signingAccount),
+        filter(([, store]) => store.ui.liquidity.form.assetId && !!store.ui.liquidity.form.signingAccount),
         switchMap(
             ([[api], store]): Observable<Action<any>> => {
-                const {add1Asset, signingAccount} = store.ui.liquidity.form;
-                return of(requestAssetBalance(add1Asset, signingAccount));
+                const {assetId, signingAccount} = store.ui.liquidity.form;
+                return of(requestAssetBalance(assetId, signingAccount));
             }
         )
     );

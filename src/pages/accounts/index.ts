@@ -21,10 +21,6 @@ import {AppState} from '../../redux/reducers';
 import {SendFormData, IAccounts, IExtrinsic, IFee, IOption, Asset} from '../../typings';
 import {Amount} from '../../util/Amount';
 import {prepareExchangeExtrinsicParamsWithBuffer, SWAP_INPUT, SWAP_OUTPUT} from '../../util/extrinsicUtil';
-// import {Send, SendProps} from './send';
-// import {getAssets, getExchangeRateMsg, getFromAssetUserBalance, getOutputReserve, getTxFeeMessage} from './selectors';
-import BN from 'bn.js';
-import {SendState} from '../../redux/reducers/ui/send.reducer';
 import {Account} from './Account';
 
 const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {

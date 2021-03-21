@@ -27,10 +27,12 @@ export const initialState: ExtensionState = {
             name: 'Alice',
             assets: [
                 {
-                    assetId: 16000,
+                    id: 16000,
+                    symbol: 'CENNZ',
                 },
                 {
-                    assetId: 16001,
+                    id: 16001,
+                    symbol: 'CPAY',
                 },
             ],
             address: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',

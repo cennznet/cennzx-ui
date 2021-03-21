@@ -28,9 +28,9 @@ export const getExchangeRateEpic = (
         switchMap(([obj, store]) => {
             const api: ApiRx = obj[0];
             const {exchangeRate} = store.ui.liquidity as LiquidityState;
-            const {add2Asset, add1Asset, add1Amount, add2Amount} = store.ui.liquidity.form as LiquidityFormData;
+            const {coreAsset, assetId, assetAmount, coreAmount} = store.ui.liquidity.form as LiquidityFormData;
             // ### sellPrice(AssetToSell: `AssetId`, Amount: `Balance`, AssetToPayout: `AssetId`): `u64`
-            return api.rpc.cennzx.sellPrice(add1Asset, add2Amount, add2Asset).pipe(
+            return api.rpc.cennzx.sellPrice(assetId, coreAmount, coreAsset).pipe(
                 filter(
                     (exchangeRateFromAPI: BN) =>
                         !exchangeRate || !new Amount(exchangeRateFromAPI.toString()).eq(exchangeRate)
@@ -62,7 +62,6 @@ export const requestExchangeRateEpic = (
                 types.ui.Liquidity.ADD1_ASSET_AMOUNT_SET,
                 types.ui.Liquidity.ADD2_ASSET_AMOUNT_SET,
                 types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE,
-                types.ui.Liquidity.SELECTED_ADD2_ASSET_UPDATE,
                 types.ui.Liquidity.ASSET_SWAP
             )
         ),
@@ -70,9 +69,9 @@ export const requestExchangeRateEpic = (
         withLatestFrom(store$),
         filter(
             ([, store]) =>
-                store.ui.liquidity.form.add1Asset &&
-                store.ui.liquidity.form.add1Asset &&
-                !!store.ui.liquidity.form.add2Amount
+                store.ui.liquidity.form.assetId &&
+                store.ui.liquidity.form.coreAssetId &&
+                !!store.ui.liquidity.form.coreAmount
         ),
         switchMap(
             ([, store]): Observable<Action<any>> => {

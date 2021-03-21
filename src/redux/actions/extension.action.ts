@@ -13,7 +13,7 @@ export enum ExtensionActions {
 export const updateSSDetected = createAction(
     ExtensionActions.DETECTION_UPDATE,
     (detected: boolean, polkadotInjected: PolkadotInjectedGlobal) => {
-        console.log('REached inside updateSSDetected:', detected);
+        console.log('Reached inside updateSSDetected:', detected);
         console.log('polkadotInjected:', polkadotInjected);
         return {detected, polkadotInjected};
     }

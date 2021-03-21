@@ -10,7 +10,7 @@ import {EMLINK} from 'constants';
 export interface TxSummaryEstimatedTxFeeForBodyProps {
     txFee: IFee;
     feeAssetId: number;
-    coreAsset: BN;
+    coreAssetId: number;
 }
 
 const Em = styled.span`
@@ -18,11 +18,10 @@ const Em = styled.span`
     font-weight: 300;
 `;
 
-const getFeeMsg = ({txFee, feeAssetId, coreAsset}: TxSummaryEstimatedTxFeeForBodyProps) => {
+const getFeeMsg = ({txFee, feeAssetId, coreAssetId}: TxSummaryEstimatedTxFeeForBodyProps) => {
     let fee;
     const assetSymbol = getAsset(feeAssetId).symbol;
-
-    if (coreAsset.eqn(feeAssetId) && txFee) {
+    if (coreAssetId === feeAssetId && txFee) {
         // If fee asset is CPAY use cpayFee
         fee = txFee.feeInCpay.asString(DECIMALS);
         return (

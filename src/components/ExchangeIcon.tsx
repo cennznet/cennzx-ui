@@ -8,21 +8,20 @@ interface ExchangeIconProps {
 }
 
 export interface FontAwesomeIconProps {
-    // can't pass in boolean, it complains, so use string as boolean
-    spinner: string;
+    rotations: number;
 }
 
 const ExchangeIcon = styled(FontAwesomeIcon)<FontAwesomeIconProps>`
-    height: 16px;
-    width: 16px;
+    height: 22px;
+    width: 22px;
     color: rgba(17, 48, 255, 0.3);
-    font-size: 16px;
-    line-height: 16px;
+    font-size: 22px;
+    line-height: 22px;
     text-align: center;
     cursor: pointer;
-    transform: ${props => (props.spinner === 'true' ? 'rotate(-90deg) ' : 'rotate(90deg)')};
-    -webkit-transform: ${props => (props.spinner === 'true' ? 'rotate(-90deg) ' : 'rotate(90deg)')};
-    transition-duration: 0.8s;
+    transform: ${props => (props.rotations % 2 ? 'rotate(-90deg) ' : 'rotate(90deg)')};
+    -webkit-transform: ${props => (props.rotations % 2 ? 'rotate(-90deg) ' : 'rotate(90deg)')};
+    transition-duration: 0.7s;
     transition-property: transform;
 
     :hover {
@@ -35,22 +34,18 @@ const Container = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin-top: 32px;
 `;
 
 const ExchangeIconClass: FC<ExchangeIconProps> = ({onClick}) => {
-    const [state, setState] = useState({spinner: false});
+    const [rotations, setRotations] = useState(0);
     return (
         <Container
             onClick={() => {
-                setState({spinner: true});
-                setTimeout(() => {
-                    setState({spinner: false});
-                }, 1000);
+                setRotations(rotations + 1);
                 onClick();
             }}
         >
-            <ExchangeIcon spinner={state.spinner.toString()} icon={faExchangeAlt as any} />
+            <ExchangeIcon rotations={rotations} icon={faExchangeAlt as any} />
         </Container>
     );
 };

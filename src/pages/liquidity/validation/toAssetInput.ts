@@ -1,33 +1,21 @@
-import {FieldNotReady, ToAssetAmountRequired, ToAssetNotSelected} from '../../../error/error';
+import {FieldNotReadyForLiquidity, ToAssetAmountRequired, ToAssetNotSelected} from '../../../error/error';
 import {LiquidityProps, FormSection} from '../liquidity';
 import {existErrors, FormErrors, mergeError} from './index';
 
-function checkToAssetAmount(props: LiquidityProps, errors: FormErrors): void {
-    if (existErrors(['PoolBalanceNotEnough', 'ToAssetNotSelected'], errors)) {
+function checkCoreAssetAmount(props: LiquidityProps, errors: FormErrors): void {
+    if (existErrors(['PoolBalanceNotEnough'], errors)) {
         return;
     }
     const {
-        form: {add1Amount, add2Amount},
+        form: {assetAmount, coreAmount},
     } = props;
-    if (!add1Amount) {
-        if (add2Amount) {
-            mergeError(FormSection.add1Amount, new FieldNotReady(FormSection.add2Amount), errors);
+    if (!assetAmount) {
+        if (coreAmount) {
+            mergeError(FormSection.assetAmount, new FieldNotReadyForLiquidity(FormSection.coreAmount), errors);
         } else {
-            mergeError(FormSection.add1Amount, new ToAssetAmountRequired(), errors);
+            mergeError(FormSection.assetAmount, new ToAssetAmountRequired(), errors);
         }
     }
 }
 
-function checkToAssetDropdown(props: LiquidityProps, errors: FormErrors): void {
-    const {
-        form: {add1Amount},
-    } = props;
-    if (!add1Amount) {
-        mergeError(FormSection.add1Amount, new ToAssetNotSelected(), errors);
-    }
-}
-
-/**
- * priorities: checkToAssetDropdown > checkToAssetAmount
- */
-export default [checkToAssetDropdown, checkToAssetAmount];
+export default [checkCoreAssetAmount];
