@@ -43,13 +43,10 @@ export enum LiquidityPoolActions {
     EXCHANGE_POOL_BALANCE_UPDATE = 'POOL/EXCHANGE_POOL_BALANCE_UPDATE',
     TRANSACTION_FEE_PARAMS_UPDATE = 'POOL/TRANSACTION_FEE_PARAMS_UPDATE',
     ERROR_SET = 'POOL/ERROR_SET',
-    TOTAL_LIQUIDITY_UPDATE = 'POOL/TOTAL_LIQUIDITY_UPDATE',
     USER_LIQUIDITY_UPDATE = 'POOL/USER_LIQUIDITY_UPDATE',
     USER_ASSET_BALANCE_FOR_REMOVE_LIQUIDITY_UPDATE = 'POOL/USER_ASSET_BALANCE_FOR_REMOVE_LIQUIDITY_UPDATE',
     USER_ASSET_BALANCE_FOR_ADD_LIQUIDITY_UPDATE = 'POOL/USER_ASSET_BALANCE_FOR_ADD_LIQUIDITY_UPDATE',
     USER_LIQUIDITY_REQUEST = 'POOL/USER_LIQUIDITY_REQUEST',
-    TOTAL_LIQUIDITY_REQUEST = 'POOL/TOTAL_LIQUIDITY_REQUEST',
-    POOL_BALANCE_REQUEST = 'POOL/POOL_BALANCE_REQUEST',
 }
 
 export const updateInvestorForAddLiquidity = createAction(
@@ -131,13 +128,6 @@ export const requestUserLiquidity = createAction(
     (assetId: number, address: string) => ({assetId, address})
 );
 
-export const requestPoolBalance = createAction(LiquidityPoolActions.POOL_BALANCE_REQUEST, (assetId: number) => assetId);
-
-export const requestTotalLiquidity = createAction(
-    LiquidityPoolActions.TOTAL_LIQUIDITY_REQUEST,
-    (assetId: number) => assetId
-);
-
 export const updateExchangeRate = createAction(
     LiquidityPoolActions.EXCHANGE_RATE_UPDATE,
     (exchangeRate: Amount) => exchangeRate
@@ -158,11 +148,6 @@ export const updateTxFeeParameter = createAction(
 );
 
 export const setPoolError = createAction(LiquidityPoolActions.ERROR_SET, (errorMsg: BaseError) => errorMsg);
-
-export const updateTotalLiquidity = createAction(
-    LiquidityPoolActions.TOTAL_LIQUIDITY_UPDATE,
-    (liquidity: Amount) => liquidity
-);
 
 export const updateUserLiquidity = createAction(
     LiquidityPoolActions.USER_LIQUIDITY_UPDATE,
@@ -232,8 +217,6 @@ export type UpdateUserPayAssetBalanceForWithdrawLiquidityAction = ReturnType<
 export type UpdateTxFeeParameterAction = ReturnType<typeof updateTxFeeParameter>;
 
 export type SetPoolErrorAction = ReturnType<typeof setPoolError>;
-
-export type UpdateTotalLiquidityAction = ReturnType<typeof updateTotalLiquidity>;
 
 export type UpdateUserLiquidityAction = ReturnType<typeof updateUserLiquidity>;
 

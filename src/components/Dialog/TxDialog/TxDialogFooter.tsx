@@ -21,14 +21,18 @@ const FooterForSigning: FC<{error?: Error; onClose(): void; onSubmit(): void}> =
     ) : (
         <>
             <TransparentButton onClick={onClose}>Cancel</TransparentButton>
-            <BlueButton
-                onClick={element => {
-                    setLoading(true);
-                    onSubmit();
-                }}
-            >
-                {loading ? <Loading size={25} /> : 'Authorise Transaction'}
-            </BlueButton>
+            {loading ? (
+                <Loading size={25} />
+            ) : (
+                <BlueButton
+                    onClick={element => {
+                        setLoading(true);
+                        onSubmit();
+                    }}
+                >
+                    'Authorise Transaction'
+                </BlueButton>
+            )}
         </>
     );
 };

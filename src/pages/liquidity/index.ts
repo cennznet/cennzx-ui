@@ -8,13 +8,13 @@ import {
     removeLiquidityError,
     requestTransactionFee,
     resetTrade,
-    setAdd1AssetAmount,
-    setAdd2AssetAmount,
+    setAddAsset1Amount,
+    setAddAsset2Amount,
     setLiquidityAction,
     swapAsset,
     updateExtrinsic,
     updateSelectedAccount,
-    updateSelectedAdd1Asset,
+    updateSelectedAddAsset1,
     updateTransactionBuffer,
 } from '../../redux/actions/ui/liquidity.action';
 import {openDialog} from '../../redux/actions/ui/txDialog.action';
@@ -70,11 +70,11 @@ const mapStateToProps = (state: AppState): LiquidityProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     handleAssetAmountChange: (amount: Amount) => {
-        dispatch(setAdd1AssetAmount(amount));
+        dispatch(setAddAsset1Amount(amount));
         dispatch(requestTransactionFee());
     },
     handleCoreAmountChange: (amount: Amount) => {
-        dispatch(setAdd2AssetAmount(amount));
+        dispatch(setAddAsset2Amount(amount));
         dispatch(requestTransactionFee());
     },
     handleSelectedAccountChange: (account: string) => {
@@ -103,7 +103,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         if (errorToRemove) {
             dispatch(removeLiquidityError(errorToRemove));
         }
-        dispatch(updateSelectedAdd1Asset(newAssetId));
+        dispatch(updateSelectedAddAsset1(newAssetId));
     },
     handleExtrinsicChange: (Extrinsic: string) => {
         Extrinsic === LiquidityAction.ADD

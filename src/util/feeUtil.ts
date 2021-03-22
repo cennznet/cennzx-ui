@@ -27,46 +27,22 @@ export function observableEstimatedFee(
     feeAssetId: number,
     api: ApiRx
 ): Observable<[BN, BN]> {
-    // const CPAY = {id: 11}
-    // const isFeeAssetNotCPAY = feeAssetId !== CPAY.id;
-    // First time use maxPayment as constant
-    //1630000000000000
-    const assetAmount = new Amount('0.00163', AmountUnit.DISPLAY);
-    // if (isFeeAssetNotCPAY) {
-    //     tx.addFeeExchangeOpt({
-    //         assetId: feeAssetId,
-    //         maxPayment: assetAmount,
-    //     });
-    // }
+    // const observableFee = api.rpc.payment.queryInfo(tx.toHex());
+    // return observableFee.pipe(
+    //     switchMap(feeAmtInCPAY => {
+    const maxPayment = '50000000000000000';
 
-    const encodedLengthFirstTime = tx.encodedLength;
-
-    const observableFee = api.rpc.payment.queryInfo(tx.toHex());
-    // if (!isFeeAssetNotCPAY) {
-    //     return observableFee.pipe(map((fee): [BN, BN] => [fee, null]));
-    // }
-    return observableFee.pipe(
-        switchMap(feeAmtInCPAY => {
-            const maxPayment = '50000000000000000';
-            // const extrinsic = api.tx.genericAsset.transfer(feeAssetId, signingAccount, 10000);
-
-            return api.derive.fees.estimateFee({extrinsic: tx, userFeeAssetId: feeAssetId, maxPayment}).pipe(
-                switchMap(estimatedFeeAssetAmount => {
-                    // const maxPayment = addBufer(estimatedFeeAssetAmount);
-                    // const encodedLengthSecondTime = tx.encodedLength;
-                    // if (encodedLengthFirstTime === encodedLengthSecondTime) {
-                    return of([feeAmtInCPAY.partialFee as BN, estimatedFeeAssetAmount as BN]);
-                    // } else {
-                    //     return tx.fee(signingAccount).pipe(map((fee): [BN, BN] => [fee as BN, maxPayment as BN]));
-                    // }
-                }),
-                catchError((err: Error) => {
-                    // tslint:disable-next-line:no-console
-                    console.log('error', err);
-                })
-            );
+    return api.derive.fees.estimateFee({extrinsic: tx, userFeeAssetId: feeAssetId, maxPayment}).pipe(
+        switchMap(estimatedFeeAssetAmount => {
+            return of([estimatedFeeAssetAmount as BN, estimatedFeeAssetAmount as BN]);
+        }),
+        catchError((err: Error) => {
+            // tslint:disable-next-line:no-console
+            console.log('error', err);
         })
     );
+    // })
+    // );
 }
 
 export function observableActualFee(blockHash: Hash, extrinsicIndex: BN, api: ApiRx): Observable<BN> {

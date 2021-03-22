@@ -4,7 +4,7 @@ import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, from, Observable, of} from 'rxjs';
 import {catchError, switchMap, withLatestFrom} from 'rxjs/operators';
-import {ExtrinsicFailed} from '../../../error/error';
+import {ExtrinsicFailed, InsufficientBalanceForOperation} from '../../../error/error';
 import {IEpicDependency} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import types from '../../actions';
@@ -31,7 +31,6 @@ export const submitTransactionEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
-        from(web3Enable('cennzx')),
         action$.pipe(ofType<RequestSubmitTransaction>(types.ui.TxDialog.TRANSACTION_SUBMIT_REQUEST)),
         from(web3FromSource('polkadot-js')),
     ]).pipe(
@@ -40,7 +39,6 @@ export const submitTransactionEpic = (
             ([
                 [
                     api,
-                    ,
                     {
                         payload: {extrinsic, signingAccount, buffer, password},
                     },
@@ -69,11 +67,7 @@ export const submitTransactionEpic = (
                         } else if (status.isFinalized && events) {
                             const blockHash = status.asFinalized;
                             const extrinsicIndex = events[0].phase.asApplyExtrinsic;
-                            return of(
-                                updateTxEvents(events),
-                                updateStage(Stages.Finalised),
-                                requestActualFee({blockHash, extrinsicIndex})
-                            );
+                            return of(updateTxEvents(events), updateStage(Stages.Finalised));
                         } else {
                             return EMPTY;
                         }
@@ -113,7 +107,6 @@ export const submitSendEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
-        from(web3Enable('cennzx')),
         action$.pipe(ofType<RequestSubmitSend>(types.ui.TxDialog.TRANSACTION_SUBMIT_SEND)),
         from(web3FromSource('polkadot-js')),
     ]).pipe(
@@ -122,7 +115,6 @@ export const submitSendEpic = (
             ([
                 [
                     api,
-                    ,
                     {
                         payload: {extrinsic, signingAccount, recipientAddress, buffer, password},
                     },
@@ -149,11 +141,7 @@ export const submitSendEpic = (
                         } else if (status.isFinalized && events) {
                             const blockHash = status.asFinalized;
                             const extrinsicIndex = events[0].phase.asApplyExtrinsic;
-                            return of(
-                                updateTxEvents(events),
-                                updateStage(Stages.Finalised),
-                                requestActualFee({blockHash, extrinsicIndex})
-                            );
+                            return of(updateTxEvents(events), updateStage(Stages.Finalised));
                         } else {
                             return EMPTY;
                         }
@@ -193,7 +181,6 @@ export const submitLiquidityEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
-        from(web3Enable('cennzx')),
         action$.pipe(ofType<RequestSubmitLiquidity>(types.ui.TxDialog.TRANSACTION_SUBMIT_LIQUIDITY)),
         from(web3FromSource('polkadot-js')),
     ]).pipe(
@@ -202,7 +189,6 @@ export const submitLiquidityEpic = (
             ([
                 [
                     api,
-                    ,
                     {
                         payload: {extrinsic, signingAccount, add1Asset, add1Amount, add2Amount, buffer, password},
                     },
@@ -211,12 +197,32 @@ export const submitLiquidityEpic = (
                 store,
             ]): Observable<Action<any>> => {
                 const [assetId, , assetAmount, coreAmount] = extrinsic.params;
+                const currentExchangePool = store.ui.liquidity.exchangePool.find(ex => ex.assetId === assetId);
+                const coreAssetReserve = currentExchangePool ? currentExchangePool.coreAssetBalance : new Amount(0);
+                const tradeAssetReserve = currentExchangePool ? currentExchangePool.assetBalance : new Amount(0);
+                const totalLiquidity = store.ui.liquidity.totalLiquidity;
+
                 let tx;
                 if (extrinsic.method === 'addLiquidity') {
-                    const min_liquidity = new Amount(assetAmount.muln(1 - buffer));
-                    // const max_asset_amount = new Amount(assetAmount.muln(1 + buffer));
-                    // tx = api.tx.cennzx.addLiquidity(add1Asset, 0.00001, 100000000, add2Amount);
-                    tx = api.tx.cennzx.addLiquidity(assetId, min_liquidity, assetAmount, coreAmount);
+                    const minLiquidity = totalLiquidity.isZero()
+                        ? new Amount(coreAmount)
+                        : new Amount(coreAmount).mul(totalLiquidity.div(coreAssetReserve));
+                    let investmentAmount = totalLiquidity.isZero()
+                        ? new Amount(assetAmount)
+                        : new Amount(coreAmount).mul(tradeAssetReserve.div(coreAssetReserve)).iaddn(1);
+                    if (investmentAmount.ltn(assetAmount)) {
+                        investmentAmount = new Amount(assetAmount);
+                    }
+                    const maxAssetAmount = new Amount(assetAmount.muln(1 + buffer));
+                    if (maxAssetAmount.lt(investmentAmount)) {
+                        const err = new InsufficientBalanceForOperation(
+                            maxAssetAmount,
+                            new Amount(investmentAmount),
+                            assetId
+                        );
+                        return of(setDailogError(err));
+                    }
+                    tx = api.tx.cennzx.addLiquidity(assetId, minLiquidity, investmentAmount, coreAmount);
                 } else {
                     const min_asset_withdraw = new Amount(add1Amount.muln(1 - buffer));
                     const min_core_withdraw = new Amount(add2Amount.muln(1 - buffer));
@@ -229,13 +235,7 @@ export const submitLiquidityEpic = (
                         if (status.isInBlock) {
                             return of(updateTxHash(status.asInBlock.toString()), updateStage(Stages.Broadcasted));
                         } else if (status.isFinalized && events) {
-                            const blockHash = status.asFinalized;
-                            const extrinsicIndex = events[0].phase.asApplyExtrinsic;
-                            return of(
-                                updateTxEvents(events),
-                                updateStage(Stages.Finalised),
-                                requestActualFee({blockHash, extrinsicIndex})
-                            );
+                            return of(updateTxEvents(events), updateStage(Stages.Finalised));
                         } else {
                             return EMPTY;
                         }

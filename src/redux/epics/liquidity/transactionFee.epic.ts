@@ -34,8 +34,8 @@ export const requestTransactionFeeEpic = (
         api$,
         action$.pipe(
             ofType(
-                types.ui.Liquidity.ADD1_ASSET_AMOUNT_UPDATE,
-                types.ui.Liquidity.ADD2_ASSET_AMOUNT_UPDATE,
+                types.ui.Liquidity.ADD_ASSET1_AMOUNT_UPDATE,
+                types.ui.Liquidity.ADD_ASSET2_AMOUNT_UPDATE,
                 types.ui.Liquidity.ASSET_SWAP,
                 types.ui.Liquidity.SELECTED_FROM_ASSET_UPDATE,
                 types.ui.Liquidity.SELECTED_TO_ASSET_UPDATE,

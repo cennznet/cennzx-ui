@@ -59,9 +59,9 @@ export const requestExchangeRateEpic = (
         api$,
         action$.pipe(
             ofType(
-                types.ui.Liquidity.ADD1_ASSET_AMOUNT_SET,
-                types.ui.Liquidity.ADD2_ASSET_AMOUNT_SET,
-                types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE,
+                types.ui.Liquidity.ADD_ASSET1_AMOUNT_SET,
+                types.ui.Liquidity.ADD_ASSET2_AMOUNT_SET,
+                types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE,
                 types.ui.Liquidity.ASSET_SWAP
             )
         ),

@@ -9,11 +9,11 @@ export enum LiquidityActions {
     EXTRINSIC_UPDATE = 'LIQUIDITY/EXTRINSIC_UPDATE',
     SELECTED_ACCOUNT_UPDATE = 'LIQUIDITY/SELECTED_ACCOUNT_UPDATE',
     TO_ASSET_AMOUNT_SET = 'LIQUIDITY/TO_ASSET_AMOUNT_SET',
-    SELECTED_ADD1_ASSET_UPDATE = 'LIQUIDITY/SELECTED_ADD1_ASSET_UPDATE',
-    ADD1_ASSET_AMOUNT_SET = 'LIQUIDITY/ADD1_ASSET_AMOUNT_SET',
-    ADD2_ASSET_AMOUNT_SET = 'LIQUIDITY/ADD2_ASSET_AMOUNT_SET',
-    ADD1_ASSET_AMOUNT_UPDATE = 'LIQUIDITY/ADD1_ASSET_AMOUNT_UPDATE',
-    ADD2_ASSET_AMOUNT_UPDATE = 'LIQUIDITY/ADD2_ASSET_AMOUNT_UPDATE',
+    SELECTED_ADD_ASSET1_UPDATE = 'LIQUIDITY/SELECTED_ADD_ASSET1_UPDATE',
+    ADD_ASSET1_AMOUNT_SET = 'LIQUIDITY/ADD_ASSET1_AMOUNT_SET',
+    ADD_ASSET2_AMOUNT_SET = 'LIQUIDITY/ADD_ASSET2_AMOUNT_SET',
+    ADD_ASSET1_AMOUNT_UPDATE = 'LIQUIDITY/ADD_ASSET1_AMOUNT_UPDATE',
+    ADD_ASSET2_AMOUNT_UPDATE = 'LIQUIDITY/ADD_ASSET2_AMOUNT_UPDATE',
     ERROR_SET = 'LIQUIDITY/ERROR_SET',
     ERROR_RESET = 'LIQUIDITY/ERROR_RESET',
     ERROR_REMOVE = 'LIQUIDITY/ERROR_REMOVE',
@@ -37,8 +37,11 @@ export enum LiquidityActions {
     ASSET_BALANCE_REQUEST = 'LIQUIDITY/ASSET_BALANCE_REQUEST',
     ASSET_ADD1_BALANCE_REQUEST = 'LIQUIDITY/ASSET_ADD1_BALANCE_REQUEST',
     USER_ASSET_BALANCE_UPDATE = 'LIQUIDITY/USER_ASSET_BALANCE_UPDATE',
-    USER_ADD1_ASSET_BALANCE_UPDATE = 'LIQUIDITY/USER_ADD1_ASSET_BALANCE_UPDATE',
+    USER_ADD_ASSET1_BALANCE_UPDATE = 'LIQUIDITY/USER_ADD_ASSET1_BALANCE_UPDATE',
     USER_POOL_SHARE_UPDATE = 'LIQUIDITY/USER_POOL_SHARE_UPDATE',
+    TOTAL_LIQUIDITY_REQUEST = 'LIQUIDITY/TOTAL_LIQUIDITY_REQUEST',
+    TOTAL_LIQUIDITY_UPDATE = 'LIQUIDITY/TOTAL_LIQUIDITY_UPDATE',
+    POOL_BALANCE_REQUEST = 'LIQUIDITY/POOL_BALANCE_REQUEST',
 }
 
 export const updateExtrinsic = createAction(LiquidityActions.EXTRINSIC_UPDATE, (extrinsic: string) => extrinsic);
@@ -56,24 +59,24 @@ export const updateSelectedAccount = createAction(
     LiquidityActions.SELECTED_ACCOUNT_UPDATE,
     (account: string) => account
 );
-export const updateSelectedAdd1Asset = createAction(
-    LiquidityActions.SELECTED_ADD1_ASSET_UPDATE,
+export const updateSelectedAddAsset1 = createAction(
+    LiquidityActions.SELECTED_ADD_ASSET1_UPDATE,
     (assetId: number) => assetId
 );
-export const setAdd1AssetAmount = createAction(
-    LiquidityActions.ADD1_ASSET_AMOUNT_SET,
+export const setAddAsset1Amount = createAction(
+    LiquidityActions.ADD_ASSET1_AMOUNT_SET,
     (assetAmount: Amount) => assetAmount
 );
-export const updateAdd1AssetAmount = createAction(
-    LiquidityActions.ADD1_ASSET_AMOUNT_UPDATE,
+export const updateAddAsset1Amount = createAction(
+    LiquidityActions.ADD_ASSET1_AMOUNT_UPDATE,
     (assetAmount: Amount) => assetAmount
 );
-export const setAdd2AssetAmount = createAction(
-    LiquidityActions.ADD2_ASSET_AMOUNT_SET,
+export const setAddAsset2Amount = createAction(
+    LiquidityActions.ADD_ASSET2_AMOUNT_SET,
     (toAssetAmount: Amount) => toAssetAmount
 );
-export const updateAdd2AssetAmount = createAction(
-    LiquidityActions.ADD2_ASSET_AMOUNT_UPDATE,
+export const updateAddAsset2Amount = createAction(
+    LiquidityActions.ADD_ASSET2_AMOUNT_UPDATE,
     (toAssetAmount: Amount) => toAssetAmount
 );
 export const setLiquidityError = createAction(LiquidityActions.ERROR_SET, (error: BaseError) => error);
@@ -94,7 +97,7 @@ export const requestAssetBalance = createAction(LiquidityActions.ASSET_BALANCE_R
         signingAccount,
     };
 });
-export const requestAdd1AssetBalance = createAction(
+export const requestAddAsset1Balance = createAction(
     LiquidityActions.ASSET_ADD1_BALANCE_REQUEST,
     (assetId, signingAccount) => {
         return {
@@ -141,6 +144,7 @@ export const updateExchangeRate = createAction(
     LiquidityActions.EXCHANGE_RATE_UPDATE,
     (exchangeRate: Amount) => exchangeRate
 );
+export const requestPoolBalance = createAction(LiquidityActions.POOL_BALANCE_REQUEST, (assetId: number) => assetId);
 
 export const requestLiquidityRate = createAction(LiquidityActions.EXCHANGE_RATE_REQUEST);
 export const getPool = createAction(LiquidityActions.GET_POOL);
@@ -148,10 +152,22 @@ export const updateUserAssetBalance = createAction(
     LiquidityActions.USER_ASSET_BALANCE_UPDATE,
     (assetBalance: IAssetBalance) => assetBalance
 );
-export const updateUserAdd1AssetBalance = createAction(
-    LiquidityActions.USER_ADD1_ASSET_BALANCE_UPDATE,
+export const updateUserAddAsset1Balance = createAction(
+    LiquidityActions.USER_ADD_ASSET1_BALANCE_UPDATE,
     (assetBalance: IAssetBalance) => assetBalance
 );
+
+export const requestTotalLiquidity = createAction(
+    LiquidityActions.TOTAL_LIQUIDITY_REQUEST,
+    (assetId: number) => assetId
+);
+
+export const updateTotalLiquidity = createAction(
+    LiquidityActions.TOTAL_LIQUIDITY_UPDATE,
+    (liquidity: Amount) => liquidity
+);
+
+export type UpdateTotalLiquidityAction = ReturnType<typeof updateTotalLiquidity>;
 export type RequestLiquidityRateAction = ReturnType<typeof requestLiquidityRate>;
 export type UpdateExchangeRateAction = ReturnType<typeof updateExchangeRate>;
 export type RequestTransactionFeeAction = ReturnType<typeof requestTransactionFee>;
@@ -169,11 +185,11 @@ export type SetAdd1Action = ReturnType<typeof setAdd1Amount>;
 export type SetAdd2Action = ReturnType<typeof setAdd2Amount>;
 export type UpdateExtrinsicAction = ReturnType<typeof updateExtrinsic>;
 export type UpdateSelectedAccountAction = ReturnType<typeof updateSelectedAccount>;
-export type UpdateSelectedAdd1AssetAction = ReturnType<typeof updateSelectedAdd1Asset>;
-export type UpdateAdd1AssetAmountAction = ReturnType<typeof updateAdd1AssetAmount>;
-export type UpdateAdd2AssetAmountAction = ReturnType<typeof updateAdd2AssetAmount>;
-export type SetAdd1AssetAmountAction = ReturnType<typeof setAdd1AssetAmount>;
-export type SetAdd2AssetAmountAction = ReturnType<typeof setAdd2AssetAmount>;
+export type UpdateSelectedAddAsset1Action = ReturnType<typeof updateSelectedAddAsset1>;
+export type UpdateAddAsset1AmountAction = ReturnType<typeof updateAddAsset1Amount>;
+export type UpdateAddAsset2AmountAction = ReturnType<typeof updateAddAsset2Amount>;
+export type SetAddAsset1AmountAction = ReturnType<typeof setAddAsset1Amount>;
+export type SetAddAsset2AmountAction = ReturnType<typeof setAddAsset2Amount>;
 export type SetLiquidityErrorAction = ReturnType<typeof setLiquidityError>;
 export type ResetLiquidityErrorAction = ReturnType<typeof resetError>;
 export type UpdatePoolBalanceAction = ReturnType<typeof updatePoolBalance>;
@@ -182,7 +198,7 @@ export type SetLiquidityAction = ReturnType<typeof setLiquidityAction>;
 export type RemoveLiquidityErrorAction = ReturnType<typeof removeLiquidityError>;
 
 export type UpdateUserAssetBalanceAction = ReturnType<typeof updateUserAssetBalance>;
-export type UpdateUserAdd1AssetBalanceAction = ReturnType<typeof updateUserAdd1AssetBalance>;
+export type UpdateUserAddAsset1BalanceAction = ReturnType<typeof updateUserAddAsset1Balance>;
 export type RequestAssetBalanceAction = ReturnType<typeof requestAssetBalance>;
 export type RequestExchangeRateAction = ReturnType<typeof requestExchangeRate>;
 export default LiquidityActions;
