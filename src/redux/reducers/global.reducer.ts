@@ -1,4 +1,5 @@
 import {FeeRate} from '@cennznet/types/interfaces/cennzx';
+import {MetadataDef} from '@polkadot/extension-inject/types';
 import produce from 'immer';
 import {handleActions} from 'redux-actions';
 import GlobalActions, {
@@ -8,9 +9,9 @@ import GlobalActions, {
 } from '../actions/global.action';
 
 export interface GlobalState {
-    coreAssetId?: any;
+    coreAssetId?: number;
     feeRate?: FeeRate;
-    metadata: MetadataDef;
+    metadata?: MetadataDef;
 }
 
 export const initialState: GlobalState = {};

@@ -1,6 +1,6 @@
 import {createAction} from 'redux-actions';
 import {BaseError} from '../../../error/error';
-import {IAssetBalance, IAssetSwap, IExchangePool, IExtrinsic, IFee} from '../../../typings';
+import {IAssetBalance, IAssetSwap, IExchangePool, IExtrinsic, IFee, IUserShareInPool} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 
 export enum LiquidityActions {
@@ -38,6 +38,7 @@ export enum LiquidityActions {
     ASSET_ADD1_BALANCE_REQUEST = 'LIQUIDITY/ASSET_ADD1_BALANCE_REQUEST',
     USER_ASSET_BALANCE_UPDATE = 'LIQUIDITY/USER_ASSET_BALANCE_UPDATE',
     USER_ADD1_ASSET_BALANCE_UPDATE = 'LIQUIDITY/USER_ADD1_ASSET_BALANCE_UPDATE',
+    USER_POOL_SHARE_UPDATE = 'LIQUIDITY/USER_POOL_SHARE_UPDATE',
 }
 
 export const updateExtrinsic = createAction(LiquidityActions.EXTRINSIC_UPDATE, (extrinsic: string) => extrinsic);
@@ -81,6 +82,12 @@ export const updatePoolBalance = createAction(
     LiquidityActions.LIQUIDITY_POOL_BALANCE_UPDATE,
     (poolBalance: IExchangePool) => poolBalance
 );
+
+export const updateUserPoolShare = createAction(
+    LiquidityActions.USER_POOL_SHARE_UPDATE,
+    (userShareInPool: IUserShareInPool) => userShareInPool
+);
+
 export const requestAssetBalance = createAction(LiquidityActions.ASSET_BALANCE_REQUEST, (assetId, signingAccount) => {
     return {
         assetId,
@@ -170,6 +177,7 @@ export type SetAdd2AssetAmountAction = ReturnType<typeof setAdd2AssetAmount>;
 export type SetLiquidityErrorAction = ReturnType<typeof setLiquidityError>;
 export type ResetLiquidityErrorAction = ReturnType<typeof resetError>;
 export type UpdatePoolBalanceAction = ReturnType<typeof updatePoolBalance>;
+export type UpdateUserPoolShareAction = ReturnType<typeof updateUserPoolShare>;
 export type SetLiquidityAction = ReturnType<typeof setLiquidityAction>;
 export type RemoveLiquidityErrorAction = ReturnType<typeof removeLiquidityError>;
 

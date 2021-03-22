@@ -75,6 +75,14 @@ export interface IExchangePool {
     address: string;
     assetId: number;
 }
+
+export interface IUserShareInPool {
+    coreAssetBalance: Amount;
+    assetBalance: Amount;
+    liquidity: Amount;
+    address: string;
+    assetId: number;
+}
 export interface IAssetBalance {
     assetId: number;
     account: string;
@@ -116,7 +124,8 @@ export interface SingleSourceInjected extends CennznetInjected {
 }
 
 export interface AddLiquidityFormData {
-    asset: number;
+    assetId: number;
+    coreAssetId: number;
     assetAmount: Amount;
     coreAmount: Amount;
     feeAssetId: number;

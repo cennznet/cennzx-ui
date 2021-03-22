@@ -49,7 +49,7 @@ export function existErrors(
  */
 const rules: ValidationRule[] = [
     ...accountRules,
-    ...poolBalanceRules,
+    // ...poolBalanceRules,
     ...toAssetInputRules,
     ...fromAssetInputRules,
     ...userBalanceRules,

@@ -32,6 +32,7 @@ import {
     getExchangeRateMsg,
     getFee,
     getTxFeeMessage,
+    getUserPoolShare,
 } from './selectors';
 
 const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
@@ -63,6 +64,7 @@ const mapStateToProps = (state: AppState): LiquidityProps => ({
     fee: getFee(state),
     exchangeRateMsg: getExchangeRateMsg(state),
     txFeeMsg: getTxFeeMessage(state),
+    userPoolShare: getUserPoolShare(state),
     // isDialogOpen: state.ui.txDialog.stage ? true : false,
 });
 
@@ -104,7 +106,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         dispatch(updateSelectedAdd1Asset(newAssetId));
     },
     handleExtrinsicChange: (Extrinsic: string) => {
-        dispatch(updateExtrinsic(Extrinsic));
+        Extrinsic === LiquidityAction.ADD
+            ? dispatch(updateExtrinsic(ADD_LIQUIDITY))
+            : dispatch(updateExtrinsic(REMOVE_LIQUIDITY));
     },
     handleReset: () => {
         dispatch(resetTrade());
@@ -125,6 +129,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     ) => {
         const paramList = prepareExchangeExtrinsicParamsWithBuffer(extrinsic, {
             assetId,
+            coreAssetId,
             coreAmount,
             assetAmount,
         });

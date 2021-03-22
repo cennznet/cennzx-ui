@@ -1,7 +1,7 @@
 import produce from 'immer';
 import {handleActions} from 'redux-actions';
 import {BaseError} from '../../../error/error';
-import {IAssetBalance, IExchangePool, IFee, LiquidityFormData} from '../../../typings';
+import {IAssetBalance, IExchangePool, IFee, IUserShareInPool, LiquidityFormData} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import LiquidityActions, {
     RemoveLiquidityErrorAction,
@@ -22,11 +22,13 @@ import LiquidityActions, {
     UpdateTransactionFeeAction,
     UpdateTxFeeParameterAction,
     UpdateUserAssetBalanceAction,
+    UpdateUserPoolShareAction,
 } from '../../actions/ui/liquidity.action';
 
 export interface LiquidityState {
     exchangeRate?: Amount;
     exchangePool: IExchangePool[];
+    userPoolShare?: IUserShareInPool[];
     txFee?: IFee;
     form: Partial<LiquidityFormData>;
     userAssetBalance: IAssetBalance[];
@@ -38,9 +40,11 @@ export const initialState: LiquidityState = {
     form: {
         feeAssetId: 16001,
         buffer: typeof window !== 'undefined' ? window.config.FEE_BUFFER : 0.05,
+        coreAssetId: 16001,
     },
     exchangePool: [],
     userAssetBalance: [],
+    userPoolShare: [],
     error: [],
 };
 
@@ -66,6 +70,20 @@ export default handleActions<LiquidityState, any>(
                     draft.exchangePool.push(action.payload);
                 } else {
                     draft.exchangePool[index] = action.payload;
+                }
+            }
+        ),
+        [LiquidityActions.USER_POOL_SHARE_UPDATE]: produce(
+            (draft: LiquidityState, action: UpdateUserPoolShareAction) => {
+                const index = draft.exchangePool.findIndex(
+                    (poolShareData: IUserShareInPool) =>
+                        poolShareData.assetId === action.payload.assetId &&
+                        poolShareData.address === action.payload.address
+                );
+                if (index === -1) {
+                    draft.userPoolShare.push(action.payload);
+                } else {
+                    draft.userPoolShare[index] = action.payload;
                 }
             }
         ),

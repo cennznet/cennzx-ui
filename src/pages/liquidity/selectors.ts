@@ -1,6 +1,6 @@
 import {createSelector} from 'reselect';
 import {AppState} from '../../redux/reducers';
-import {Asset, IAssetBalance, IExchangePool} from '../../typings';
+import {Asset, IAssetBalance, IExchangePool, IUserShareInPool} from '../../typings';
 import {Amount} from '../../util/Amount';
 import {getAsset as getAsset_} from '../../util/assets';
 import {DECIMALS} from './liquidity';
@@ -16,8 +16,21 @@ const getTxFee = (state: AppState) => state.ui.liquidity.txFee;
 const getFeeAssetId = (state: AppState) => state.ui.liquidity.form.feeAssetId;
 const getCoreAsset = (state: AppState) => state.global.coreAssetId;
 const getUserAssetBalance = (state: AppState) => state.ui.liquidity.userAssetBalance;
+const getAllUserPoolShare = (state: AppState) => state.ui.liquidity.userPoolShare;
 
 export const getAssets = () => (typeof window !== 'undefined' ? window.config.ASSETS : []);
+
+export const getUserPoolShare = createSelector(
+    [getAsset, getAllUserPoolShare, getSigningAccount],
+    (assetId, poolShare, signingAccount) => {
+        if (!assetId) return null;
+        if (!poolShare.length) return null;
+        const accountAssetBalance = poolShare.find(
+            (share: IUserShareInPool) => share.assetId === assetId && share.address === signingAccount
+        );
+        return accountAssetBalance;
+    }
+);
 
 // always fixed to CPAY
 export const getLiquidityExchangeRate = createSelector(
@@ -71,10 +84,14 @@ export const getAssetReserve = createSelector(
 );
 
 export const getCoreReserve = createSelector(
-    [getExchangePool],
-    exchangePool => {
+    [getAsset, getExchangePool],
+    (asset, exchangePool) => {
+        if (!asset) return null;
         if (!exchangePool.length) return null;
-        return exchangePool[0].coreAssetBalance;
+        const poolBalanceForBuyAsset = exchangePool.find((poolData: IExchangePool) => poolData.assetId === asset);
+        if (poolBalanceForBuyAsset) {
+            return poolBalanceForBuyAsset.coreAssetBalance;
+        }
     }
 );
 

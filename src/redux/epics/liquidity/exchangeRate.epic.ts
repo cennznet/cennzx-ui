@@ -18,37 +18,37 @@ import {
 import {AppState} from '../../reducers';
 import {LiquidityState} from '../../reducers/ui/liquidity.reducer';
 
-export const getExchangeRateEpic = (
-    action$: Observable<Action<any>>,
-    store$: Observable<AppState>,
-    {api$}: IEpicDependency
-): Observable<UpdateExchangeRateAction | SetLiquidityErrorAction> =>
-    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.EXCHANGE_RATE_REQUEST))]).pipe(
-        withLatestFrom(store$),
-        switchMap(([obj, store]) => {
-            const api: ApiRx = obj[0];
-            const {exchangeRate} = store.ui.liquidity as LiquidityState;
-            const {coreAsset, assetId, assetAmount, coreAmount} = store.ui.liquidity.form as LiquidityFormData;
-            // ### sellPrice(AssetToSell: `AssetId`, Amount: `Balance`, AssetToPayout: `AssetId`): `u64`
-            return api.rpc.cennzx.sellPrice(assetId, coreAmount, coreAsset).pipe(
-                filter(
-                    (exchangeRateFromAPI: BN) =>
-                        !exchangeRate || !new Amount(exchangeRateFromAPI.toString()).eq(exchangeRate)
-                ),
-                map((exchangeRateFromAPI: BN) => {
-                    const exRate = new Amount(exchangeRateFromAPI.toString(), AmountUnit.UN);
-                    return updateExchangeRate(exRate);
-                }),
-                takeUntil(action$.pipe(ofType(types.ui.Liquidity.TRADE_RESET))),
-                catchError((err: any) => {
-                    if (err.message === 'Pool balance is low') {
-                        return EMPTY;
-                    }
-                    return of(setLiquidityError(err));
-                })
-            );
-        })
-    );
+// export const getExchangeRateEpic = (
+//     action$: Observable<Action<any>>,
+//     store$: Observable<AppState>,
+//     {api$}: IEpicDependency
+// ): Observable<UpdateExchangeRateAction | SetLiquidityErrorAction> =>
+//     combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.EXCHANGE_RATE_REQUEST))]).pipe(
+//         withLatestFrom(store$),
+//         switchMap(([obj, store]) => {
+//             const api: ApiRx = obj[0];
+//             const {exchangeRate} = store.ui.liquidity as LiquidityState;
+//             const {coreAsset, assetId, assetAmount, coreAmount} = store.ui.liquidity.form as LiquidityFormData;
+//             // ### sellPrice(AssetToSell: `AssetId`, Amount: `Balance`, AssetToPayout: `AssetId`): `u64`
+//             return api.rpc.cennzx.sellPrice(assetId, coreAmount, coreAsset).pipe(
+//                 filter(
+//                     (exchangeRateFromAPI: BN) =>
+//                         !exchangeRate || !new Amount(exchangeRateFromAPI.toString()).eq(exchangeRate)
+//                 ),
+//                 map((exchangeRateFromAPI: BN) => {
+//                     const exRate = new Amount(exchangeRateFromAPI.toString(), AmountUnit.UN);
+//                     return updateExchangeRate(exRate);
+//                 }),
+//                 takeUntil(action$.pipe(ofType(types.ui.Liquidity.TRADE_RESET))),
+//                 catchError((err: any) => {
+//                     if (err.message === 'Pool balance is low') {
+//                         return EMPTY;
+//                     }
+//                     return of(setLiquidityError(err));
+//                 })
+//             );
+//         })
+//     );
 
 export const requestExchangeRateEpic = (
     action$: Observable<Action<any>>,
@@ -80,4 +80,5 @@ export const requestExchangeRateEpic = (
         )
     );
 
-export default combineEpics(getExchangeRateEpic, requestExchangeRateEpic);
+// export default combineEpics(getExchangeRateEpic, requestExchangeRateEpic);
+export default combineEpics(requestExchangeRateEpic);

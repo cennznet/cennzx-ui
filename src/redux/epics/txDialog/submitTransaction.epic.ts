@@ -31,6 +31,7 @@ export const submitTransactionEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
+        from(web3Enable('cennzx')),
         action$.pipe(ofType<RequestSubmitTransaction>(types.ui.TxDialog.TRANSACTION_SUBMIT_REQUEST)),
         from(web3FromSource('polkadot-js')),
     ]).pipe(
@@ -39,6 +40,7 @@ export const submitTransactionEpic = (
             ([
                 [
                     api,
+                    ,
                     {
                         payload: {extrinsic, signingAccount, buffer, password},
                     },
@@ -46,26 +48,24 @@ export const submitTransactionEpic = (
                 ],
                 store,
             ]): Observable<Action<any>> => {
-                const [fromAsset, toAsset, amount] = extrinsic.params;
-                const sellAmount = amount.asString(DECIMALS);
                 let tx;
+                const [fromAsset, toAsset, fromAssetAmount, toAssetAmount] = extrinsic.params;
                 if (extrinsic.method === 'sellAsset') {
-                    // ### sellAsset(recipient: `Option<AccountId>`, asset_to_sell: `Compact<AssetId>`,
-                    // asset_to_buy: `Compact<AssetId>`, sell_amount: `Compact<BalanceOf>`, minimum_buy: `Compact<BalanceOf>`)
-                    const minSale = new Amount(amount.muln(1 - buffer)).asString(DECIMALS);
-                    tx = api.tx.cennzx.sellAsset(null, fromAsset, toAsset, +sellAmount, 0.0001);
+                    const sellAmount = fromAssetAmount; //.asString(DECIMALS);
+                    const minSale = new Amount(toAssetAmount.muln(1 - buffer)); /*.asString(DECIMALS);*/
+                    tx = api.tx.cennzx.sellAsset(null, fromAsset, toAsset, sellAmount, minSale);
                 } else {
-                    // ### buyAsset(recipient: `Option<AccountId>`, asset_to_sell: `Compact<AssetId>`,
-                    // asset_to_buy: `Compact<AssetId>`, buy_amount: `Compact<BalanceOf>`, maximum_sell: `Compact<BalanceOf>`)
-                    const maxSale = new Amount(amount.muln(1 + buffer)).asString(DECIMALS);
-                    tx = api.tx.cennzx.buyAsset(null, fromAsset, toAsset, +sellAmount, 1000000);
+                    const buyAmount = toAssetAmount; //.asString(DECIMALS);
+                    const maxSale = new Amount(fromAssetAmount.muln(1 + buffer)); /*.asString(DECIMALS);*/
+                    const recipient = null;
+                    tx = api.tx.cennzx.buyAsset(recipient, fromAsset, toAsset, buyAmount, maxSale);
                 }
                 const signer = injector.signer;
 
                 return tx.signAndSend(signingAccount, {signer}).pipe(
                     switchMap(({events, status}: SubmittableResult) => {
                         if (status.isInBlock) {
-                            return of(updateTxHash(status.asInBlock.toString()), updateStage(Stages.InBlock));
+                            return of(updateTxHash(status.asInBlock.toString()), updateStage(Stages.Broadcasted));
                         } else if (status.isFinalized && events) {
                             const blockHash = status.asFinalized;
                             const extrinsicIndex = events[0].phase.asApplyExtrinsic;
@@ -113,6 +113,7 @@ export const submitSendEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
+        from(web3Enable('cennzx')),
         action$.pipe(ofType<RequestSubmitSend>(types.ui.TxDialog.TRANSACTION_SUBMIT_SEND)),
         from(web3FromSource('polkadot-js')),
     ]).pipe(
@@ -121,6 +122,7 @@ export const submitSendEpic = (
             ([
                 [
                     api,
+                    ,
                     {
                         payload: {extrinsic, signingAccount, recipientAddress, buffer, password},
                     },
@@ -143,7 +145,7 @@ export const submitSendEpic = (
                 return tx.signAndSend(signingAccount, {signer}).pipe(
                     switchMap(({events, status}: SubmittableResult) => {
                         if (status.isBroadcast) {
-                            return of(updateTxHash(tx.hash.toString()), updateStage(Stages.InBlock));
+                            return of(updateTxHash(tx.hash.toString()), updateStage(Stages.Broadcasted));
                         } else if (status.isFinalized && events) {
                             const blockHash = status.asFinalized;
                             const extrinsicIndex = events[0].phase.asApplyExtrinsic;
@@ -191,6 +193,7 @@ export const submitLiquidityEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
+        from(web3Enable('cennzx')),
         action$.pipe(ofType<RequestSubmitLiquidity>(types.ui.TxDialog.TRANSACTION_SUBMIT_LIQUIDITY)),
         from(web3FromSource('polkadot-js')),
     ]).pipe(
@@ -199,6 +202,7 @@ export const submitLiquidityEpic = (
             ([
                 [
                     api,
+                    ,
                     {
                         payload: {extrinsic, signingAccount, add1Asset, add1Amount, add2Amount, buffer, password},
                     },
@@ -206,12 +210,13 @@ export const submitLiquidityEpic = (
                 ],
                 store,
             ]): Observable<Action<any>> => {
+                const [assetId, , assetAmount, coreAmount] = extrinsic.params;
                 let tx;
                 if (extrinsic.method === 'addLiquidity') {
-                    const min_liquidity = new Amount(add1Amount.muln(1 - buffer));
-                    const max_asset_amount = new Amount(add1Amount.muln(1 + buffer));
+                    const min_liquidity = new Amount(assetAmount.muln(1 - buffer));
+                    // const max_asset_amount = new Amount(assetAmount.muln(1 + buffer));
                     // tx = api.tx.cennzx.addLiquidity(add1Asset, 0.00001, 100000000, add2Amount);
-                    tx = api.tx.cennzx.addLiquidity(add1Asset, 0.00001, add1Amount, add2Amount);
+                    tx = api.tx.cennzx.addLiquidity(assetId, min_liquidity, assetAmount, coreAmount);
                 } else {
                     const min_asset_withdraw = new Amount(add1Amount.muln(1 - buffer));
                     const min_core_withdraw = new Amount(add2Amount.muln(1 - buffer));
@@ -221,8 +226,8 @@ export const submitLiquidityEpic = (
 
                 return tx.signAndSend(signingAccount, {signer}).pipe(
                     switchMap(({events, status}) => {
-                        if (status.isBroadcast) {
-                            return of(updateTxHash(tx.hash.toString()), updateStage(Stages.InBlock));
+                        if (status.isInBlock) {
+                            return of(updateTxHash(status.asInBlock.toString()), updateStage(Stages.Broadcasted));
                         } else if (status.isFinalized && events) {
                             const blockHash = status.asFinalized;
                             const extrinsicIndex = events[0].phase.asApplyExtrinsic;
@@ -257,7 +262,7 @@ export const resetTradeOnBroadCastedStage = (
     action$.pipe(
         ofType<UpdateStageAction>(types.ui.TxDialog.STAGE_UPDATE),
         switchMap(action => {
-            if (action.payload === Stages.InBlock) {
+            if (action.payload === Stages.Broadcasted) {
                 return of(resetTrade());
             } else {
                 return EMPTY;

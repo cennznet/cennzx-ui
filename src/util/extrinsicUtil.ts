@@ -28,10 +28,10 @@ export function prepareExchangeExtrinsicParamsWithBuffer(
     switch (extrinsic) {
         case ADD_LIQUIDITY:
             return [
-                (params as AddLiquidityFormData).asset,
+                (params as AddLiquidityFormData).assetId,
+                (params as AddLiquidityFormData).coreAssetId,
                 (params as AddLiquidityFormData).coreAmount, // # of pool liquidity shares to mint
                 (params as AddLiquidityFormData).assetAmount, // max asset deposit
-                (params as AddLiquidityFormData).coreAmount, // core amount
             ];
         case REMOVE_LIQUIDITY:
             return [
@@ -44,15 +44,17 @@ export function prepareExchangeExtrinsicParamsWithBuffer(
             return [
                 (params as ExchangeFormData).fromAsset,
                 (params as ExchangeFormData).toAsset,
+                (params as ExchangeFormData).fromAssetAmount,
+                // new Amount((params as ExchangeFormData).fromAssetAmount.muln(1 + (params as ExchangeFormData).buffer)),
                 (params as ExchangeFormData).toAssetAmount,
-                new Amount((params as ExchangeFormData).fromAssetAmount.muln(1 + (params as ExchangeFormData).buffer)),
             ];
         case SWAP_INPUT:
             return [
                 (params as ExchangeFormData).fromAsset,
                 (params as ExchangeFormData).toAsset,
                 (params as ExchangeFormData).fromAssetAmount,
-                new Amount((params as ExchangeFormData).toAssetAmount.muln(1 - (params as ExchangeFormData).buffer)),
+                // new Amount((params as ExchangeFormData).toAssetAmount.muln(1 - (params as ExchangeFormData).buffer)),
+                (params as ExchangeFormData).toAssetAmount,
             ];
         default:
             return [];

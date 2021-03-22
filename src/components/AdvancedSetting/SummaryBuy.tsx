@@ -2,7 +2,7 @@ import React, {FC} from 'react';
 import styled from 'styled-components';
 import {Amount} from '../../util/Amount';
 import {getAsset} from '../../util/assets';
-import {SWAP_OUTPUT} from '../../util/extrinsicUtil';
+import {ADD_LIQUIDITY, REMOVE_LIQUIDITY, SWAP_INPUT, SWAP_OUTPUT} from '../../util/extrinsicUtil';
 
 type AssetSwapParams = [number, number, Amount, Amount];
 
@@ -41,13 +41,15 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
     buffer,
     recipientAddress,
 }) => {
-    const [assetB, assetA, amountA, amountB] =
-        method === SWAP_OUTPUT
-            ? [fromAsset, toAsset, toAssetAmount, fromAssetAmount]
-            : [fromAsset, toAsset, toAssetAmount, fromAssetAmount];
-    if (!amountA || !amountB) return null;
+    if (!toAssetAmount || !fromAssetAmount) return null;
     switch (method) {
-        case 'buyAsset':
+        case SWAP_OUTPUT: {
+            // console.log('toAssetAmount:',toAssetAmount?.toString());
+            // console.log('toAsset:',toAsset?.toString());
+            // console.log('fromAssetAmount:',fromAssetAmount?.toString());
+            // console.log('fromAsset:',fromAsset?.toString());
+
+            const [assetB, assetA, amountB, amountA] = [fromAsset, toAsset, fromAssetAmount, toAssetAmount];
             return (
                 <div>
                     <p>
@@ -64,14 +66,16 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                     <p>
                         If the amount of {getAsset(assetB).symbol} used sits outside{' '}
                         <Em>
-                            {buffer}% ({new Amount(amountA.muln(1 - buffer)).asString(DECIMALS)}-
-                            {new Amount(amountA.muln(1 + buffer)).asString(DECIMALS)} CPAY)
+                            {buffer}% ({new Amount(amountB.muln(1 - buffer)).asString(DECIMALS)}-
+                            {new Amount(amountB.muln(1 + buffer)).asString(DECIMALS)} CPAY)
                         </Em>
                         , the transaction will fail.
                     </p>
                 </div>
             );
-        case 'sellAsset':
+        }
+        case SWAP_INPUT: {
+            const [assetB, assetA, amountA, amountB] = [fromAsset, toAsset, toAssetAmount, fromAssetAmount];
             return (
                 <div>
                     <p>
@@ -95,8 +99,10 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                     </p>
                 </div>
             );
+        }
 
-        case 'remove':
+        case REMOVE_LIQUIDITY: {
+            const [assetA, assetB, amountA, amountB] = [fromAsset, toAsset, toAssetAmount, fromAssetAmount];
             return (
                 <div>
                     <p>
@@ -126,37 +132,46 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                     </p>
                 </div>
             );
+        }
 
-        case 'add':
+        case ADD_LIQUIDITY: {
+            const [investmentAsset, coreAsset, investmentAmount, coreAmount] = [
+                fromAsset,
+                toAsset,
+                toAssetAmount,
+                fromAssetAmount,
+            ];
             return (
                 <div>
                     <p>
                         You are depositing{' '}
                         <Em>
-                            {amountA.asString(DECIMALS, Amount.ROUND_UP)} {getAsset(assetA).symbol}
+                            {investmentAmount.asString(DECIMALS, Amount.ROUND_UP)} {getAsset(investmentAsset).symbol}
                         </Em>{' '}
                         +{' '}
                         <Em>
-                            {amountB.asString(DECIMALS)} {getAsset(assetB).symbol}
+                            {coreAmount.asString(DECIMALS)} {getAsset(coreAsset).symbol}
                         </Em>
                         .
                     </p>
                     <p>
                         If the amount of{' '}
                         <Em>
-                            {getAsset(assetA).symbol} or {getAsset(assetB).symbol}
+                            {getAsset(investmentAsset).symbol} or {getAsset(coreAsset).symbol}
                         </Em>{' '}
                         deposited sits outside{' '}
                         <Em>
-                            {buffer}% ({new Amount(amountA.muln(1 - buffer)).asString(DECIMALS)}-
-                            {new Amount(amountA.muln(1 + buffer)).asString(DECIMALS)} {getAsset(assetA).symbol},{' '}
-                            {new Amount(amountB.muln(1 - buffer)).asString(DECIMALS)}-
-                            {new Amount(amountB.muln(1 + buffer)).asString(DECIMALS)} {getAsset(assetB).symbol})
+                            {buffer}% ({new Amount(investmentAmount.muln(1 - buffer)).asString(DECIMALS)}-
+                            {new Amount(investmentAmount.muln(1 + buffer)).asString(DECIMALS)}{' '}
+                            {getAsset(investmentAsset).symbol},{' '}
+                            {new Amount(coreAmount.muln(1 - buffer)).asString(DECIMALS)}-
+                            {new Amount(coreAmount.muln(1 + buffer)).asString(DECIMALS)} {getAsset(coreAsset).symbol})
                         </Em>
                         , the transaction will fail.
                     </p>
                 </div>
             );
+        }
         default:
             return <div></div>;
     }
