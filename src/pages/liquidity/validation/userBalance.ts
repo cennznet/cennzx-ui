@@ -2,7 +2,7 @@ import {UserBalanceNotEnough, UserBalanceNotEnoughForFee} from '../../../error/e
 import {IAssetBalance} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import {getAsset} from '../../../util/assets';
-import {LiquidityProps, FormSection} from '../liquidity';
+import {FormSection, LiquidityProps} from '../liquidity';
 import {existErrors, FormErrors, mergeError} from './index';
 
 function checkUserBalance(props: LiquidityProps, errors: FormErrors): void {

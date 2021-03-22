@@ -6,16 +6,15 @@ import {IExtrinsic, IFee} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import TxDialogActions, {
     OpenTxDialogAction,
+    RequestSubmitLiquidity,
+    RequestSubmitSend,
+    RequestSubmitTransaction,
     SetDailogErrorAction,
     UpdateActualFeeAction,
     UpdateStageAction,
     UpdateTxEventsAction,
     UpdateTxHashAction,
-    RequestSubmitTransaction,
-    RequestSubmitSend,
-    RequestSubmitLiquidity,
 } from '../../actions/ui/txDialog.action';
-import keyring from '@polkadot/ui-keyring';
 
 export enum Stages {
     Signing = 'signing',
@@ -26,7 +25,6 @@ export enum Stages {
 export interface TxDialogState {
     title?: string;
     signingAccount: string;
-    isAccountLocked: boolean;
     extrinsic?: IExtrinsic;
     estimatedTxFee?: IFee;
     stage?: Stages;
@@ -45,7 +43,6 @@ export const initialState: TxDialogState = {
     title: '',
     events: [],
     signingAccount: '',
-    isAccountLocked: true,
 };
 
 export default handleActions<TxDialogState, any>(
@@ -58,7 +55,6 @@ export default handleActions<TxDialogState, any>(
         }),
         [TxDialogActions.DIALOG_OPEN]: produce((draft: TxDialogState, action: OpenTxDialogAction) => {
             const {title, signingAccount, extrinsic, feeInFeeAsset, feeAssetId, fromAssetBalance} = action.payload;
-            const pair = keyring.getPair(signingAccount);
             draft.title = title;
             draft.extrinsic = extrinsic;
             draft.estimatedTxFee = feeInFeeAsset;
@@ -66,7 +62,6 @@ export default handleActions<TxDialogState, any>(
             draft.stage = Stages.Signing;
             draft.feeAssetId = feeAssetId;
             draft.fromAssetBalance = fromAssetBalance;
-            draft.isAccountLocked = pair.isLocked;
         }),
         [TxDialogActions.TX_ACTUAL_FEE_UPDATE]: produce((draft: TxDialogState, action: UpdateActualFeeAction) => {
             draft.actualTxFee = action.payload;

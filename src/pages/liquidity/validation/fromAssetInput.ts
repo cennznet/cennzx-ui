@@ -4,7 +4,7 @@ import {
     FromAssetAmountRequired,
     FromAssetNotSelected,
 } from '../../../error/error';
-import {LiquidityProps, FormSection} from '../liquidity';
+import {FormSection, LiquidityProps} from '../liquidity';
 import {existErrors, FormErrors, mergeError} from './index';
 
 function checkFromAssetAmount(props: LiquidityProps, errors: FormErrors): void {

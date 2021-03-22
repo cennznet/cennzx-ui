@@ -4,7 +4,7 @@ import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs';
 import {catchError, filter, map, mergeMap, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
-import {SendFormData, IEpicDependency} from '../../../typings';
+import {IEpicDependency, SendFormData} from '../../../typings';
 import {Amount, AmountUnit} from '../../../util/Amount';
 import types from '../../actions';
 import {

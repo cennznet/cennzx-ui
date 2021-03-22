@@ -3,8 +3,8 @@ import {createSelector} from 'reselect';
 import {AppState} from '../../redux/reducers';
 import {Asset, IAssetBalance, IExchangePool} from '../../typings';
 import {Amount} from '../../util/Amount';
-import {DECIMALS} from './exchange';
 import {getAsset} from '../../util/assets';
+import {DECIMALS} from './exchange';
 
 const getBuffer = (state: AppState) => state.ui.exchange.form.buffer;
 const getToAsset = (state: AppState) => state.ui.exchange.form.toAsset;

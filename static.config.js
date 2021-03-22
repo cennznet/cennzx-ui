@@ -34,10 +34,6 @@ export default {
                     path: '/liquidity',
                     template: 'src/pages/liquidity',
                 },
-                {
-                    path: '/accounts',
-                    template: 'src/pages/accounts',
-                },
                 //  A 404 component
                 {
                     path: '404',

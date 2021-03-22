@@ -25,11 +25,11 @@ function checkUserBalanceForFee(props: ExchangeProps, errors: FormErrors): strin
     const {
         form: {fromAssetAmount, fromAsset, feeAssetId, signingAccount},
         txFee,
-        coreAsset,
+        coreAssetId,
         userAssetBalance,
     } = props;
     if (!fromAssetAmount || !fromAsset || !txFee) return;
-    const feeAmount = coreAsset.eqn(feeAssetId) ? txFee.feeInCpay : txFee.feeInFeeAsset;
+    const feeAmount = coreAssetId === feeAssetId ? txFee.feeInCpay : txFee.feeInFeeAsset;
     let balRequired = feeAmount;
 
     if (fromAsset === feeAssetId && balRequired) {

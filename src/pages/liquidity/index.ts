@@ -4,30 +4,30 @@ import {Dispatch} from 'redux';
 import {BaseError, EmptyPool} from '../../error/error';
 
 import {
-    resetTrade,
-    swapAsset,
-    updateTransactionBuffer,
     addLiquidity,
     removeLiquidityError,
-    updateExtrinsic,
-    updateSelectedAccount,
-    setLiquidityAction,
-    updateSelectedAdd1Asset,
+    requestTransactionFee,
+    resetTrade,
     setAdd1AssetAmount,
     setAdd2AssetAmount,
-    requestTransactionFee,
+    setLiquidityAction,
+    swapAsset,
+    updateExtrinsic,
+    updateSelectedAccount,
+    updateSelectedAdd1Asset,
+    updateTransactionBuffer,
 } from '../../redux/actions/ui/liquidity.action';
 import {openDialog} from '../../redux/actions/ui/txDialog.action';
 import {AppState} from '../../redux/reducers';
-import {LiquidityFormData, IAccounts, IExtrinsic, IFee} from '../../typings';
+import {IAccounts, IExtrinsic, IFee, LiquidityFormData} from '../../typings';
 import {Amount} from '../../util/Amount';
-import {prepareExchangeExtrinsicParamsWithBuffer, ADD_LIQUIDITY, REMOVE_LIQUIDITY} from '../../util/extrinsicUtil';
+import {ADD_LIQUIDITY, prepareExchangeExtrinsicParamsWithBuffer, REMOVE_LIQUIDITY} from '../../util/extrinsicUtil';
 import {Liquidity, LiquidityAction, LiquidityProps} from './liquidity';
 import {
-    getAssets,
     getAccountAssetBalance,
     getAccountCoreBalance,
     getAssetReserve,
+    getAssets,
     getCoreReserve,
     getExchangeRateMsg,
     getFee,
@@ -97,11 +97,11 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         }
     },
     handleAssetIdChange: (newAssetId: number, {assetId, coreAmount}: LiquidityFormData, error: BaseError[]) => {
-            const errorToRemove = errorInstanceForPreviousEmptyPool(error, newAssetId);
-            if (errorToRemove) {
-                dispatch(removeLiquidityError(errorToRemove));
-            }
-            dispatch(updateSelectedAdd1Asset(newAssetId));
+        const errorToRemove = errorInstanceForPreviousEmptyPool(error, newAssetId);
+        if (errorToRemove) {
+            dispatch(removeLiquidityError(errorToRemove));
+        }
+        dispatch(updateSelectedAdd1Asset(newAssetId));
     },
     handleExtrinsicChange: (Extrinsic: string) => {
         dispatch(updateExtrinsic(Extrinsic));

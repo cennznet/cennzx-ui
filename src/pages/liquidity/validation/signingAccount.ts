@@ -1,5 +1,5 @@
 import {AccountNotSelected} from '../../../error/error';
-import {LiquidityProps, FormSection} from '../liquidity';
+import {FormSection, LiquidityProps} from '../liquidity';
 import {FormErrors, mergeError} from './index';
 
 function checkAccountAvailable(props: LiquidityProps, errors: FormErrors): void {

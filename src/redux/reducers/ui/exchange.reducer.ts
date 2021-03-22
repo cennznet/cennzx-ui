@@ -5,6 +5,7 @@ import {ExchangeFormData, IAssetBalance, IExchangePool, IFee} from '../../../typ
 import {Amount} from '../../../util/Amount';
 import ExchangeActions, {
     RemoveExchangeErrorAction,
+    RequestAssetBalanceAction,
     ResetExchangeErrorAction,
     SetExchangeErrorAction,
     SetFromAssetAmountAction,
@@ -22,7 +23,6 @@ import ExchangeActions, {
     UpdateTransactionFeeAction,
     UpdateTxFeeParameterAction,
     UpdateUserAssetBalanceAction,
-    RequestAssetBalanceAction,
 } from '../../actions/ui/exchange.action';
 
 export interface ExchangeState {

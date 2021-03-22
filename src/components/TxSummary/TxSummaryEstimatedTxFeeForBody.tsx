@@ -1,11 +1,11 @@
 import BN from 'bn.js';
+import {EMLINK} from 'constants';
 import React, {FC} from 'react';
+import styled from 'styled-components';
 import {DECIMALS} from '../../pages/exchange/exchange';
 import {IFee} from '../../typings';
 import {getAsset} from '../../util/assets';
-import styled from 'styled-components';
 import Link from './Link';
-import {EMLINK} from 'constants';
 
 export interface TxSummaryEstimatedTxFeeForBodyProps {
     txFee: IFee;

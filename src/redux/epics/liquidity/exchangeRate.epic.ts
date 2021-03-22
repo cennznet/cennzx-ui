@@ -4,16 +4,16 @@ import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs';
 import {catchError, filter, map, mergeMap, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
-import {LiquidityFormData, IEpicDependency} from '../../../typings';
+import {IEpicDependency, LiquidityFormData} from '../../../typings';
 import {Amount, AmountUnit} from '../../../util/Amount';
 import types from '../../actions';
 import {
     requestExchangeRate,
+    setAdd1Amount,
     setLiquidityError,
     SetLiquidityErrorAction,
     updateExchangeRate,
     UpdateExchangeRateAction,
-    setAdd1Amount,
 } from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
 import {LiquidityState} from '../../reducers/ui/liquidity.reducer';

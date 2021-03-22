@@ -1,21 +1,21 @@
+import {faChevronDown} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import AssetDropDown from 'components/AssetDropDown';
 import ErrorBox from 'components/Error/ErrorBox';
 import PageInside from 'components/PageInside';
 import TextInput from 'components/TextInput';
 import {TxSummaryProps} from 'components/TxSummary/TxSummary';
 import TxSummaryEstimatedTxFeeForBody from 'components/TxSummary/TxSummaryEstimatedTxFeeForBody';
-import {Asset} from '../../typings';
-import {Amount} from '../../util/Amount';
-import {DECIMALS, FormSection} from '../../pages/exchange/exchange';
-import {faChevronDown} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {FormErrors as ExchangeFormErrors} from './../../pages/exchange/validation';
-import {FormErrors as LiquidityFormErrors} from './../../pages/liquidity/validation';
-import {getAsset} from '../../util/assets';
-import {SummaryBuy} from './SummaryBuy';
-import SummaryFee from './SummaryFee';
 import React, {FC, useState} from 'react';
 import styled from 'styled-components';
+import {DECIMALS, FormSection} from '../../pages/exchange/exchange';
+import {Asset} from '../../typings';
+import {Amount} from '../../util/Amount';
+import {getAsset} from '../../util/assets';
+import {FormErrors as ExchangeFormErrors} from './../../pages/exchange/validation';
+import {FormErrors as LiquidityFormErrors} from './../../pages/liquidity/validation';
+import {SummaryBuy} from './SummaryBuy';
+import SummaryFee from './SummaryFee';
 
 const Container = styled.div`
     padding: 5%;

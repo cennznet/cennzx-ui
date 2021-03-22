@@ -2,8 +2,8 @@ import {TxDialogBody} from 'components/Dialog/TxDialog/TxDialogBody';
 import {TxDialogFooter} from 'components/Dialog/TxDialog/TxDialogFooter';
 import {TxDialogTitle} from 'components/Dialog/TxDialog/TxDialogTitle';
 import React, {FC} from 'react';
-import {TxDialogState} from '../../../redux/reducers/ui/txDialog.reducer';
 import {SubmitType} from '../../../redux/actions/ui/txDialog.action';
+import {TxDialogState} from '../../../redux/reducers/ui/txDialog.reducer';
 import Dialog from '../Dialog';
 
 export type TxDialogProps = {
@@ -93,7 +93,6 @@ export const TxDialog: FC<TxDialogProps> = ({
                         }
                     }}
                     onComplete={handleComplete}
-                    isAccountLocked={isAccountLocked}
                 />
             }
         />

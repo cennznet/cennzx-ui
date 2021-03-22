@@ -1,5 +1,5 @@
 import {FieldNotReadyForLiquidity, ToAssetAmountRequired, ToAssetNotSelected} from '../../../error/error';
-import {LiquidityProps, FormSection} from '../liquidity';
+import {FormSection, LiquidityProps} from '../liquidity';
 import {existErrors, FormErrors, mergeError} from './index';
 
 function checkCoreAssetAmount(props: LiquidityProps, errors: FormErrors): void {

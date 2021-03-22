@@ -4,7 +4,7 @@ import {from, Observable, of} from 'rxjs/index';
 import {EMPTY} from 'rxjs/internal/observable/empty';
 import {filter, switchMap, withLatestFrom} from 'rxjs/operators';
 import {EmptyPool} from '../../../error/error';
-import {SendFormData, IEpicDependency} from '../../../typings';
+import {IEpicDependency, SendFormData} from '../../../typings';
 import {SWAP_INPUT, SWAP_OUTPUT} from '../../../util/extrinsicUtil';
 import types from '../../actions';
 import {

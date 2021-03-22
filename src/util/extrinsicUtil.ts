@@ -1,11 +1,11 @@
 import {
     AddLiquidityFormData,
     ExchangeFormData,
-    SendFormData,
-    LiquidityFormData,
     IAddLiquidity,
     IRemoveLiquidity,
+    LiquidityFormData,
     RemoveLiquidityFormData,
+    SendFormData,
 } from '../typings';
 import {Amount} from './Amount';
 

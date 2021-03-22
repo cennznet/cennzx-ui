@@ -1,26 +1,26 @@
 import produce from 'immer';
 import {handleActions} from 'redux-actions';
 import {BaseError} from '../../../error/error';
-import {LiquidityFormData, IAssetBalance, IExchangePool, IFee} from '../../../typings';
+import {IAssetBalance, IExchangePool, IFee, LiquidityFormData} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import LiquidityActions, {
-    UpdateExtrinsicAction,
-    UpdateSelectedAccountAction,
-    UpdateSelectedAdd1AssetAction,
-    UpdateAdd1AssetAmountAction,
-    UpdateAdd2AssetAmountAction,
-    SetAdd1AssetAmountAction,
-    SetAdd2AssetAmountAction,
-    UpdatePoolBalanceAction,
-    SetLiquidityAction,
     RemoveLiquidityErrorAction,
     ResetLiquidityErrorAction,
+    SetAdd1AssetAmountAction,
+    SetAdd2AssetAmountAction,
+    SetLiquidityAction,
     SetLiquidityErrorAction,
+    UpdateAdd1AssetAmountAction,
+    UpdateAdd2AssetAmountAction,
+    UpdateExchangeRateAction,
+    UpdateExtrinsicAction,
     UpdateFeeAssetAction,
+    UpdatePoolBalanceAction,
+    UpdateSelectedAccountAction,
+    UpdateSelectedAdd1AssetAction,
     UpdateTransactionBufferAction,
     UpdateTransactionFeeAction,
     UpdateTxFeeParameterAction,
-    UpdateExchangeRateAction,
     UpdateUserAssetBalanceAction,
 } from '../../actions/ui/liquidity.action';
 
