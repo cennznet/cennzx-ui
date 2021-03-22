@@ -1,9 +1,9 @@
 import {BlueButton, RedButton} from 'components/Dialog/DialogButtons';
 import TransparentButton from 'components/TransparentButton';
 import React, {FC, useState} from 'react';
-import {Stages} from '../../../redux/reducers/ui/txDialog.reducer';
-import styled from 'styled-components';
 import ClipLoader from 'react-spinners/ClipLoader';
+import styled from 'styled-components';
+import {Stages} from '../../../redux/reducers/ui/txDialog.reducer';
 
 const Loading = styled(ClipLoader)`
     border-color: white !important;
@@ -14,46 +14,25 @@ const CancelButton = styled(TransparentButton)`
     margin-bottom: 0.2rem;
 `;
 
-const FooterForSigning: FC<{isAccountLocked: boolean; error?: Error; onClose(): void; onSubmit(): void}> = ({
-    isAccountLocked = false,
-    error,
-    onClose,
-    onSubmit,
-}) => {
-    const [password, setPassword] = useState('');
-    let [loading, setLoading] = useState(false);
-
+const FooterForSigning: FC<{error?: Error; onClose(): void; onSubmit(): void}> = ({error, onClose, onSubmit}) => {
+    const [loading, setLoading] = useState(false);
     return error ? (
         <RedButton onClick={onClose}>Close</RedButton>
     ) : (
         <>
-            {isAccountLocked && (
-                <p>
-                    <label>unlock account with password:</label>
-                    <input
-                        type={'password'}
-                        onChange={element => {
-                            const pass = element.currentTarget.value;
-                            setPassword(pass);
-                        }}
-                    />
-                </p>
-            )}
-            <p>
-                <CancelButton onClick={onClose}>Cancel</CancelButton>
-                <BlueButton
-                    disabled={isAccountLocked === true && password === ''}
-                    onClick={element => {
-                        setLoading(true);
-                        onSubmit();
-                    }}
-                >
-                    {loading ? <Loading size={25} /> : 'Authorise Transaction'}
-                </BlueButton>
-            </p>
+            <TransparentButton onClick={onClose}>Cancel</TransparentButton>
+            <BlueButton
+                onClick={element => {
+                    setLoading(true);
+                    onSubmit();
+                }}
+            >
+                {loading ? <Loading size={25} /> : 'Authorise Transaction'}
+            </BlueButton>
         </>
     );
 };
+
 const FooterForBroadcasted: FC<{onClick(): void}> = ({onClick}) => <BlueButton onClick={onClick}>Close</BlueButton>;
 
 const FooterForFinalised: FC<{success: boolean; onClick(): void}> = ({success, onClick}) =>
@@ -61,10 +40,9 @@ const FooterForFinalised: FC<{success: boolean; onClick(): void}> = ({success, o
 const FootBox = styled.div`
     display: flex;
     justify-content: flex-end;
-    flex: 2;
+    flex: 1;
 `;
 export interface TxDialogFooterProps {
-    isAccountLocked: boolean;
     stage: Stages;
     error?: Error;
     success?: boolean;
@@ -74,15 +52,7 @@ export interface TxDialogFooterProps {
     onComplete(): void;
 }
 
-export const TxDialogFooter: FC<TxDialogFooterProps> = ({
-    isAccountLocked,
-    error,
-    stage,
-    success,
-    onClose,
-    onSubmit,
-    onComplete,
-}) => {
+export const TxDialogFooter: FC<TxDialogFooterProps> = ({error, stage, success, onClose, onSubmit, onComplete}) => {
     const closeAndComplete = () => {
         onClose();
         onComplete();
@@ -92,12 +62,7 @@ export const TxDialogFooter: FC<TxDialogFooterProps> = ({
         case Stages.Signing:
             return (
                 <FootBox>
-                    <FooterForSigning
-                        isAccountLocked={isAccountLocked}
-                        error={error}
-                        onClose={onClose}
-                        onSubmit={onSubmit}
-                    />
+                    <FooterForSigning error={error} onClose={onClose} onSubmit={onSubmit} />
                 </FootBox>
             );
         case Stages.Broadcasted:

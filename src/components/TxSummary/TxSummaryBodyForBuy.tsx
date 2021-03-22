@@ -1,11 +1,11 @@
 import React, {FC} from 'react';
+import styled from 'styled-components';
 import {DECIMALS} from '../../pages/exchange/exchange';
 import {Amount} from '../../util/Amount';
 import {getAsset} from '../../util/assets';
 import Link from './Link';
 import {TxSummaryBodyForWithAndBodyForBuyProps} from './TxSummary';
 import TxSummaryEstimatedTxFeeForBody from './TxSummaryEstimatedTxFeeForBody';
-import styled from 'styled-components';
 
 const Em = styled.span`
     color: #1130ff;

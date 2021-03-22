@@ -1,7 +1,7 @@
 import {ExchangeActions} from './exchange.action';
 import {LiquidityActions} from './liquidity.action';
-import {SendActions} from './send.action';
 import {LiquidityPoolActions} from './liquidityPool.action';
+import {SendActions} from './send.action';
 import {TxDialogActions} from './txDialog.action';
 
 export default {

@@ -1,8 +1,9 @@
+import {InjectedExtension, MetadataDef} from '@polkadot/extension-inject/types';
 import React, {FC} from 'react';
 import {connect} from 'react-redux';
 import {Routes} from 'react-static';
 import styled from 'styled-components';
-// import AppDialog from './Dialog/AppDialog';
+import AppDialog from './Dialog/AppDialog';
 import TxDialog from './Dialog/TxDialog';
 import Header from './Header';
 
@@ -25,23 +26,37 @@ const Content = styled.div`
 interface LayoutProps {
     extensionDetected: boolean;
     extensionConnected: boolean;
+    polkadotExtension: InjectedExtension;
+    metadata: MetadataDef;
 }
 
-const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected}) => (
-    <React.Fragment>
-        <Header />
-        <Content id="content">
-            <TxDialog />
-            {/*Comment the extension pop up for now, we might want to re-introduce this after we support polkadot extension*/}
-            {/*<AppDialog extensionConnected={extensionConnected} extensionDetected={extensionDetected} />*/}
-            <React.Suspense fallback={<em>Loading...</em>}>
-                <Routes path="*" />
-            </React.Suspense>
-        </Content>
-    </React.Fragment>
-);
+const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, polkadotExtension, metadata}) => {
+    const metaUpdated = localStorage.getItem('EXTENSION_META_UPDATED');
+    return (
+        <React.Fragment>
+            <Header />
+            <Content id="content">
+                <TxDialog />
+                {/* If metadata is not updated, or extension is disconnected or denied access to this app, open pop up*/}
+                {metaUpdated === null || extensionConnected === false || extensionDetected === false ? (
+                    <AppDialog
+                        extensionConnected={extensionConnected}
+                        extensionDetected={extensionDetected}
+                        polkadotExtension={polkadotExtension}
+                        metadata={metadata}
+                    />
+                ) : null}
+                <React.Suspense fallback={<em>Loading...</em>}>
+                    <Routes path="*" />
+                </React.Suspense>
+            </Content>
+        </React.Fragment>
+    );
+};
 
 export default connect((state: any) => ({
     extensionConnected: state.extension.extensionConnected,
     extensionDetected: state.extension.extensionDetected,
+    polkadotExtension: state.extension.polkadotExtension,
+    metadata: state.global.metadata,
 }))(Layout);

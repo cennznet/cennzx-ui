@@ -1,5 +1,5 @@
 import {FormErrorTypes} from '../../../error/error';
-import {LiquidityProps, FormSection} from '../liquidity';
+import {FormSection, LiquidityProps} from '../liquidity';
 import fromAssetInputRules from './fromAssetInput';
 import poolBalanceRules from './poolBalance';
 import accountRules from './signingAccount';

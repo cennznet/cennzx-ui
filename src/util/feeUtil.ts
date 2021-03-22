@@ -2,8 +2,8 @@ import {ApiRx, SubmittableResult} from '@cennznet/api';
 import {SubmittableExtrinsic} from '@cennznet/api/types';
 import {Hash} from '@plugnet/types/interfaces';
 import BN from 'bn.js';
-import {Observable, of, async} from 'rxjs';
-import {map, mergeMap, switchMap, catchError} from 'rxjs/operators';
+import {async, Observable, of} from 'rxjs';
+import {catchError, map, mergeMap, switchMap} from 'rxjs/operators';
 import {Amount, AmountUnit} from './Amount';
 
 /**
@@ -61,6 +61,7 @@ export function observableEstimatedFee(
                     // }
                 }),
                 catchError((err: Error) => {
+                    // tslint:disable-next-line:no-console
                     console.log('error', err);
                 })
             );

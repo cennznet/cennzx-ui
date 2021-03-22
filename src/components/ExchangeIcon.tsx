@@ -12,11 +12,11 @@ export interface FontAwesomeIconProps {
 }
 
 const ExchangeIcon = styled(FontAwesomeIcon)<FontAwesomeIconProps>`
-    height: 22px;
-    width: 22px;
+    height: 20px;
+    width: 20px;
     color: rgba(17, 48, 255, 0.3);
-    font-size: 22px;
-    line-height: 22px;
+    font-size: 20px;
+    line-height: 20px;
     text-align: center;
     cursor: pointer;
     transform: ${props => (props.rotations % 2 ? 'rotate(-90deg) ' : 'rotate(90deg)')};

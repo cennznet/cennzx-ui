@@ -4,9 +4,9 @@ import {createSelector} from 'reselect';
 import {resetTrade} from '../../../redux/actions/ui/exchange.action';
 import {
     closeDialog,
-    requestSubmitTransaction,
-    requestSubmitSend,
     requestSubmitLiquidity,
+    requestSubmitSend,
+    requestSubmitTransaction,
 } from '../../../redux/actions/ui/txDialog.action';
 import {AppState} from '../../../redux/reducers';
 import {Amount} from '../../../util/Amount';

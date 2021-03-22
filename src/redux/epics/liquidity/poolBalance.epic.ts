@@ -9,10 +9,10 @@ import {getAsset} from '../../../util/assets';
 import types from '../../actions';
 
 import {
-    UpdateSelectedAdd1AssetAction,
-    UpdatePoolBalanceAction,
     setLiquidityError,
     updatePoolBalance,
+    UpdatePoolBalanceAction,
+    UpdateSelectedAdd1AssetAction,
 } from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
 
@@ -23,11 +23,7 @@ export const getAssetPoolBalanceEpic = (
 ): Observable<UpdatePoolBalanceAction> =>
     combineLatest([
         api$,
-        action$.pipe(
-            ofType<UpdateSelectedAdd1AssetAction>(
-                types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE
-            )
-        ),
+        action$.pipe(ofType<UpdateSelectedAdd1AssetAction>(types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
         switchMap(

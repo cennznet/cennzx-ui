@@ -1,22 +1,22 @@
 import {EventRecord} from '@cennznet/types/polkadot';
+import BN from 'bn.js';
 import ExternalLink from 'components/ExternalLink';
+import TxSummaryEstimatedTxFeeForBody from 'components/TxSummary/TxSummaryEstimatedTxFeeForBody';
 import React, {FC, useState} from 'react';
+import styled from 'styled-components';
 import {Stages} from '../../../redux/reducers/ui/txDialog.reducer';
 import {IExtrinsic, IFee} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import {getAsset} from '../../../util/assets';
 import {SWAP_OUTPUT} from '../../../util/extrinsicUtil';
-import styled from 'styled-components';
 import {SummaryBuy} from '../../AdvancedSetting/SummaryBuy';
 import SummaryFee from '../../AdvancedSetting/SummaryFee';
-import TxSummaryEstimatedTxFeeForBody from 'components/TxSummary/TxSummaryEstimatedTxFeeForBody';
-import BN from 'bn.js';
 
 type AssetSwapParams = [number, number, Amount, Amount];
 
 const DECIMALS = 5;
 
-const getCennzScanURL = txHash => `https://www.uncoverexplorer.com/tx/${txHash}`;
+const getCennzScanURL = txHash => `https://www.uncoverexplorer.com/extrinsic/${txHash}`;
 
 const Em = styled.span`
     color: #1130ff;

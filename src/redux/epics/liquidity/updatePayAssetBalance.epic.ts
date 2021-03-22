@@ -7,10 +7,10 @@ import {IAssetBalance, IEpicDependency} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import types from '../../actions';
 import {
-    requestAssetBalance,
     requestAdd1AssetBalance,
-    updateUserAssetBalance,
+    requestAssetBalance,
     updateUserAdd1AssetBalance,
+    updateUserAssetBalance,
     UpdateUserAssetBalanceAction,
 } from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';

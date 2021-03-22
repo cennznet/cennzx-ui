@@ -9,9 +9,9 @@ import FlexDiv from './FlexDiv';
 import MessageBox from './MessageBox';
 
 const Trade = styled.div`
+    display: flex;
     flex-direction: row;
-    flex-shrink: 1;
-    max-width: 600px !important;
+    flex-wrap: wrap;
 
     h2 {
         font-size: 16px;
@@ -24,8 +24,9 @@ const MaxButton = styled(TransparentButton)`
     margin-top: auto;
     margin-bottom: auto;
     border: 1px solid white;
-    margin-right: 4px;
+    margin-right: 0.5em;
     height: 1.5rem;
+    max-width: 3rem;
 
     :hover {
         color: blue;
@@ -39,15 +40,12 @@ const InputAndSelect = styled(FlexDiv)`
     background-color: transparent;
     border: 1px solid #b5babd;
     border-radius: 3px;
-    margin-top: 12px;
-    margin-bottom: 12px;
+    font-size: 14px;
 
     :hover {
         border: 1px solid #1130ff;
         border-radius: 3px;
     }
-
-    font-size: 14px;
 `;
 interface AssetInputProps {
     value: AmountParams;
@@ -62,8 +60,6 @@ interface AssetInputProps {
 }
 
 const Top = styled.div`
-    display: flex;
-    flex-direction: row;
     justify-content: space-between;
 `;
 

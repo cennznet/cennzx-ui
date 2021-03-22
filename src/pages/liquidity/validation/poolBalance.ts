@@ -1,6 +1,6 @@
 import {PoolBalanceNotEnough} from '../../../error/error';
 import {getAsset} from '../../../util/assets';
-import {LiquidityProps, FormSection} from '../liquidity';
+import {FormSection, LiquidityProps} from '../liquidity';
 import {FormErrors, mergeError} from './index';
 
 function checkPoolBalance(props: LiquidityProps, errors: FormErrors): void {

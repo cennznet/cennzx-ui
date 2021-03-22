@@ -1,8 +1,8 @@
 import React, {FC} from 'react';
+import styled from 'styled-components';
 import {Amount} from '../../util/Amount';
 import {getAsset} from '../../util/assets';
 import {SWAP_OUTPUT} from '../../util/extrinsicUtil';
-import styled from 'styled-components';
 
 type AssetSwapParams = [number, number, Amount, Amount];
 
@@ -23,12 +23,13 @@ export interface SummaryBuyProps {
 }
 
 const showRecipientAddress = recipientAddress => {
-    if (recipientAddress)
+    if (recipientAddress) {
         return (
             <>
                 to <Em>{recipientAddress}</Em>
             </>
         );
+    }
 };
 
 export const SummaryBuy: FC<SummaryBuyProps> = ({

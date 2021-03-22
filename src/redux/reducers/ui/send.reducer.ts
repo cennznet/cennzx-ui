@@ -1,7 +1,7 @@
 import produce from 'immer';
 import {handleActions} from 'redux-actions';
 import {BaseError} from '../../../error/error';
-import {SendFormData, IAssetBalance, IExchangePool, IFee} from '../../../typings';
+import {IAssetBalance, IExchangePool, IFee, SendFormData} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import SendActions, {
     RemoveSendErrorAction,
@@ -14,6 +14,7 @@ import SendActions, {
     UpdateFeeAssetAction,
     UpdateFromAssetAmountAction,
     UpdatePoolBalanceAction,
+    UpdateRecipientAddressAction,
     UpdateSelectedAccountAction,
     UpdateSelectedFromAssetAction,
     UpdateSelectedToAssetAction,
@@ -22,7 +23,6 @@ import SendActions, {
     UpdateTransactionFeeAction,
     UpdateTxFeeParameterAction,
     UpdateUserAssetBalanceAction,
-    UpdateRecipientAddressAction,
 } from '../../actions/ui/send.action';
 
 export interface SendState {

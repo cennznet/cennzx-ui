@@ -1,9 +1,9 @@
 import BN from 'bn.js';
 import React, {FC} from 'react';
+import styled from 'styled-components';
 import {DECIMALS} from '../../pages/exchange/exchange';
 import {IFee} from '../../typings';
 import {getAsset} from '../../util/assets';
-import styled from 'styled-components';
 
 export interface SummaryFeeProps {
     txFee: IFee;
@@ -20,7 +20,7 @@ const getFeeMsg = ({txFee, feeAssetId, coreAssetId}: SummaryFeeProps) => {
     let fee;
     const assetSymbol = getAsset(feeAssetId).symbol;
 
-    if (coreAssetId && coreAssetId == feeAssetId && txFee) {
+    if (coreAssetId && coreAssetId === feeAssetId && txFee) {
         // If fee asset is CPAY use cpayFee
         fee = txFee.feeInCpay.asString(DECIMALS);
         return (

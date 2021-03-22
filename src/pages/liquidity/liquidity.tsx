@@ -1,32 +1,30 @@
 import {FeeRate} from '@cennznet/types/interfaces/cennzx';
+import {faExchangeAlt} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import BN from 'bn.js';
 import {Button} from 'centrality-react-core';
 import AccountPicker from 'components/AccountPicker';
+import AdvancedSetting from 'components/AdvancedSetting';
 import AssetInputForAdd from 'components/AssetInputForAdd';
+import ErrorMessage from 'components/Error/ErrorMessageForLiquidity';
+import ExchangeIconClass from 'components/ExchangeIcon';
 import Nav from 'components/Nav';
 import Page from 'components/Page';
 import PageInside from 'components/PageInside';
-import ErrorMessage from 'components/Error/ErrorMessageForLiquidity';
-import React, {FC, useState, useEffect} from 'react';
+import Select from 'components/Select';
+import TextInput from 'components/TextInput';
+import {add, values} from 'ramda';
+import React, {FC, useEffect, useState} from 'react';
+import ReactSlider from 'react-slider';
+import {Icon} from 'semantic-ui-react';
 import styled from 'styled-components';
+import liquidity from '.';
 import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
 import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
 import {LiquidityState} from '../../redux/reducers/ui/liquidity.reducer';
-import {AmountParams, Asset, LiquidityFormData, IFee, IOption} from '../../typings';
-import ReactSlider from 'react-slider';
-import {faExchangeAlt} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {AmountParams, Asset, IFee, IOption, LiquidityFormData} from '../../typings';
 import {Amount} from '../../util/Amount';
 import getFormErrors from './validation';
-import Select from 'components/Select';
-import TextInput from 'components/TextInput';
-import AdvancedSetting from 'components/AdvancedSetting';
-import keyring from '@polkadot/ui-keyring';
-import liquidity from '.';
-import {add, values} from 'ramda';
-import Toggle from 'components/Toggle';
-import {Icon} from 'semantic-ui-react';
-import ExchangeIconClass from 'components/ExchangeIcon';
 
 export const DECIMALS = 4;
 
@@ -35,16 +33,6 @@ const Line = styled.div`
     height: 1px;
     margin-top: 20px;
     margin-bottom: 20px;
-`;
-
-const AddIcon = styled.span`
-    color: #1130ff;
-    font-size: 20px;
-    font-weight: 700;
-    margin-top: auto;
-    margin-right: 2px;
-    margin-left: 2px;
-    margin-bottom: auto;
 `;
 
 const Bottom = styled.div`
@@ -64,15 +52,10 @@ const Flex = styled.div`
     display: inline-flex;
 `;
 
-const Flex2 = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 1rem;
-`;
-
-const FullWidthContainer = styled.div`
-    width: 100%;
+const Block = styled.div`
+    align-items: center;
+    display: block;
+    text-align: center;
 `;
 
 const Buttons = styled.div`
@@ -85,6 +68,8 @@ const Buttons = styled.div`
         border: 2px solid #1130ff;
         color: #1130ff;
         border-radius: 3px;
+        width: 6rem;
+        font-weight: 600;
 
         :disabled {
             background-color: #ebeced;
@@ -121,6 +106,7 @@ const SwapButton = styled(Button)`
     border: 1px solid #f7941d;
     border-radius: 5px;
     margin-right: 0.5rem;
+    width: 2rem;
 
     :hover {
         color: white;
@@ -260,6 +246,9 @@ const selectOption = [
     },
 ];
 
+/// TODO - FIX THIS FUNCTION
+// The function has a cyclomatic complexity of 25 which is higher than the threshold of 20
+// tslint:disable-next-line
 export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const {
         accounts,
@@ -289,17 +278,6 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         sliderP: 0,
     };
 
-    const addresses = keyring.getAccounts();
-    const accountList = addresses.map(value => {
-        const name = value.meta.name ? value.meta.name : value.address;
-        const address = value.address;
-        const labelValue = `${name}: ${address}`;
-        return {
-            label: labelValue,
-            value: address,
-        };
-    });
-
     const [state, setState] = useState(initState);
     useEffect((): void => {
         if (!type) {
@@ -326,7 +304,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     <AccountPicker
                         title="Choose account"
                         selected={signingAccount}
-                        options={accountList}
+                        options={accounts}
                         onChange={(picked: {label: string; value: string}) => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({
@@ -343,7 +321,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                         <SwapButton
                             onClick={() => {
                                 // just flip the action
-                                let action =
+                                const action =
                                     state.liquidityAction === LiquidityAction.REMOVE
                                         ? LiquidityAction.ADD
                                         : LiquidityAction.REMOVE;
@@ -360,7 +338,22 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             {state.liquidityAction === LiquidityAction.REMOVE ? 'Withdraw liquidity' : 'Add liquidity'}
                         </Label>
                     </Flex>
-                    <Flex2>
+                    <div>
+                        {state.liquidityAction === LiquidityAction.ADD
+                            ? coreName && (
+                                  <LabelDetail>
+                                      To keep the liquidity pool functional, deposits require an equal value of{' '}
+                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
+                                  </LabelDetail>
+                              )
+                            : coreName && (
+                                  <LabelDetail>
+                                      To keep the liquidity pool functional, withdrawals will return an equal value of{' '}
+                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
+                                  </LabelDetail>
+                              )}
+                    </div>
+                    <Block>
                         <AssetInputForAdd
                             max={accountAssetBalance}
                             value={{amount: assetAmount, assetId}}
@@ -387,7 +380,6 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             message={`Balance: ${assetBalance || 0}`}
                             errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetInput} />}
                         />
-                        <AddIcon></AddIcon>
                         <AssetInputForAdd
                             max={accountCoreBalance}
                             value={{amount: coreAmount, assetId: coreAssetId}}
@@ -407,22 +399,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             secondaryTitle={null}
                             message={`Balance: ${coreBalance || 0}`}
                         />
-                    </Flex2>
-                    <div>
-                        {state.liquidityAction === LiquidityAction.ADD
-                            ? coreName && (
-                                  <LabelDetail>
-                                      To keep the liquidity pool functional, deposits require an equal value of{' '}
-                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
-                                  </LabelDetail>
-                              )
-                            : coreName && (
-                                  <LabelDetail>
-                                      To keep the liquidity pool functional, withdrawals will return an equal value of{' '}
-                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
-                                  </LabelDetail>
-                              )}
-                    </div>
+                    </Block>
                     {/* {state.liquidityAction === LiquidityAction.REMOVE && coreAssetId && assetId && (
                         <SliderContainer spinner={state.slider.toString()}>
                             <ReactSlider

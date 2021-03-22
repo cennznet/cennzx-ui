@@ -17,7 +17,6 @@ interface AccountPickerProps {
 const AccountWrapper = styled.div`
     max-height: 1rem;
     display: block;
-    margin-bottom: 2rem;
 
     .select {
         max-width: calc(100% - 2.5rem);

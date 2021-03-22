@@ -1,12 +1,12 @@
+import {Select as SelectCom} from 'centrality-react-core';
+import {SelectProps} from 'centrality-react-core/components/Select';
+import AssetDropDown from 'components/AssetDropDown';
 import TransparentButton from 'components/TransparentButton';
 import React, {FC} from 'react';
 import styled from 'styled-components';
-import {Select as SelectCom} from 'centrality-react-core';
-import {SelectProps} from 'centrality-react-core/components/Select';
 import {AmountParams, Asset} from '../typings';
 import {Amount} from '../util/Amount';
 import AmountBox from './AmountBox';
-import AssetDropDown from 'components/AssetDropDown';
 import FlexDiv from './FlexDiv';
 import MessageBox from './MessageBox';
 

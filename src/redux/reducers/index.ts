@@ -5,10 +5,10 @@ import extension, {ExtensionState} from './extension.reducer';
 import global, {GlobalState} from './global.reducer';
 import localize from './localize.reducer';
 import {ExchangeState} from './ui/exchange.reducer';
-import {SendState} from './ui/send.reducer';
-import {LiquidityState} from './ui/liquidity.reducer';
 import ui from './ui/index';
+import {LiquidityState} from './ui/liquidity.reducer';
 import {LiquidityPoolState} from './ui/liquidityPool.reducer';
+import {SendState} from './ui/send.reducer';
 import {TxDialogState} from './ui/txDialog.reducer';
 
 let router = null;

@@ -1,5 +1,5 @@
-import {Amount, AmountUnit} from '../util/Amount';
 import {AmountParams} from '../typings';
+import {Amount, AmountUnit} from '../util/Amount';
 
 const MAX_DECIMALS = 18;
 

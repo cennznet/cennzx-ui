@@ -45,7 +45,6 @@ const Multiple = styled.div`
     padding: 0 12px;
     margin: 8px 0;
     border-left: 1px solid #b5babd;
-    line-height: 32px;
 `;
 
 interface InputProps {

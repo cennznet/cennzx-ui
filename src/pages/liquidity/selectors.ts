@@ -2,8 +2,8 @@ import {createSelector} from 'reselect';
 import {AppState} from '../../redux/reducers';
 import {Asset, IAssetBalance, IExchangePool} from '../../typings';
 import {Amount} from '../../util/Amount';
-import {DECIMALS} from './liquidity';
 import {getAsset as getAsset_} from '../../util/assets';
+import {DECIMALS} from './liquidity';
 
 const getBuffer = (state: AppState) => state.ui.liquidity.form.buffer;
 const getAsset = (state: AppState) => state.ui.liquidity.form.assetId;
