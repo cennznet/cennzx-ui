@@ -39,7 +39,6 @@ export const submitTransactionEpic = (
             ([
                 [
                     api,
-                    ,
                     {
                         payload: {extrinsic, signingAccount, buffer, password},
                     },
@@ -122,7 +121,6 @@ export const submitSendEpic = (
             ([
                 [
                     api,
-                    ,
                     {
                         payload: {extrinsic, signingAccount, recipientAddress, buffer, password},
                     },
@@ -201,7 +199,6 @@ export const submitLiquidityEpic = (
             ([
                 [
                     api,
-                    ,
                     {
                         payload: {extrinsic, signingAccount, add1Asset, add1Amount, add2Amount, buffer, password},
                     },
