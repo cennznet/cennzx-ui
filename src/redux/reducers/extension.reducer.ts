@@ -34,6 +34,7 @@ export default handleActions<ExtensionState, any>(
     {
         [ExtensionActions.DETECTION_UPDATE]: produce((draft: ExtensionState, action: UpdateExDetectedAction) => {
             draft.extensionDetected = action.payload.detected;
+            draft.polkadotExtension = action.payload.polkadotInjected;
         }),
         [ExtensionActions.CONNECTION_UPDATE]: produce((draft: ExtensionState, action: UpdateExConnectedAction) => {
             draft.extensionConnected = action.payload;
