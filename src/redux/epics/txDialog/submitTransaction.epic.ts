@@ -31,7 +31,6 @@ export const submitTransactionEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
-        from(web3Enable('cennzx')),
         action$.pipe(ofType<RequestSubmitTransaction>(types.ui.TxDialog.TRANSACTION_SUBMIT_REQUEST)),
         from(web3FromSource('polkadot-js')),
     ]).pipe(
@@ -115,7 +114,6 @@ export const submitSendEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
-        from(web3Enable('cennzx')),
         action$.pipe(ofType<RequestSubmitSend>(types.ui.TxDialog.TRANSACTION_SUBMIT_SEND)),
         from(web3FromSource('polkadot-js')),
     ]).pipe(
@@ -195,7 +193,6 @@ export const submitLiquidityEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
-        from(web3Enable('cennzx')),
         action$.pipe(ofType<RequestSubmitLiquidity>(types.ui.TxDialog.TRANSACTION_SUBMIT_LIQUIDITY)),
         from(web3FromSource('polkadot-js')),
     ]).pipe(

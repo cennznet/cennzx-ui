@@ -1,5 +1,4 @@
 import {ApiRx} from '@cennznet/api';
-import {web3Accounts} from '@polkadot/extension-dapp';
 import {cryptoWaitReady} from '@polkadot/util-crypto';
 import {applyMiddleware, compose, createStore} from 'redux';
 import {createEpicMiddleware} from 'redux-observable';

@@ -14,11 +14,14 @@ const Container = styled.div`
 const getDialogBody = (detected: boolean, connected: boolean) => {
     if (!detected) {
         return (
-            <React.Fragment>
+            // <React.Fragment>
+            <div>
                 To use CENNZX you need to install and connect to the Polkadot browser extension. If you don't have the
                 extension installed you can download it
+                {/*for some reason not able to remove the following link*/}
                 <Link to="https://soramitsu.co.jp/validator-plugin"> here</Link>
-            </React.Fragment>
+                <a href={'https://soramitsu.co.jp/validator-plugin'}>yum</a>
+            </div>
         );
     } else if (!connected) {
         // Polkadot is not allowed to access this site - show relevant message
