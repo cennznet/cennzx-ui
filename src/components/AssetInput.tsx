@@ -46,9 +46,8 @@ interface AssetInputProps {
 const Top = styled.div`
     display: flex;
     flex-direction: row;
-    margintop: 20px;
     justify-content: space-between;
-    min-width: 224px;
+    min-width: 420px;
 `;
 
 const getAmountParams = (amount: Amount, assetId: number, amountChange: boolean): AmountParams => ({

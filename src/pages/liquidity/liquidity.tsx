@@ -13,7 +13,6 @@ import Page from 'components/Page';
 import PageInside from 'components/PageInside';
 import Select from 'components/Select';
 import TextInput from 'components/TextInput';
-import Toggle from 'components/Toggle';
 import {add, values} from 'ramda';
 import React, {FC, useEffect, useState} from 'react';
 import ReactSlider from 'react-slider';
@@ -36,16 +35,6 @@ const Line = styled.div`
     margin-bottom: 20px;
 `;
 
-const AddIcon = styled.span`
-    color: #1130ff;
-    font-size: 20px;
-    font-weight: 700;
-    margin-top: auto;
-    margin-right: 2px;
-    margin-left: 2px;
-    margin-bottom: auto;
-`;
-
 const Bottom = styled.div`
     display: flex;
     flex-direction: row;
@@ -63,15 +52,10 @@ const Flex = styled.div`
     display: inline-flex;
 `;
 
-const Flex2 = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 1rem;
-`;
-
-const FullWidthContainer = styled.div`
-    width: 100%;
+const Block = styled.div`
+    align-items: center;
+    display: block;
+    text-align: center;
 `;
 
 const Buttons = styled.div`
@@ -84,6 +68,8 @@ const Buttons = styled.div`
         border: 2px solid #1130ff;
         color: #1130ff;
         border-radius: 3px;
+        width: 6rem;
+        font-weight: 600;
 
         :disabled {
             background-color: #ebeced;
@@ -120,6 +106,7 @@ const SwapButton = styled(Button)`
     border: 1px solid #f7941d;
     border-radius: 5px;
     margin-right: 0.5rem;
+    width: 2rem;
 
     :hover {
         color: white;
@@ -351,7 +338,22 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             {state.liquidityAction === LiquidityAction.REMOVE ? 'Withdraw liquidity' : 'Add liquidity'}
                         </Label>
                     </Flex>
-                    <Flex2>
+                    <div>
+                        {state.liquidityAction === LiquidityAction.ADD
+                            ? coreName && (
+                                  <LabelDetail>
+                                      To keep the liquidity pool functional, deposits require an equal value of{' '}
+                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
+                                  </LabelDetail>
+                              )
+                            : coreName && (
+                                  <LabelDetail>
+                                      To keep the liquidity pool functional, withdrawals will return an equal value of{' '}
+                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
+                                  </LabelDetail>
+                              )}
+                    </div>
+                    <Block>
                         <AssetInputForAdd
                             max={accountAssetBalance}
                             value={{amount: assetAmount, assetId}}
@@ -378,7 +380,6 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             message={`Balance: ${assetBalance || 0}`}
                             errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetInput} />}
                         />
-                        <AddIcon></AddIcon>
                         <AssetInputForAdd
                             max={accountCoreBalance}
                             value={{amount: coreAmount, assetId: coreAssetId}}
@@ -398,22 +399,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             secondaryTitle={null}
                             message={`Balance: ${coreBalance || 0}`}
                         />
-                    </Flex2>
-                    <div>
-                        {state.liquidityAction === LiquidityAction.ADD
-                            ? coreName && (
-                                  <LabelDetail>
-                                      To keep the liquidity pool functional, deposits require an equal value of{' '}
-                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
-                                  </LabelDetail>
-                              )
-                            : coreName && (
-                                  <LabelDetail>
-                                      To keep the liquidity pool functional, withdrawals will return an equal value of{' '}
-                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
-                                  </LabelDetail>
-                              )}
-                    </div>
+                    </Block>
                     {/* {state.liquidityAction === LiquidityAction.REMOVE && coreAssetId && assetId && (
                         <SliderContainer spinner={state.slider.toString()}>
                             <ReactSlider

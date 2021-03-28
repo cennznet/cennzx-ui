@@ -20,7 +20,7 @@ import SummaryFee from './SummaryFee';
 const Container = styled.div`
     padding: 5%;
     background: #f8f9f9;
-    margin-top: 20px;
+    margin-top: 2em;
     padding: 5px 5%;
 `;
 const SummaryBody = styled.div`

@@ -11,7 +11,6 @@ export type StyledInputProps = InputProps & {
 
 const StyledInput = styled(Input)<StyledInputProps>`
     background-color: ${props => (props.readOnly ? '#EBECED' : 'white')};
-    flex: 1;
     color: black;
     height: 100%;
     border: none;
@@ -19,7 +18,6 @@ const StyledInput = styled(Input)<StyledInputProps>`
     margin-top: auto;
     margin-bottom: auto;
     min-width: 0px !important;
-    max-width: 160px;
 
     :hover {
         border: none;
@@ -32,6 +30,8 @@ const StyledInput = styled(Input)<StyledInputProps>`
 
 const StyledInputParent = styled.div`
     min-width: 0px !important;
+    flex: 1 0 60%;
+
     div {
         margin-top: 0px;
         height: 100%;
