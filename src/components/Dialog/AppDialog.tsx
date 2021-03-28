@@ -18,9 +18,10 @@ const getDialogBody = (detected: boolean, connected: boolean) => {
             <div>
                 To use CENNZX you need to install and connect to the Polkadot browser extension. If you don't have the
                 extension installed you can download it
-                {/*for some reason not able to remove the following link*/}
-                <Link to="https://soramitsu.co.jp/validator-plugin"> here</Link>
-                <a href={'https://soramitsu.co.jp/validator-plugin'}>yum</a>
+                <a target="_blank" href={'https://soramitsu.co.jp/validator-plugin'}>
+                    {' '}
+                    here
+                </a>
             </div>
         );
     } else if (!connected) {
@@ -33,7 +34,7 @@ const getDialogBody = (detected: boolean, connected: boolean) => {
 };
 
 const getDialogFooter = (
-    setState: Function,
+    setDialogOpen: Function,
     extensionConnected: boolean,
     polkadotExtension: InjectedExtension,
     metadataDef
@@ -46,7 +47,7 @@ const getDialogFooter = (
                         const metadata = polkadotExtension.metadata;
                         await metadata.provide(metadataDef);
                         localStorage.setItem('EXTENSION_META_UPDATED', 'true');
-                        setState({isOpen: false});
+                        setDialogOpen(false);
                     }}
                 >
                     Update Metadata
@@ -54,7 +55,7 @@ const getDialogFooter = (
             )}
             <BlueButton
                 onClick={async () => {
-                    setState({isOpen: false});
+                    setDialogOpen(false);
                 }}
             >
                 Cancel
@@ -73,16 +74,15 @@ export type AppDialogProps = Pick<DialogProps, Exclude<keyof DialogProps, 'title
 
 const AppDialog: FC<AppDialogProps> = props => {
     const {extensionDetected, extensionConnected, polkadotExtension, metadata} = props;
-    const [state, setState] = useState({isOpen: true});
-    const {isOpen} = state;
+    const [isDialogOpen, setDialogOpen] = useState(true);
 
     return (
         <Dialog
             {...props}
-            isOpen={isOpen}
+            isOpen={isDialogOpen}
             title={'Connect to Polkadot extension'}
             body={getDialogBody(extensionDetected, extensionConnected)}
-            footer={getDialogFooter(setState, extensionConnected, polkadotExtension, metadata)}
+            footer={getDialogFooter(setDialogOpen, extensionConnected, polkadotExtension, metadata)}
         />
     );
 };
