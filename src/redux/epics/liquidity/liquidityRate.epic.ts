@@ -25,6 +25,11 @@ export const getLiquidityValueEpic = (
         switchMap(([, store]) => {
             const {assetId, assetAmount} = store.ui.liquidity.form as LiquidityFormData;
             const exchangeReserve = store.ui.liquidity.exchangePool.find(exPool => exPool.assetId === assetId);
+            const totalLiquidity = store.ui.liquidity.totalLiquidity;
+            // If its the first time to add liquidity, no need to calculate the liquidity value, can use any combination
+            if (!totalLiquidity || totalLiquidity.isZero()) {
+                return EMPTY;
+            }
             const coreAssetReserve = exchangeReserve ? exchangeReserve.coreAssetBalance : new Amount(0);
             const tradeAssetReserve = exchangeReserve ? exchangeReserve.assetBalance : new Amount(0);
             let liquidityValue: Amount | BN = assetAmount;
@@ -48,6 +53,11 @@ export const getLiquidityPriceEpic = (
         switchMap(([, store]) => {
             const {assetId, coreAmount} = store.ui.liquidity.form as LiquidityFormData;
             const exchangeReserve = store.ui.liquidity.exchangePool.find(exPool => exPool.assetId === assetId);
+            const totalLiquidity = store.ui.liquidity.totalLiquidity;
+            // If its the first time to add liquidity, no need to calculate the liquidity price, can use any combination
+            if (!totalLiquidity || totalLiquidity.isZero()) {
+                return EMPTY;
+            }
             const coreAssetReserve = exchangeReserve ? exchangeReserve.coreAssetBalance : new Amount(0);
             const tradeAssetReserve = exchangeReserve ? exchangeReserve.assetBalance : new Amount(0);
             let liquidityPrice: Amount | BN = coreAmount;
