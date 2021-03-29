@@ -42,6 +42,8 @@ export enum LiquidityActions {
     TOTAL_LIQUIDITY_REQUEST = 'LIQUIDITY/TOTAL_LIQUIDITY_REQUEST',
     TOTAL_LIQUIDITY_UPDATE = 'LIQUIDITY/TOTAL_LIQUIDITY_UPDATE',
     POOL_BALANCE_REQUEST = 'LIQUIDITY/POOL_BALANCE_REQUEST',
+    EXCHANGE_LIQUIDITY_VALUE = 'LIQUIDITY/EXCHANGE_LIQUIDITY_VALUE',
+    EXCHANGE_LIQUIDITY_PRICE = 'LIQUIDITY/EXCHANGE_LIQUIDITY_PRICE',
 }
 
 export const updateExtrinsic = createAction(LiquidityActions.EXTRINSIC_UPDATE, (extrinsic: string) => extrinsic);
@@ -139,6 +141,8 @@ export const updateTxFeeParameter = createAction(
 );
 
 export const requestExchangeRate = createAction(LiquidityActions.EXCHANGE_RATE_REQUEST);
+export const requestLiquidityPrice = createAction(LiquidityActions.EXCHANGE_LIQUIDITY_PRICE);
+export const requestLiquidityValue = createAction(LiquidityActions.EXCHANGE_LIQUIDITY_VALUE);
 export const requestTransactionFee = createAction(LiquidityActions.TRANSACTION_FEE_REQUEST);
 export const updateExchangeRate = createAction(
     LiquidityActions.EXCHANGE_RATE_UPDATE,

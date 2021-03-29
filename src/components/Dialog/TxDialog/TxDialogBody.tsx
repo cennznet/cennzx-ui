@@ -127,7 +127,7 @@ export const TxDialogBody: FC<TxDialogBodyProps> = ({
                     <SummaryFee txFee={estimatedTxFee} coreAssetId={coreAssetId} feeAssetId={feeAssetId} />
                 </>
             );
-        case Stages.Broadcasted:
+        case Stages.InBlock:
             return <BodyForBroadcasted txHash={txHash} />;
         case Stages.Finalised:
             return (

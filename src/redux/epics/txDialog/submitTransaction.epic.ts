@@ -63,7 +63,7 @@ export const submitTransactionEpic = (
                 return tx.signAndSend(signingAccount, {signer}).pipe(
                     switchMap(({events, status}: SubmittableResult) => {
                         if (status.isInBlock) {
-                            return of(updateTxHash(status.asInBlock.toString()), updateStage(Stages.Broadcasted));
+                            return of(updateTxHash(status.asInBlock.toString()), updateStage(Stages.InBlock));
                         } else if (status.isFinalized && events) {
                             const blockHash = status.asFinalized;
                             const extrinsicIndex = events[0].phase.asApplyExtrinsic;
@@ -136,8 +136,8 @@ export const submitSendEpic = (
 
                 return tx.signAndSend(signingAccount, {signer}).pipe(
                     switchMap(({events, status}: SubmittableResult) => {
-                        if (status.isBroadcast) {
-                            return of(updateTxHash(tx.hash.toString()), updateStage(Stages.Broadcasted));
+                        if (status.isInBlock) {
+                            return of(updateTxHash(tx.hash.toString()), updateStage(Stages.InBlock));
                         } else if (status.isFinalized && events) {
                             const blockHash = status.asFinalized;
                             const extrinsicIndex = events[0].phase.asApplyExtrinsic;
@@ -196,10 +196,10 @@ export const submitLiquidityEpic = (
                 ],
                 store,
             ]): Observable<Action<any>> => {
-                const [assetId, , assetAmount, coreAmount] = extrinsic.params;
+                const [assetId, , coreAmount, assetAmount] = extrinsic.params;
                 const currentExchangePool = store.ui.liquidity.exchangePool.find(ex => ex.assetId === assetId);
                 const coreAssetReserve = currentExchangePool ? currentExchangePool.coreAssetBalance : new Amount(0);
-                const tradeAssetReserve = currentExchangePool ? currentExchangePool.assetBalance : new Amount(0);
+                // const tradeAssetReserve = currentExchangePool ? currentExchangePool.assetBalance : new Amount(0);
                 const totalLiquidity = store.ui.liquidity.totalLiquidity;
 
                 let tx;
@@ -207,22 +207,17 @@ export const submitLiquidityEpic = (
                     const minLiquidity = totalLiquidity.isZero()
                         ? new Amount(coreAmount)
                         : new Amount(coreAmount).mul(totalLiquidity.div(coreAssetReserve));
-                    let investmentAmount = totalLiquidity.isZero()
-                        ? new Amount(assetAmount)
-                        : new Amount(coreAmount).mul(tradeAssetReserve.div(coreAssetReserve)).iaddn(1);
-                    if (investmentAmount.ltn(assetAmount)) {
-                        investmentAmount = new Amount(assetAmount);
-                    }
+
                     const maxAssetAmount = new Amount(assetAmount.muln(1 + buffer));
-                    if (maxAssetAmount.lt(investmentAmount)) {
-                        const err = new InsufficientBalanceForOperation(
-                            maxAssetAmount,
-                            new Amount(investmentAmount),
-                            assetId
-                        );
-                        return of(setDailogError(err));
-                    }
-                    tx = api.tx.cennzx.addLiquidity(assetId, minLiquidity, investmentAmount, coreAmount);
+                    // if (maxAssetAmount.lt(investmentAmount)) {
+                    //     const err = new InsufficientBalanceForOperation(
+                    //         maxAssetAmount,
+                    //         new Amount(investmentAmount),
+                    //         assetId
+                    //     );
+                    //     return of(setDailogError(err));
+                    // }
+                    tx = api.tx.cennzx.addLiquidity(assetId, minLiquidity, maxAssetAmount, coreAmount);
                 } else {
                     const min_asset_withdraw = new Amount(add1Amount.muln(1 - buffer));
                     const min_core_withdraw = new Amount(add2Amount.muln(1 - buffer));
@@ -233,7 +228,7 @@ export const submitLiquidityEpic = (
                 return tx.signAndSend(signingAccount, {signer}).pipe(
                     switchMap(({events, status}) => {
                         if (status.isInBlock) {
-                            return of(updateTxHash(status.asInBlock.toString()), updateStage(Stages.Broadcasted));
+                            return of(updateTxHash(status.asInBlock.toString()), updateStage(Stages.InBlock));
                         } else if (status.isFinalized && events) {
                             return of(updateTxEvents(events), updateStage(Stages.Finalised));
                         } else {
@@ -254,7 +249,7 @@ export const submitLiquidityEpic = (
         })
     );
 
-export const resetTradeOnBroadCastedStage = (
+export const resetTradeOnInBlockCastedStage = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
@@ -262,7 +257,7 @@ export const resetTradeOnBroadCastedStage = (
     action$.pipe(
         ofType<UpdateStageAction>(types.ui.TxDialog.STAGE_UPDATE),
         switchMap(action => {
-            if (action.payload === Stages.Broadcasted) {
+            if (action.payload === Stages.InBlock) {
                 return of(resetTrade());
             } else {
                 return EMPTY;
@@ -270,4 +265,4 @@ export const resetTradeOnBroadCastedStage = (
         })
     );
 
-export default combineEpics(submitTransactionEpic, submitSendEpic, submitLiquidityEpic, resetTradeOnBroadCastedStage);
+export default combineEpics(submitTransactionEpic, submitSendEpic, submitLiquidityEpic, resetTradeOnInBlockCastedStage);

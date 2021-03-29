@@ -69,7 +69,7 @@ export const TxDialogFooter: FC<TxDialogFooterProps> = ({error, stage, success, 
                     <FooterForSigning error={error} onClose={onClose} onSubmit={onSubmit} />
                 </FootBox>
             );
-        case Stages.Broadcasted:
+        case Stages.InBlock:
             return (
                 <FootBox>
                     <FooterForBroadcasted onClick={closeAndComplete} />
