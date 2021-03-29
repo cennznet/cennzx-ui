@@ -21,6 +21,7 @@ export const BlueButton = styled(Button)`
     background-color: #1130ff;
     border-radius: 3px;
     color: white;
+    margin-right: auto;
 
     :hover {
         border: 2px solid #1130ff;

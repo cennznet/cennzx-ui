@@ -16,8 +16,9 @@ const getDialogBody = (detected: boolean, connected: boolean) => {
         return (
             // <React.Fragment>
             <div>
-                To use CENNZX you need to install and connect to the Polkadot browser extension. If you don't have the
-                extension installed you can download it
+                CENNZX requires the Polkadot browser extension to manage transaction signing.
+                <br />
+                you can install it by following the guide
                 <a target="_blank" href={'https://soramitsu.co.jp/validator-plugin'}>
                     {' '}
                     here
@@ -26,10 +27,10 @@ const getDialogBody = (detected: boolean, connected: boolean) => {
         );
     } else if (!connected) {
         // Polkadot is not allowed to access this site - show relevant message
-        return 'To use CENNZX you need to go to Polkadot extension settings, Manage website access and allow this site to use extension.';
+        return 'CENNZX is disallowed in your Polkadot extension settings. Go to \'Manage website access\' and allow this site to continue.';
     } else {
         // Update metadata
-        return 'To use CENNZX you need to update metadata for the Polkadot browser extension.';
+        return 'Install the latest metadata file for the best experience with CENNZX & Polkadot extension.';
     }
 };
 
