@@ -2,48 +2,24 @@ import {StateObservable} from 'redux-observable';
 import {Observable, Subject} from 'rxjs';
 import {ReplaySubject} from 'rxjs';
 import types from '../../../actions';
-import LiquidityActions, {
+import {
     requestAssetLiquidityPrice,
     requestCoreLiquidityPrice,
-    requestLiquidityValue,
     setAddAsset1Amount,
     setAddAsset2Amount,
     updateSelectedAddAsset1,
 } from '../../../actions/ui/liquidity.action';
 import {AppState} from '../../../reducers';
-import {getInputPriceEpic, getOutputPriceEpic} from '../../exchange/price.epic';
 import {TestScheduler} from 'rxjs/testing';
 import {IEpicDependency} from '../../../../typings';
-import {
-    requestExchangeRate,
-    setFromAssetAmount,
-    setToAssetAmount,
-    swapAsset,
-    updateSelectedFromAsset,
-    updateSelectedToAsset,
-} from '../../../actions/ui/exchange.action';
 import {Amount, AmountUnit} from '../../../../util/Amount';
 import {of} from 'rxjs/index';
-import BN from 'bn.js';
-import {throwError} from 'rxjs/internal/observable/throwError';
-import {AmountExceedsPoolBalance, NodeConnectionTimeOut} from '../../../../error/error';
-// import {getExchangeRateEpic, requestExchangeRateEpic} from '../../exchange/exchangeRate.epic';
-import {EMPTY} from 'rxjs/internal/observable/empty';
 import {
     getAssetLiquidityPriceEpic,
     getCoreLiquidityPriceEpic,
     requestAssetLiquidityPriceEpic,
     requestCoreLiquidityPriceEpic,
 } from '../../liquidity/liquidityRate.epic';
-
-const accounts$ = new ReplaySubject<any>(1);
-const account = [
-    {
-        name: 'Account 1',
-        address: '5GDq1kEpNzxWQcnviMRFnp1y8m47kWC1EDEUzgCZQFc4G1Df',
-    },
-];
-accounts$.next(account);
 
 describe('Get core amount when asset amount is provided', () => {
     const triggers = [requestCoreLiquidityPrice()];
