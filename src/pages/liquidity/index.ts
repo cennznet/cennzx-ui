@@ -64,7 +64,7 @@ const mapStateToProps = (state: AppState): LiquidityProps => ({
     fee: getFee(state),
     exchangeRateMsg: getExchangeRateMsg(state),
     txFeeMsg: getTxFeeMessage(state),
-    userPoolShare: getUserPoolShare(state),
+    userShareInPool: getUserPoolShare(state),
     // isDialogOpen: state.ui.txDialog.stage ? true : false,
 });
 
