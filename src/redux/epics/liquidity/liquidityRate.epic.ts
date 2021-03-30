@@ -37,7 +37,7 @@ export const getCoreLiquidityValueEpic = (
                 coreAmount = assetAmount
                     .mul(coreAssetReserve)
                     .div(tradeAssetReserve)
-                    .subn(1);
+                    .addn(1);
             }
             return of(updateAddAsset2Amount(new Amount(coreAmount)));
         })
