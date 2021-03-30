@@ -30,7 +30,7 @@ const FooterForSigning: FC<{error?: Error; onClose(): void; onSubmit(): void}> =
                         onSubmit();
                     }}
                 >
-                    'Authorise Transaction'
+                    Authorise Transaction
                 </BlueButton>
             )}
         </>
