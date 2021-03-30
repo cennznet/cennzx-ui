@@ -33,7 +33,8 @@ describe('Get core amount when asset amount is provided', () => {
             testScheduler.run(({hot, cold, expectObservable}) => {
                 // prettier-ignore
                 const action_                   = '-a-';
-                const expect_ = '-b-';
+                // prettier-ignore
+                const expect_                   = '-b-';
 
                 const action$ = hot(action_, {
                     a: action,
@@ -100,7 +101,8 @@ describe('Get asset amount when core amount is provided', () => {
             testScheduler.run(({hot, cold, expectObservable}) => {
                 // prettier-ignore
                 const action_                   = '-a-';
-                const expect_ = '-b-';
+                // prettier-ignore
+                const expect_                   = '-b-';
 
                 const action$ = hot(action_, {
                     a: action,
