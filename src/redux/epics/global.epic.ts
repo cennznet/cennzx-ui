@@ -50,6 +50,9 @@ const getExtensionMetadata = (
                             api.runtimeVersion.specVersion
                         );
                         // remove all the classes from the spectypes
+                        // The reason for the removal of the following object from specTypes -
+                        // the metadata that gets updated on the polkadot extension requires types of type (Record<string, string>)
+                        // It does not allow classes/objects...
                         if (specTypes.ExtrinsicSignatureV4) {
                             delete specTypes.ExtrinsicSignatureV4;
                         }

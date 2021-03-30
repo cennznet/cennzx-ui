@@ -8,19 +8,19 @@ import {IEpicDependency, LiquidityFormData} from '../../../typings';
 import {Amount, AmountUnit} from '../../../util/Amount';
 import types from '../../actions';
 import {
-    requestLiquidityPrice,
-    requestLiquidityValue,
+    requestAssetLiquidityPrice,
+    requestCoreLiquidityPrice,
     updateAddAsset1Amount,
     updateAddAsset2Amount,
 } from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
 
-export const getCoreLiquidityValueEpic = (
+export const getCoreLiquidityPriceEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
 ) =>
-    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.EXCHANGE_LIQUIDITY_VALUE))]).pipe(
+    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.CORE_LIQUIDITY_PRICE_REQUEST))]).pipe(
         withLatestFrom(store$),
         switchMap(([, store]) => {
             const {assetId, assetAmount} = store.ui.liquidity.form as LiquidityFormData;
@@ -48,7 +48,7 @@ export const getAssetLiquidityPriceEpic = (
     store$: Observable<AppState>,
     {api$}: IEpicDependency
 ) =>
-    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.EXCHANGE_LIQUIDITY_PRICE))]).pipe(
+    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.ASSET_LIQUIDITY_PRICE_REQUEST))]).pipe(
         withLatestFrom(store$),
         switchMap(([, store]) => {
             const {assetId, coreAmount} = store.ui.liquidity.form as LiquidityFormData;
@@ -71,7 +71,7 @@ export const getAssetLiquidityPriceEpic = (
         })
     );
 
-export const requestLiquidityPriceEpic = (
+export const requestAssetLiquidityPriceEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
@@ -86,12 +86,12 @@ export const requestLiquidityPriceEpic = (
         ),
         switchMap(
             ([, store]): Observable<Action<any>> => {
-                return of(requestLiquidityPrice());
+                return of(requestAssetLiquidityPrice());
             }
         )
     );
 
-export const requestLiquidityValueEpic = (
+export const requestCoreLiquidityPriceEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
@@ -109,14 +109,14 @@ export const requestLiquidityValueEpic = (
         ),
         switchMap(
             ([, store]): Observable<Action<any>> => {
-                return of(requestLiquidityValue());
+                return of(requestCoreLiquidityPrice());
             }
         )
     );
 
 export default combineEpics(
-    getCoreLiquidityValueEpic,
+    getCoreLiquidityPriceEpic,
     getAssetLiquidityPriceEpic,
-    requestLiquidityValueEpic,
-    requestLiquidityPriceEpic
+    requestAssetLiquidityPriceEpic,
+    requestCoreLiquidityPriceEpic
 );
