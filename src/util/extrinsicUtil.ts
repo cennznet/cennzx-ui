@@ -35,10 +35,10 @@ export function prepareExchangeExtrinsicParamsWithBuffer(
             ];
         case REMOVE_LIQUIDITY:
             return [
-                (params as RemoveLiquidityFormData).asset,
-                (params as RemoveLiquidityFormData).liquidity,
-                (params as RemoveLiquidityFormData).minAssetYield,
-                (params as RemoveLiquidityFormData).minCoreYield,
+                (params as AddLiquidityFormData).assetId,
+                (params as AddLiquidityFormData).coreAssetId,
+                (params as AddLiquidityFormData).coreAmount, // min core amount to withdraw
+                (params as AddLiquidityFormData).assetAmount, // min asset amount to withdraw
             ];
         case SWAP_OUTPUT:
             return [

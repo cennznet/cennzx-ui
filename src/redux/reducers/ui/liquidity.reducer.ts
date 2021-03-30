@@ -15,6 +15,7 @@ import LiquidityActions, {
     UpdateExchangeRateAction,
     UpdateExtrinsicAction,
     UpdateFeeAssetAction,
+    UpdateLiquidityForWithdrawalAction,
     UpdatePoolBalanceAction,
     UpdateSelectedAccountAction,
     UpdateSelectedAddAsset1Action,
@@ -38,6 +39,7 @@ export interface LiquidityState {
     userAssetBalance: IAssetBalance[];
     extrinsicParams?: any[];
     error: BaseError[];
+    liquidityToWithdraw?: Amount;
 }
 
 export const initialState: LiquidityState = {
@@ -54,9 +56,13 @@ export const initialState: LiquidityState = {
 
 export default handleActions<LiquidityState, any>(
     {
+        [LiquidityActions.LIQUIDITY_TO_WITHDRAW_UPDATE]: produce(
+            (draft: LiquidityState, action: UpdateLiquidityForWithdrawalAction) => {
+                draft.liquidityToWithdraw = action.payload;
+            }
+        ),
         [LiquidityActions.TOTAL_LIQUIDITY_UPDATE]: produce(
             (draft: LiquidityState, action: UpdateTotalLiquidityAction) => {
-                // console.log('total_liquidity::::::', action.payload);
                 draft.totalLiquidity = action.payload;
             }
         ),

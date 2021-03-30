@@ -219,9 +219,10 @@ export const submitLiquidityEpic = (
                     // }
                     tx = api.tx.cennzx.addLiquidity(assetId, minLiquidity, maxAssetAmount, coreAmount);
                 } else {
-                    const min_asset_withdraw = new Amount(add1Amount.muln(1 - buffer));
-                    const min_core_withdraw = new Amount(add2Amount.muln(1 - buffer));
-                    tx = api.tx.cennzx.removeLiquidity(add1Asset, add1Amount, 0.00001, 0.00001);
+                    const minAssetWithdraw = new Amount(assetAmount.muln(1 - buffer));
+                    const minCoreWithdraw = new Amount(coreAmount.muln(1 - buffer));
+                    const liquidityToWithdraw = store.ui.liquidity.liquidityToWithdraw;
+                    tx = api.tx.cennzx.removeLiquidity(assetId, liquidityToWithdraw, minAssetWithdraw, minCoreWithdraw);
                 }
                 const signer = injector.signer;
 

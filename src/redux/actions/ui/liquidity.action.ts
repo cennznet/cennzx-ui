@@ -44,6 +44,7 @@ export enum LiquidityActions {
     POOL_BALANCE_REQUEST = 'LIQUIDITY/POOL_BALANCE_REQUEST',
     CORE_LIQUIDITY_PRICE_REQUEST = 'LIQUIDITY/CORE_LIQUIDITY_PRICE_REQUEST',
     ASSET_LIQUIDITY_PRICE_REQUEST = 'LIQUIDITY/ASSETLIQUIDITY_PRICE_REQUEST',
+    LIQUIDITY_TO_WITHDRAW_UPDATE = 'LIQUIDITY/LIQUIDITY_TO_WITHDRAW_UPDATE',
 }
 
 export const updateExtrinsic = createAction(LiquidityActions.EXTRINSIC_UPDATE, (extrinsic: string) => extrinsic);
@@ -171,6 +172,12 @@ export const updateTotalLiquidity = createAction(
     (liquidity: Amount) => liquidity
 );
 
+export const updateLiquidityForWithdrawal = createAction(
+    LiquidityActions.LIQUIDITY_TO_WITHDRAW_UPDATE,
+    (liquidity: Amount) => liquidity
+);
+
+export type UpdateLiquidityForWithdrawalAction = ReturnType<typeof updateLiquidityForWithdrawal>;
 export type UpdateTotalLiquidityAction = ReturnType<typeof updateTotalLiquidity>;
 export type RequestLiquidityRateAction = ReturnType<typeof requestLiquidityRate>;
 export type UpdateExchangeRateAction = ReturnType<typeof updateExchangeRate>;

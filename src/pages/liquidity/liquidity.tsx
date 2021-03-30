@@ -240,7 +240,7 @@ export type LiquidityProps = {
     coreAssetId: number;
     fee: any;
     feeRate: FeeRate;
-    userPoolShare: IUserShareInPool;
+    userShareInPool: IUserShareInPool;
 } & LiquidityState;
 
 const getAssetName = (options, id) => {
@@ -276,7 +276,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         exchangeRateMsg,
         fee,
         txFee,
-        userPoolShare,
+        userShareInPool,
     } = props;
 
     const {assetId, assetAmount, buffer, coreAmount, extrinsic, feeAssetId, signingAccount, type} = props.form;
@@ -309,8 +309,8 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const coreName = getAssetName(assets, coreAssetId);
     const corePool = coreReserve && coreReserve.asString && coreReserve.asString(DECIMALS);
 
-    const [userAssetShareInPool, userCoreShareInPool] = userPoolShare
-        ? [userPoolShare.assetBalance.asString(), userPoolShare.coreAssetBalance.asString()]
+    const [userAssetShareInPool, userCoreShareInPool] = userShareInPool
+        ? [userShareInPool.assetBalance.asString(), userShareInPool.coreAssetBalance.asString()]
         : [0, 0];
 
     const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
@@ -381,7 +381,11 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             }}
                             title=""
                             secondaryTitle={null}
-                            message={`Balance: ${assetBalance || 0}`}
+                            message={
+                                state.liquidityAction === LiquidityAction.REMOVE
+                                    ? `User's pool balance: ${userAssetShareInPool}`
+                                    : `Balance: ${assetBalance || 0}`
+                            }
                             errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetInput} />}
                         />
                         <AddIcon></AddIcon>
@@ -402,7 +406,11 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             }}
                             title=""
                             secondaryTitle={null}
-                            message={`Balance: ${coreBalance || 0}`}
+                            message={
+                                state.liquidityAction === LiquidityAction.REMOVE
+                                    ? `User's pool balance: ${userCoreShareInPool}`
+                                    : `Balance: ${coreBalance || 0}`
+                            }
                         />
                     </Flex2>
                     <div>
@@ -457,33 +465,17 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             />
                         </SliderContainer>
                     )} */}
-                    {assetPool &&
-                        corePool &&
-                        (state.liquidityAction === LiquidityAction.ADD ? (
-                            <Summary>
-                                Your pool share: {userAssetShareInPool} {assetName} + {userCoreShareInPool} {coreName}
-                                <br />
-                                Current pool size: {assetPool} {assetName} + {corePool} {coreName}
-                                <br />
-                                {exchangeRateMsg}
-                                <br />
-                                {fee && `Transaction fee (estimated) : ${fee}`}
-                            </Summary>
-                        ) : (
-                            <Summary>
-                                {assetAmount &&
-                                    coreAmount &&
-                                    `Your pool share (${state.sliderP * 100}%): ${assetAmount.asString(
-                                        DECIMALS
-                                    )} ${assetName} + ${coreAmount.asString(DECIMALS)} ${coreName}`}
-                                <br />
-                                Current pool size: {assetPool} {assetName} + {corePool} {coreName}
-                                <br />
-                                {exchangeRateMsg}
-                                <br />
-                                {fee && `Transaction fee (estimated) : ${fee}`}
-                            </Summary>
-                        ))}
+                    {assetPool && corePool ? (
+                        <Summary>
+                            Your pool share: {userAssetShareInPool} {assetName} + {userCoreShareInPool} {coreName}
+                            <br />
+                            Current pool size: {assetPool} {assetName} + {corePool} {coreName}
+                            <br />
+                            {exchangeRateMsg}
+                            <br />
+                            {fee && `Transaction fee (estimated) : ${fee}`}
+                        </Summary>
+                    ) : null}
                 </PageInside>
                 <Buttons id="buttons">
                     <Button
