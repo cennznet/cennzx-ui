@@ -62,7 +62,10 @@ export const getAssetLiquidityPriceEpic = (
             const tradeAssetReserve = exchangeReserve ? exchangeReserve.assetBalance : new Amount(0);
             let assetAmount: Amount | BN = coreAmount;
             if (!coreAssetReserve.isZero() || !tradeAssetReserve.isZero()) {
-                assetAmount = new Amount(coreAmount).mul(tradeAssetReserve.div(coreAssetReserve)).addn(1);
+                assetAmount = coreAmount
+                    .mul(tradeAssetReserve)
+                    .div(coreAssetReserve)
+                    .addn(1);
             }
             return of(updateAddAsset1Amount(new Amount(assetAmount)));
         })
