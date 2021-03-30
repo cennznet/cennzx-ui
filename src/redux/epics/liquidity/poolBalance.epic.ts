@@ -1,7 +1,8 @@
+import BN from 'bn.js';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';
-import {catchError, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
 import {EmptyPool} from '../../../error/error';
 import {IEpicDependency, IUserShareInPool} from '../../../typings';
 import {Amount} from '../../../util/Amount';
@@ -12,7 +13,8 @@ import {
     setLiquidityError,
     updatePoolBalance,
     UpdatePoolBalanceAction,
-    UpdateSelectedAdd1AssetAction,
+    UpdateSelectedAddAsset1Action,
+    updateTotalLiquidity,
     updateUserPoolShare,
 } from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
@@ -24,41 +26,35 @@ export const getAssetPoolBalanceEpic = (
 ): Observable<UpdatePoolBalanceAction> =>
     combineLatest([
         api$,
-        action$.pipe(ofType<UpdateSelectedAdd1AssetAction>(types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE)),
+        action$.pipe(ofType<UpdateSelectedAddAsset1Action>(types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
         switchMap(
             ([[api, action], store]): Observable<Action<any>> => {
                 const poolAsset = action.payload;
-                return api.query.cennzx.coreAssetId().pipe(
-                    switchMap(coreAsset => {
-                        if (poolAsset.toString() === coreAsset.toString()) {
-                            return EMPTY;
-                        }
-                        return combineLatest([
-                            api.derive.cennzx.poolAssetBalance(poolAsset),
-                            api.derive.cennzx.poolCoreAssetBalance(poolAsset),
-                            api.derive.cennzx.exchangeAddress(poolAsset),
-                        ]).pipe(
-                            switchMap(([assetBalance, coreBalance, exchangeAddress]) => {
-                                const coreAssetBalance: Amount = new Amount(coreBalance);
-                                const poolAssetBalance: Amount = new Amount(assetBalance);
-                                // if (coreAssetBalance.isZero() || poolAssetBalance.isZero()) {
-                                //     return of(setLiquidityError(new EmptyPool(getAsset(poolAsset))));
-                                // }
-                                const poolBalance = {
-                                    coreAssetBalance: coreAssetBalance,
-                                    assetBalance: poolAssetBalance,
-                                    address: exchangeAddress.toString(),
-                                    assetId: poolAsset,
-                                };
-                                return of(updatePoolBalance(poolBalance));
-                            }),
-                            takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),
-                            catchError((err: any) => {
-                                return of(setLiquidityError(err));
-                            })
-                        );
+                const coreAssetId = store.global.coreAssetId;
+                if (poolAsset.toString() === coreAssetId.toString()) {
+                    return EMPTY;
+                }
+                return combineLatest([
+                    api.derive.cennzx.poolAssetBalance(poolAsset),
+                    api.derive.cennzx.poolCoreAssetBalance(poolAsset),
+                    api.derive.cennzx.exchangeAddress(poolAsset),
+                ]).pipe(
+                    switchMap(([assetBalance, coreBalance, exchangeAddress]) => {
+                        const coreAssetBalance: Amount = new Amount(coreBalance);
+                        const poolAssetBalance: Amount = new Amount(assetBalance);
+                        const poolBalance = {
+                            coreAssetBalance: coreAssetBalance,
+                            assetBalance: poolAssetBalance,
+                            address: exchangeAddress.toString(),
+                            assetId: poolAsset,
+                        };
+                        return of(updatePoolBalance(poolBalance));
+                    }),
+                    takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),
+                    catchError((err: any) => {
+                        return of(setLiquidityError(err));
                     })
                 );
             }
@@ -72,7 +68,7 @@ export const getUserPoolShareEpic = (
 ): Observable<UpdatePoolBalanceAction> =>
     combineLatest([
         api$,
-        action$.pipe(ofType(types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)),
+        action$.pipe(ofType(types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
         switchMap(
@@ -107,4 +103,23 @@ export const getUserPoolShareEpic = (
         )
     );
 
-export default combineEpics(getAssetPoolBalanceEpic, getUserPoolShareEpic);
+export const getTotalLiquidityEpic = (
+    action$: Observable<Action<any>>,
+    store$: Observable<AppState>,
+    {api$}: IEpicDependency
+): Observable<Action<any>> =>
+    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.TOTAL_LIQUIDITY_REQUEST))]).pipe(
+        withLatestFrom(store$),
+        switchMap(([[api, action], store]) => {
+            const {totalLiquidity} = store.ui.liquidityPool;
+            return api.derive.cennzx.totalLiquidity(action.payload).pipe(
+                filter((liquidity: BN) => !totalLiquidity || !liquidity.eq(totalLiquidity)),
+                map((liquidity: BN) => {
+                    const totalLiqudityAmt = new Amount(liquidity.toString());
+                    return updateTotalLiquidity(totalLiqudityAmt);
+                })
+            );
+        })
+    );
+
+export default combineEpics(getAssetPoolBalanceEpic, getUserPoolShareEpic, getTotalLiquidityEpic);

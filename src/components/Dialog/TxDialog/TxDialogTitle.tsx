@@ -21,7 +21,7 @@ export const TxDialogTitle: FC<TxDialogTitleProps> = ({error, stage, success, me
     switch (stage) {
         case Stages.Signing:
             return <TitleForSigning error={error} title={title} />;
-        case Stages.Broadcasted:
+        case Stages.InBlock:
             return <TitleForBroadcasted />;
         case Stages.Finalised:
             return <TitleForFinalised success={success} />;

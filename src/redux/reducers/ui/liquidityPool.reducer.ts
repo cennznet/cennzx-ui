@@ -21,7 +21,6 @@ import PoolActions, {
     UpdateInvestorFreeBalanceAction,
     UpdatePoolBalanceAction,
     UpdateRemoveLiquidityBufferAction,
-    UpdateTotalLiquidityAction,
     UpdateTransactionFeeAction,
     UpdateTxFeeParameterAction,
     UpdateUserLiquidityAction,
@@ -33,7 +32,6 @@ import PoolActions, {
 } from '../../actions/ui/liquidityPool.action';
 
 export interface LiquidityPoolState {
-    totalLiquidity?: Amount;
     userLiquidity?: Amount;
     txFee?: IFee;
     addLiquidity?: IAddLiquidity;
@@ -52,11 +50,6 @@ export const initialState: LiquidityPoolState = {
 
 const coreLiquidity = handleActions<LiquidityPoolState, any>(
     {
-        [PoolActions.TOTAL_LIQUIDITY_UPDATE]: produce(
-            (draft: LiquidityPoolState, action: UpdateTotalLiquidityAction) => {
-                draft.totalLiquidity = action.payload;
-            }
-        ),
         [PoolActions.USER_LIQUIDITY_UPDATE]: produce((draft: LiquidityPoolState, action: UpdateUserLiquidityAction) => {
             draft.userLiquidity = action.payload;
         }),

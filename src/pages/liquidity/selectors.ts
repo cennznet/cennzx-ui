@@ -116,10 +116,10 @@ export const getFee = createSelector(
     (txFee, coreAsset, feeAssetId) => {
         let fee;
         const assetSymbol = getAsset_(feeAssetId).symbol;
-        if (coreAsset && coreAsset.eqn && coreAsset.eqn(feeAssetId) && txFee) {
+        if (coreAsset && coreAsset === feeAssetId && txFee) {
             fee = `${txFee.feeInCpay.asString(DECIMALS)} ${assetSymbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {
-            fee = `${txFee.feeInFeeAsset.asString(DECIMALS)} (converted to ${txFee.feeInCpay.asString(DECIMALS)} CPAY)`;
+            fee = `${txFee.feeInFeeAsset.asString(DECIMALS)} CPAY)`;
         }
         return fee;
     }

@@ -1,15 +1,18 @@
 import {Balance} from '@cennznet/types';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
+import {from} from 'rxjs';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';
 import {filter, map, mergeMap, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
 import {IAssetBalance, IEpicDependency} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import types from '../../actions';
+import {updateExAccounts, updateExConnected} from '../../actions/extension.action';
 import {
-    requestAdd1AssetBalance,
+    requestAddAsset1Balance,
     requestAssetBalance,
-    updateUserAdd1AssetBalance,
+    requestTotalLiquidity,
+    updateUserAddAsset1Balance,
     updateUserAssetBalance,
     UpdateUserAssetBalanceAction,
 } from '../../actions/ui/liquidity.action';
@@ -105,7 +108,7 @@ export const updateAdd1AssetsBalanceEpic = (
                                 bal.assetId === assetId && bal.account === signingAccount && bal.balance.eq(userBal)
                         );
                         if (!fromAssetBalance) {
-                            return of(updateUserAdd1AssetBalance(newAssetBalance));
+                            return of(updateUserAddAsset1Balance(newAssetBalance));
                         }
                         return EMPTY;
                     }),
@@ -120,13 +123,16 @@ export const prepareBalanceParamsForAdd1AssetEpic = (
     store$: Observable<AppState>,
     {api$}: IEpicDependency
 ): Observable<Action<any>> =>
-    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE))]).pipe(
+    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE))]).pipe(
         withLatestFrom(store$),
         filter(([, store]) => store.ui.liquidity.form.assetId && !!store.ui.liquidity.form.signingAccount),
         switchMap(
             ([[api], store]): Observable<Action<any>> => {
                 const {assetId, signingAccount} = store.ui.liquidity.form;
-                return of(requestAdd1AssetBalance(assetId, signingAccount));
+                const retObservable: Action<any>[] = [];
+                retObservable.push(requestTotalLiquidity(assetId));
+                retObservable.push(requestAddAsset1Balance(assetId, signingAccount));
+                return from(retObservable);
             }
         )
     );

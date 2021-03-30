@@ -17,7 +17,7 @@ export const prepareBalanceParamsEpic = (
         api$,
         action$.pipe(
             ofType(
-                types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE,
+                types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE,
                 types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE,
                 types.ui.Liquidity.ASSET_SWAP
             )
