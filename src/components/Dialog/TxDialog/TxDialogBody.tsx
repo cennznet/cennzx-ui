@@ -46,11 +46,67 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
         method === SWAP_OUTPUT
             ? [amount, price.asString(DECIMALS, Amount.ROUND_UP)]
             : [price, amount.asString(DECIMALS)];
+    let message;
+    if (success) {
+        switch (method) {
+            case SWAP_OUTPUT:
+                message = `You successfully exchanged ${toAssetAmount.asString(DECIMALS)} ${
+                    getAsset(toAsset).symbol
+                } with{' '}
+                    ${fromAssetAmount} ${getAsset(fromAsset).symbol}.`;
+                break;
+            case SWAP_INPUT:
+                message = `You successfully exchanged ${toAssetAmount.asString(DECIMALS)} ${
+                    getAsset(toAsset).symbol
+                } with{' '}
+                    ${fromAssetAmount} ${getAsset(fromAsset).symbol}.`;
+                break;
+            case ADD_LIQUIDITY:
+                message = `You successfully added ${toAssetAmount.asString(DECIMALS)} ${getAsset(toAsset).symbol} and
+                    ${fromAssetAmount} ${getAsset(fromAsset).symbol} in the pool.`;
+                break;
+            case REMOVE_LIQUIDITY:
+                message = `You successfully withdraw ${toAssetAmount.asString(DECIMALS)} ${getAsset(toAsset).symbol} and
+                    ${fromAssetAmount} ${getAsset(fromAsset).symbol} from the pool.`;
+                break;
+            default:
+                message = '';
+        }
+    } else {
+        switch (method) {
+            case SWAP_OUTPUT:
+                message = `Your transaction to exchange ${toAssetAmount.asString(DECIMALS)} ${
+                    getAsset(toAsset).symbol
+                } with{' '}
+                    ${fromAssetAmount} ${getAsset(fromAsset).symbol} has failed.`;
+                break;
+            case SWAP_INPUT:
+                message = `Your transaction to exchange  ${toAssetAmount.asString(DECIMALS)} ${
+                    getAsset(toAsset).symbol
+                } with{' '}
+                    ${fromAssetAmount} ${getAsset(fromAsset).symbol} has failed.`;
+                break;
+            case ADD_LIQUIDITY:
+                message = `Your transaction to add liquidity of ${toAssetAmount.asString(DECIMALS)} ${
+                    getAsset(toAsset).symbol
+                } and
+                    ${fromAssetAmount} ${getAsset(fromAsset).symbol} in the pool failed.`;
+                break;
+            case REMOVE_LIQUIDITY:
+                message = `Your transaction to withdraw liquidity of ${toAssetAmount.asString(DECIMALS)} ${
+                    getAsset(toAsset).symbol
+                } and
+                    ${fromAssetAmount} ${getAsset(fromAsset).symbol} from the pool failed.`;
+                break;
+            default:
+                message = '';
+                break;
+        }
+    }
     if (success) {
         return (
             <div>
-                You successfully exchanged {toAssetAmount.asString(DECIMALS)} {getAsset(toAsset).symbol} with{' '}
-                {fromAssetAmount} {getAsset(fromAsset).symbol}.
+                {message}
                 <br />{' '}
                 {actualTxFee ? `The transaction fee was ${actualTxFee.asString(DECIMALS, Amount.ROUND_UP)} CPAY ` : ''}
                 {feeExchangeResult
@@ -65,7 +121,7 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
     } else {
         return (
             <div>
-                Your transaction to exchanged {toAssetAmount.asString(DECIMALS)} {getAsset(toAsset).symbol} has failed.
+                {message}.
                 <br />
                 Check transaction hash for more details:
                 <ExternalLink url={getCennzScanURL(txHash)} text={txHash} />

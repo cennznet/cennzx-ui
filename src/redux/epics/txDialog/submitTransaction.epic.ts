@@ -201,22 +201,15 @@ export const submitLiquidityEpic = (
                 const coreAssetReserve = currentExchangePool ? currentExchangePool.coreAssetBalance : new Amount(0);
                 // const tradeAssetReserve = currentExchangePool ? currentExchangePool.assetBalance : new Amount(0);
                 const totalLiquidity = store.ui.liquidity.totalLiquidity;
-
                 let tx;
                 if (extrinsic.method === 'addLiquidity') {
                     const minLiquidity = totalLiquidity.isZero()
                         ? new Amount(coreAmount)
                         : new Amount(coreAmount).mul(totalLiquidity.div(coreAssetReserve));
 
-                    const maxAssetAmount = new Amount(assetAmount.muln(1 + buffer));
-                    // if (maxAssetAmount.lt(investmentAmount)) {
-                    //     const err = new InsufficientBalanceForOperation(
-                    //         maxAssetAmount,
-                    //         new Amount(investmentAmount),
-                    //         assetId
-                    //     );
-                    //     return of(setDailogError(err));
-                    // }
+                    const maxAssetAmount = totalLiquidity.isZero()
+                        ? new Amount(assetAmount)
+                        : new Amount(assetAmount.muln(1 + buffer));
                     tx = api.tx.cennzx.addLiquidity(assetId, minLiquidity, maxAssetAmount, coreAmount);
                 } else {
                     const minAssetWithdraw = new Amount(assetAmount.muln(1 - buffer));
