@@ -15,7 +15,7 @@ import {
 } from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
 
-export const getLiquidityValueEpic = (
+export const getCoreLiquidityValueEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
@@ -32,18 +32,18 @@ export const getLiquidityValueEpic = (
             }
             const coreAssetReserve = exchangeReserve ? exchangeReserve.coreAssetBalance : new Amount(0);
             const tradeAssetReserve = exchangeReserve ? exchangeReserve.assetBalance : new Amount(0);
-            let liquidityValue: Amount | BN = assetAmount;
+            let coreAmount: Amount | BN = assetAmount;
             if (!coreAssetReserve.isZero() || !tradeAssetReserve.isZero()) {
-                const partialCalculation = new Amount(assetAmount).mul(coreAssetReserve.div(tradeAssetReserve));
-                if (partialCalculation.gtn(1)) {
-                    liquidityValue = partialCalculation.isubn(1);
-                }
+                coreAmount = assetAmount
+                    .mul(coreAssetReserve)
+                    .div(tradeAssetReserve)
+                    .subn(1);
             }
-            return of(updateAddAsset2Amount(new Amount(liquidityValue)));
+            return of(updateAddAsset2Amount(new Amount(coreAmount)));
         })
     );
 
-export const getLiquidityPriceEpic = (
+export const getAssetLiquidityPriceEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
@@ -60,11 +60,11 @@ export const getLiquidityPriceEpic = (
             }
             const coreAssetReserve = exchangeReserve ? exchangeReserve.coreAssetBalance : new Amount(0);
             const tradeAssetReserve = exchangeReserve ? exchangeReserve.assetBalance : new Amount(0);
-            let liquidityPrice: Amount | BN = coreAmount;
+            let assetAmount: Amount | BN = coreAmount;
             if (!coreAssetReserve.isZero() || !tradeAssetReserve.isZero()) {
-                liquidityPrice = new Amount(coreAmount).mul(tradeAssetReserve.div(coreAssetReserve)).addn(1);
+                assetAmount = new Amount(coreAmount).mul(tradeAssetReserve.div(coreAssetReserve)).addn(1);
             }
-            return of(updateAddAsset1Amount(new Amount(liquidityPrice)));
+            return of(updateAddAsset1Amount(new Amount(assetAmount)));
         })
     );
 
@@ -112,8 +112,8 @@ export const requestLiquidityValueEpic = (
     );
 
 export default combineEpics(
-    getLiquidityValueEpic,
-    getLiquidityPriceEpic,
+    getCoreLiquidityValueEpic,
+    getAssetLiquidityPriceEpic,
     requestLiquidityValueEpic,
     requestLiquidityPriceEpic
 );
