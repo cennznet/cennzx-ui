@@ -9,6 +9,7 @@ import {IEpicDependency} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import types from '../../actions';
 import {resetTrade} from '../../actions/ui/exchange.action';
+import {resetLiquidity} from '../../actions/ui/liquidity.action';
 import {
     requestActualFee,
     RequestSubmitLiquidity,
@@ -222,7 +223,11 @@ export const submitLiquidityEpic = (
                 return tx.signAndSend(signingAccount, {signer}).pipe(
                     switchMap(({events, status}) => {
                         if (status.isInBlock) {
-                            return of(updateTxHash(status.asInBlock.toString()), updateStage(Stages.InBlock));
+                            return of(
+                                updateTxHash(status.asInBlock.toString()),
+                                updateStage(Stages.InBlock),
+                                resetLiquidity()
+                            );
                         } else if (status.isFinalized && events) {
                             return of(updateTxEvents(events), updateStage(Stages.Finalised));
                         } else {

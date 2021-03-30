@@ -25,7 +25,6 @@ export type TxDialogProps = {
 
 export const TxDialog: FC<TxDialogProps> = ({
     signingAccount,
-    isAccountLocked,
     actualTxFee,
     feeAssetId,
     extrinsic,
@@ -75,20 +74,18 @@ export const TxDialog: FC<TxDialogProps> = ({
                     error={error}
                     success={success}
                     onClose={handleClose}
-                    onSubmit={pass => {
+                    onSubmit={() => {
                         if (title === 'exchange') {
                             handleExchangeSubmit({
                                 ...exchange,
                                 extrinsic,
                                 feeInFeeAsset: estimatedTxFee.feeInFeeAsset,
-                                password: pass,
                             });
                         } else if (title === 'liquidity') {
                             handleLiquiditySubmit({
                                 ...liquidity,
                                 extrinsic,
                                 feeInFeeAsset: null,
-                                password: pass,
                             });
                         }
                     }}

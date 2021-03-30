@@ -7,7 +7,7 @@ import {
     addLiquidity,
     removeLiquidityError,
     requestTransactionFee,
-    resetTrade,
+    resetLiquidity,
     setAddAsset1Amount,
     setAddAsset2Amount,
     setLiquidityAction,
@@ -111,7 +111,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
             : dispatch(updateExtrinsic(REMOVE_LIQUIDITY));
     },
     handleReset: () => {
-        dispatch(resetTrade());
+        dispatch(resetLiquidity());
     },
     openTxDialog: (
         {

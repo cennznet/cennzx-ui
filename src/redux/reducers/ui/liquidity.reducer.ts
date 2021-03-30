@@ -164,6 +164,9 @@ export default handleActions<LiquidityState, any>(
         }),
         [LiquidityActions.EXTRINSIC_UPDATE]: produce((draft: LiquidityState, action: UpdateExtrinsicAction) => {
             draft.form.extrinsic = action.payload;
+            draft.form.assetAmount = undefined;
+            draft.form.assetId = undefined;
+            draft.form.coreAmount = undefined;
         }),
         [LiquidityActions.TRANSACTION_BUFFER_UPDATE]: produce(
             (draft: LiquidityState, action: UpdateTransactionBufferAction) => {
@@ -183,6 +186,7 @@ export default handleActions<LiquidityState, any>(
         [LiquidityActions.EXCHANGE_RATE_UPDATE]: produce((draft: LiquidityState, action: UpdateExchangeRateAction) => {
             draft.exchangeRate = action.payload;
         }),
+        [LiquidityActions.LIQUIDITY_RESET]: () => initialState,
     },
     initialState
 );

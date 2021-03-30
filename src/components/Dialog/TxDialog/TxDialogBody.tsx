@@ -77,13 +77,13 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
             case SWAP_OUTPUT:
                 message = `Your transaction to exchange ${toAssetAmount.asString(DECIMALS)} ${
                     getAsset(toAsset).symbol
-                } with{' '}
+                } with 
                     ${fromAssetAmount} ${getAsset(fromAsset).symbol} has failed.`;
                 break;
             case SWAP_INPUT:
                 message = `Your transaction to exchange  ${toAssetAmount.asString(DECIMALS)} ${
                     getAsset(toAsset).symbol
-                } with{' '}
+                } with 
                     ${fromAssetAmount} ${getAsset(fromAsset).symbol} has failed.`;
                 break;
             case ADD_LIQUIDITY:

@@ -75,7 +75,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         coreAsset,
         fromAssetBalance,
         buffer,
-        password,
     }) => {
         dispatch(
             requestSubmitSend({
@@ -90,7 +89,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
                 buffer,
                 fromAssetAmount,
                 fromAssetBalance,
-                password,
             })
         );
     },
@@ -107,7 +105,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         feeInFeeAsset,
         add1Reserve,
         buffer,
-        password,
     }) => {
         dispatch(
             requestSubmitLiquidity({
@@ -122,7 +119,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
                 buffer,
                 feeInFeeAsset,
                 add1Reserve,
-                password,
             })
         );
     },

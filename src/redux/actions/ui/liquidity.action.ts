@@ -45,6 +45,7 @@ export enum LiquidityActions {
     CORE_LIQUIDITY_PRICE_REQUEST = 'LIQUIDITY/CORE_LIQUIDITY_PRICE_REQUEST',
     ASSET_LIQUIDITY_PRICE_REQUEST = 'LIQUIDITY/ASSETLIQUIDITY_PRICE_REQUEST',
     LIQUIDITY_TO_WITHDRAW_UPDATE = 'LIQUIDITY/LIQUIDITY_TO_WITHDRAW_UPDATE',
+    LIQUIDITY_RESET = 'LIQUIDITY/LIQUIDITY_RESET',
 }
 
 export const updateExtrinsic = createAction(LiquidityActions.EXTRINSIC_UPDATE, (extrinsic: string) => extrinsic);
@@ -177,6 +178,8 @@ export const updateLiquidityForWithdrawal = createAction(
     (liquidity: Amount) => liquidity
 );
 
+export const resetLiquidity = createAction(LiquidityActions.LIQUIDITY_RESET);
+
 export type UpdateLiquidityForWithdrawalAction = ReturnType<typeof updateLiquidityForWithdrawal>;
 export type UpdateTotalLiquidityAction = ReturnType<typeof updateTotalLiquidity>;
 export type RequestLiquidityRateAction = ReturnType<typeof requestLiquidityRate>;
@@ -184,7 +187,7 @@ export type UpdateExchangeRateAction = ReturnType<typeof updateExchangeRate>;
 export type RequestTransactionFeeAction = ReturnType<typeof requestTransactionFee>;
 export type UpdateTxFeeParameterAction = ReturnType<typeof updateTxFeeParameter>;
 export type UpdateTransactionFeeAction = ReturnType<typeof updateTransactionFee>;
-export type ResetTradeAction = ReturnType<typeof resetTrade>;
+export type ResetLiquidityAction = ReturnType<typeof resetLiquidity>;
 export type SwapAssetAction = ReturnType<typeof swapAsset>;
 export type SwapPayTransactionAssetAction = ReturnType<typeof swapPayTransactionAsset>;
 export type UpdateFeeAssetAction = ReturnType<typeof updateFeeAsset>;
