@@ -13,7 +13,7 @@ import SummaryFee from '../../AdvancedSetting/SummaryFee';
 
 type AssetSwapParams = [number, number, Amount, Amount];
 
-const DECIMALS = 5;
+const DECIMALS = 4;
 
 const getCennzScanURL = txHash => `https://www.uncoverexplorer.com/extrinsic/${txHash}`;
 

@@ -44,7 +44,10 @@ export const getCoreLiquidityPriceEpic = (
                 }
                 return of(updateAddAsset2Amount(new Amount(coreAmount)));
             } else if (liquidityAction === REMOVE_LIQUIDITY) {
-                const liquidityAmount = assetAmount.mul(totalLiquidity).div(tradeAssetReserve);
+                const liquidityAmount = assetAmount
+                    .mul(totalLiquidity)
+                    .div(tradeAssetReserve)
+                    .addn(1);
                 return (api.rpc as any).cennzx.liquidityPrice(assetId, liquidityAmount).pipe(
                     switchMap(([coreAmount]) => {
                         const amount = new Amount(coreAmount);
@@ -89,7 +92,10 @@ export const getAssetLiquidityPriceEpic = (
                 }
                 return of(updateAddAsset1Amount(new Amount(assetAmount)));
             } else if (liquidityAction === REMOVE_LIQUIDITY) {
-                const liquidityAmount = coreAmount.mul(totalLiquidity).div(coreAssetReserve);
+                const liquidityAmount = coreAmount
+                    .mul(totalLiquidity)
+                    .div(coreAssetReserve)
+                    .addn(1);
                 return (api.rpc as any).cennzx.liquidityPrice(assetId, liquidityAmount).pipe(
                     switchMap(([, assetAmount]) => {
                         const amount = new Amount(assetAmount);
