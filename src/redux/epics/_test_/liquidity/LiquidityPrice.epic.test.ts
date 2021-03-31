@@ -73,10 +73,7 @@ describe('Get core amount when asset amount is provided', () => {
                     },
                 });
 
-                const coreAmount = assetAmount
-                    .mul(coreAssetReserve)
-                    .div(tradeAssetReserve)
-                    .isubn(1);
+                const coreAmount = assetAmount.mul(coreAssetReserve).div(tradeAssetReserve);
                 const output$ = getCoreLiquidityPriceEpic(action$, state$, dependencies);
                 expectObservable(output$).toBe(expect_, {
                     b: {

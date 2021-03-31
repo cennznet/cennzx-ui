@@ -40,10 +40,7 @@ export const getCoreLiquidityPriceEpic = (
             if (liquidityAction === ADD_LIQUIDITY) {
                 let coreAmount: Amount | BN = assetAmount;
                 if (!coreAssetReserve.isZero() || !tradeAssetReserve.isZero()) {
-                    coreAmount = assetAmount
-                        .mul(coreAssetReserve)
-                        .div(tradeAssetReserve)
-                        .isubn(1);
+                    coreAmount = assetAmount.mul(coreAssetReserve).div(tradeAssetReserve);
                 }
                 return of(updateAddAsset2Amount(new Amount(coreAmount)));
             } else if (liquidityAction === REMOVE_LIQUIDITY) {
