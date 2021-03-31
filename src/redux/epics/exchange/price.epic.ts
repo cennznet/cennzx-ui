@@ -45,7 +45,7 @@ export const getInputPriceEpic = (
             ([[api], store]): Observable<Action<any>> => {
                 const {fromAssetAmount, fromAsset, toAsset, toAssetAmount} = store.ui.exchange.form as ExchangeFormData;
                 const {userAssetBalance} = store.ui.exchange;
-                return api.rpc.cennzx.sellPrice(toAsset, fromAssetAmount, fromAsset).pipe(
+                return api.rpc.cennzx.sellPrice(fromAsset, fromAssetAmount, toAsset).pipe(
                     filter((value: BN) => !toAssetAmount || !new Amount(value.toString()).eq(toAssetAmount)),
                     map((estimatedToAssetAmount: BN) => {
                         const amount = new Amount(estimatedToAssetAmount.toString(), AmountUnit.UN);
@@ -88,7 +88,7 @@ export const getOutputPriceEpic = (
         switchMap(
             ([[api], store]): Observable<Action<any>> => {
                 const {fromAssetAmount, fromAsset, toAsset, toAssetAmount} = store.ui.exchange.form as ExchangeFormData;
-                return api.rpc.cennzx.buyPrice(fromAsset, toAssetAmount, toAsset).pipe(
+                return api.rpc.cennzx.buyPrice(toAsset, toAssetAmount, fromAsset).pipe(
                     filter((value: BN) => !fromAssetAmount || !new Amount(value.toString()).eq(fromAssetAmount)),
                     map((estimatedFromAsset: BN) => {
                         const amount = new Amount(estimatedFromAsset.toString(), AmountUnit.UN);

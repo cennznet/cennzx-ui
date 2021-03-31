@@ -41,33 +41,32 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
     feeExchangeResult,
     extrinsic: {method, params, price},
 }) => {
-    const [fromAsset, toAsset, amount] = params as AssetSwapParams;
-    const [toAssetAmount, fromAssetAmount] =
-        method === SWAP_OUTPUT
-            ? [amount, price.asString(DECIMALS, Amount.ROUND_UP)]
-            : [price, amount.asString(DECIMALS)];
+    const [fromAsset, toAsset, fromAssetAmount, toAssetAmount] = params as AssetSwapParams;
+
     let message;
     if (success) {
         switch (method) {
             case SWAP_OUTPUT:
                 message = `You successfully exchanged ${toAssetAmount.asString(DECIMALS)} ${
                     getAsset(toAsset).symbol
-                } with{' '}
-                    ${fromAssetAmount} ${getAsset(fromAsset).symbol}.`;
+                } with 
+                    ${fromAssetAmount.asString(DECIMALS)} ${getAsset(fromAsset).symbol}.`;
                 break;
             case SWAP_INPUT:
                 message = `You successfully exchanged ${toAssetAmount.asString(DECIMALS)} ${
                     getAsset(toAsset).symbol
-                } with{' '}
-                    ${fromAssetAmount} ${getAsset(fromAsset).symbol}.`;
+                } with 
+                    ${fromAssetAmount.asString(DECIMALS)} ${getAsset(fromAsset).symbol}.`;
                 break;
             case ADD_LIQUIDITY:
-                message = `You successfully added ${toAssetAmount.asString(DECIMALS)} ${getAsset(toAsset).symbol} and
-                    ${fromAssetAmount} ${getAsset(fromAsset).symbol} in the pool.`;
+                message = `You successfully added ${toAssetAmount.asString(DECIMALS)} ${getAsset(fromAsset).symbol} and
+                    ${fromAssetAmount.asString(DECIMALS)} ${getAsset(toAsset).symbol} in the pool.`;
                 break;
             case REMOVE_LIQUIDITY:
-                message = `You successfully withdraw ${toAssetAmount.asString(DECIMALS)} ${getAsset(toAsset).symbol} and
-                    ${fromAssetAmount} ${getAsset(fromAsset).symbol} from the pool.`;
+                message = `You successfully withdraw ${toAssetAmount.asString(DECIMALS)} ${
+                    getAsset(fromAsset).symbol
+                } and
+                    ${fromAssetAmount.asString(DECIMALS)} ${getAsset(toAsset).symbol} from the pool.`;
                 break;
             default:
                 message = '';
@@ -88,15 +87,15 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
                 break;
             case ADD_LIQUIDITY:
                 message = `Your transaction to add liquidity of ${toAssetAmount.asString(DECIMALS)} ${
-                    getAsset(toAsset).symbol
+                    getAsset(fromAsset).symbol
                 } and
-                    ${fromAssetAmount} ${getAsset(fromAsset).symbol} in the pool failed.`;
+                    ${fromAssetAmount.asString(DECIMALS)} ${getAsset(toAsset).symbol} in the pool failed.`;
                 break;
             case REMOVE_LIQUIDITY:
                 message = `Your transaction to withdraw liquidity of ${toAssetAmount.asString(DECIMALS)} ${
-                    getAsset(toAsset).symbol
+                    getAsset(fromAsset).symbol
                 } and
-                    ${fromAssetAmount} ${getAsset(fromAsset).symbol} from the pool failed.`;
+                    ${fromAssetAmount.asString(DECIMALS)} ${getAsset(toAsset).symbol} from the pool failed.`;
                 break;
             default:
                 message = '';
