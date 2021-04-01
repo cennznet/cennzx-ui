@@ -1,3 +1,4 @@
+import {hexToString} from '@polkadot/util';
 import React from 'react';
 import {createSelector} from 'reselect';
 import {AppState} from '../../redux/reducers';
@@ -19,7 +20,23 @@ const getFeeAssetId = (state: AppState) => state.ui.exchange.form.feeAssetId;
 const getCoreAsset = (state: AppState) => state.global.coreAssetId;
 const getUserAssetBalance = (state: AppState) => state.ui.exchange.userAssetBalance;
 const getAssetInfo = (state: AppState) => state.global.assetInfo;
-export const getAssets = () => (typeof window !== 'undefined' ? window.config.ASSETS : []);
+// export const getAssets = () => (typeof window !== 'undefined' ? window.config.ASSETS : []);
+
+export const getAssets = createSelector(
+    [getAssetInfo],
+    assetInfo => {
+        const newAssetList = [];
+        assetInfo &&
+            assetInfo.forEach(asset => {
+                const assetObject = {
+                    symbol: hexToString(asset.symbol),
+                    id: asset.id,
+                };
+                newAssetList.push(assetObject);
+            });
+        return newAssetList;
+    }
+);
 
 export const getFromAssetUserBalance = createSelector(
     [getFromAsset, getUserAssetBalance, getSigningAccount],

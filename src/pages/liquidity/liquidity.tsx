@@ -28,7 +28,7 @@ import {AmountParams, Asset, IFee, IOption, IUserShareInPool, LiquidityFormData}
 import {Amount} from '../../util/Amount';
 import getFormErrors from './validation';
 
-export const DECIMALS = 4;
+//export const DECIMALS = 4;
 
 const Line = styled.div`
     border-bottom: 1px solid rgba(17, 48, 255, 0.3);
@@ -304,13 +304,13 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         }
     }, []);
 
-    const assetBalance = accountAssetBalance && accountAssetBalance.asString(DECIMALS);
+    const assetBalance = accountAssetBalance && accountAssetBalance.asString(assetInfo[assetId].decimalPlaces);
     const assetName = getAssetName(assets, assetId);
-    const assetPool = assetReserve && assetReserve.asString && assetReserve.asString(DECIMALS);
+    const assetPool = assetReserve && assetReserve.asString && assetReserve.asString(assetInfo[assetId].decimalPlaces);
 
-    const coreBalance = accountCoreBalance && accountCoreBalance.asString(DECIMALS);
+    const coreBalance = accountCoreBalance && accountCoreBalance.asString(assetInfo[coreAssetId].decimalPlaces);
     const coreName = getAssetName(assets, coreAssetId);
-    const corePool = coreReserve && coreReserve.asString && coreReserve.asString(DECIMALS);
+    const corePool = coreReserve && coreReserve.asString && coreReserve.asString(assetInfo[coreAssetId].decimalPlaces);
 
     const [userAssetShareInPool, userCoreShareInPool] = userShareInPool
         ? [userShareInPool.assetBalance.asString(), userShareInPool.coreAssetBalance.asString()]
