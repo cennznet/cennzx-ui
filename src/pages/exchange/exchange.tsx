@@ -16,12 +16,13 @@ import {propSatisfies} from 'ramda';
 import React, {FC, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
+import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
 import {AmountParams, Asset, ExchangeFormData, IFee, IOption} from '../../typings';
 import {Amount} from '../../util/Amount';
 import {getAsset} from '../../util/assets';
 import getFormErrors from './validation';
-export const DECIMALS = 4;
+//export const DECIMALS = 4;
 const SWAP_OUTPUT = 'buyAsset';
 const SWAP_INPUT = 'sellAsset';
 
@@ -126,11 +127,12 @@ export type ExchangeProps = {
     txFeeMsg: string;
     coreAssetId: number;
     feeRate: FeeRate;
+    assetInfo: AssetDetails[];
 } & ExchangeState;
 
 export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
     const [state, setState] = useState({touched: false, assetDialogOpen: false});
-    const {accounts, assets, fromAssetBalance, error, outputReserve, txFee, coreAssetId} = props;
+    const {accounts, assets, fromAssetBalance, error, outputReserve, txFee, coreAssetId, assetInfo} = props;
     const {
         toAsset,
         toAssetAmount,
@@ -149,9 +151,9 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
         assetSymbol = getAsset(feeAssetId).symbol;
         if (coreAssetId === feeAssetId && txFee) {
             // If fee asset is CPAY use cpayFee
-            fee = txFee.feeInCpay.asString(DECIMALS);
+            fee = txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces);
         } else if (txFee && txFee.feeInFeeAsset) {
-            fee = txFee.feeInFeeAsset.asString(DECIMALS);
+            fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId].decimalPlaces);
             // return (
             //     <>
             //         Your estimated fee for this transaction is {fee} {assetSymbol}{' '}
@@ -227,7 +229,11 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         }}
                         title="With"
                         secondaryTitle={extrinsic === SWAP_OUTPUT ? ESTIMATED_LABEL : null}
-                        message={fromAssetBalance ? `Balance: ${fromAssetBalance.asString(DECIMALS)}` : ''}
+                        message={
+                            fromAssetBalance
+                                ? `Balance: ${fromAssetBalance.asString(assetInfo[fromAsset].decimalPlaces)}`
+                                : ''
+                        }
                     />
                     <ErrorMessage errors={formErrors} field={FormSection.fromAssetInput} />
                 </PageInside>
@@ -258,6 +264,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     buffer={buffer}
                     selectOptions={assets}
                     selectValue={feeAssetId}
+                    assetInfo={assetInfo}
                 />
                 <PageInside>
                     <SectionColumn>

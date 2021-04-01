@@ -35,6 +35,7 @@ const mapStateToProps = (state: AppState) => ({
     send: state.ui.send.form,
     fromAssetBalance: state.ui.txDialog.fromAssetBalance,
     liquidity: state.ui.liquidity.form,
+    assetInfo: state.global.assetInfo,
     success: isTxSuccessSelector(state),
 });
 

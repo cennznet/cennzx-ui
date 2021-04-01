@@ -16,6 +16,7 @@ export type TxDialogProps = {
     send;
     buffer: number;
     liquidity;
+    assetInfo: [];
     handleClose: () => void;
     handleExchangeSubmit: (arg0: SubmitType) => void;
     handleSendSubmit: (arg0: SubmitType) => void;
@@ -42,6 +43,7 @@ export const TxDialog: FC<TxDialogProps> = ({
     exchange,
     send,
     liquidity,
+    assetInfo,
     handleClose,
     handleExchangeSubmit,
     handleSendSubmit,
@@ -66,6 +68,7 @@ export const TxDialog: FC<TxDialogProps> = ({
                     feeAssetId={feeAssetId}
                     actualTxFee={actualTxFee}
                     events={events}
+                    assetInfo={assetInfo}
                 />
             }
             footer={

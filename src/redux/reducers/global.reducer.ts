@@ -1,17 +1,24 @@
+import {AssetInfo} from '@cennznet/types';
 import {FeeRate} from '@cennznet/types/interfaces/cennzx';
 import {MetadataDef} from '@polkadot/extension-inject/types';
 import produce from 'immer';
 import {handleActions} from 'redux-actions';
 import GlobalActions, {
+    UpdateAssetsInfoAction,
     UpdateCoreAssetAction,
     UpdateFeeRateAction,
     UpdateMetadataAction,
 } from '../actions/global.action';
 
+export interface AssetDetails {
+    decimalPlaces: number;
+    symbol: string;
+}
 export interface GlobalState {
     coreAssetId?: number;
     feeRate?: FeeRate;
     metadata?: MetadataDef;
+    assetInfo?: AssetDetails[];
 }
 
 export const initialState: GlobalState = {};
@@ -26,6 +33,14 @@ export default handleActions(
         }),
         [GlobalActions.METADATA_UPDATE]: produce((draft: GlobalState, action: UpdateMetadataAction) => {
             draft.metadata = action.payload;
+        }),
+        [GlobalActions.ASSET_INFO_UPDATE]: produce((draft: GlobalState, action: UpdateAssetsInfoAction) => {
+            const newAssetList = new Array();
+            const assetList = action.payload;
+            assetList.forEach(asset => {
+                newAssetList[asset[0]] = asset[1];
+            });
+            draft.assetInfo = newAssetList;
         }),
     },
     initialState

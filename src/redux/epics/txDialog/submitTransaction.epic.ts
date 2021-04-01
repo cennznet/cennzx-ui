@@ -9,7 +9,7 @@ import {IEpicDependency} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import types from '../../actions';
 import {resetTrade} from '../../actions/ui/exchange.action';
-import {resetLiquidity} from '../../actions/ui/liquidity.action';
+import {resetLiquidity, updateExtrinsic} from '../../actions/ui/liquidity.action';
 import {
     requestActualFee,
     RequestSubmitLiquidity,
@@ -50,12 +50,12 @@ export const submitTransactionEpic = (
                 let tx;
                 const [fromAsset, toAsset, fromAssetAmount, toAssetAmount] = extrinsic.params;
                 if (extrinsic.method === 'sellAsset') {
-                    const sellAmount = fromAssetAmount; //.asString(DECIMALS);
-                    const minSale = new Amount(toAssetAmount.muln(1 - buffer)); /*.asString(DECIMALS);*/
+                    const sellAmount = fromAssetAmount;
+                    const minSale = new Amount(toAssetAmount.muln(1 - buffer));
                     tx = api.tx.cennzx.sellAsset(null, fromAsset, toAsset, sellAmount, minSale);
                 } else {
-                    const buyAmount = toAssetAmount; //.asString(DECIMALS);
-                    const maxSale = new Amount(fromAssetAmount.muln(1 + buffer)); /*.asString(DECIMALS);*/
+                    const buyAmount = toAssetAmount;
+                    const maxSale = new Amount(fromAssetAmount.muln(1 + buffer));
                     const recipient = null;
                     tx = api.tx.cennzx.buyAsset(recipient, fromAsset, toAsset, buyAmount, maxSale);
                 }
@@ -101,79 +101,80 @@ export const submitTransactionEpic = (
         })
     );
 
-export const submitSendEpic = (
-    action$: Observable<Action<any>>,
-    store$: Observable<AppState>,
-    {api$}: IEpicDependency
-): Observable<Action<any>> =>
-    combineLatest([
-        api$,
-        action$.pipe(ofType<RequestSubmitSend>(types.ui.TxDialog.TRANSACTION_SUBMIT_SEND)),
-        from(web3FromSource('polkadot-js')),
-    ]).pipe(
-        withLatestFrom(store$),
-        switchMap(
-            ([
-                [
-                    api,
-                    {
-                        payload: {extrinsic, signingAccount, recipientAddress, buffer, password},
-                    },
-                    injector,
-                ],
-                store,
-            ]): Observable<Action<any>> => {
-                const [fromAsset, toAsset, amount] = extrinsic.params;
-                const sellAmount = amount.asString(DECIMALS);
-                let tx;
-                if (extrinsic.method === 'sellAsset') {
-                    const minSale = new Amount(amount.muln(1 - buffer)).asString(DECIMALS);
-                    tx = api.tx.cennzx.sellAsset(recipientAddress, fromAsset, toAsset, +sellAmount, 0.0001);
-                } else {
-                    const maxSale = new Amount(amount.muln(1 + buffer)).asString(DECIMALS);
-                    tx = api.tx.cennzx.buyAsset(recipientAddress, fromAsset, toAsset, +sellAmount, 1000000);
-                }
-                const signer = injector.signer;
-
-                return tx.signAndSend(signingAccount, {signer}).pipe(
-                    switchMap(({events, status}: SubmittableResult) => {
-                        if (status.isInBlock) {
-                            return of(updateTxHash(tx.hash.toString()), updateStage(Stages.InBlock));
-                        } else if (status.isFinalized && events) {
-                            const blockHash = status.asFinalized;
-                            const extrinsicIndex = events[0].phase.asApplyExtrinsic;
-                            return of(updateTxEvents(events), updateStage(Stages.Finalised));
-                        } else {
-                            return EMPTY;
-                        }
-                    }),
-                    catchError((err: Error) => {
-                        let extrinsicErr;
-                        if (err.message === '1010: Invalid Transaction (3)') {
-                            extrinsicErr = new ExtrinsicFailed(
-                                "Sending account's balance is too low to execute this operation."
-                            );
-                        } else if (err.message === '1010: Invalid Transaction (0)') {
-                            extrinsicErr = new ExtrinsicFailed('BadSignature fails the extrinsic');
-                        } else if (err.message === '1010: Invalid Transaction (1)') {
-                            extrinsicErr = new ExtrinsicFailed('Nonce too low.');
-                        } else if (err.message === '1010: Invalid Transaction (2)') {
-                            extrinsicErr = new ExtrinsicFailed('Nonce too high.');
-                        } else if (err.message === '1010: Invalid Transaction (4)') {
-                            extrinsicErr = new ExtrinsicFailed('Block is full, no more extrinsics can be applied.');
-                        } else {
-                            extrinsicErr = new ExtrinsicFailed(err.message);
-                        }
-                        return of(setDailogError(extrinsicErr));
-                    })
-                );
-            }
-        ),
-        catchError((err: Error) => {
-            const extrinsicErr = new ExtrinsicFailed(err.message);
-            return of(setDailogError(extrinsicErr));
-        })
-    );
+/// TODO - Re-introduce this epic once we have exchange assets and sending it to different address
+// export const submitSendEpic = (
+//     action$: Observable<Action<any>>,
+//     store$: Observable<AppState>,
+//     {api$}: IEpicDependency
+// ): Observable<Action<any>> =>
+//     combineLatest([
+//         api$,
+//         action$.pipe(ofType<RequestSubmitSend>(types.ui.TxDialog.TRANSACTION_SUBMIT_SEND)),
+//         from(web3FromSource('polkadot-js')),
+//     ]).pipe(
+//         withLatestFrom(store$),
+//         switchMap(
+//             ([
+//                 [
+//                     api,
+//                     {
+//                         payload: {extrinsic, signingAccount, recipientAddress, buffer, password},
+//                     },
+//                     injector,
+//                 ],
+//                 store,
+//             ]): Observable<Action<any>> => {
+//                 const [fromAsset, toAsset, amount] = extrinsic.params;
+//                 const sellAmount = amount.asString(DECIMALS);
+//                 let tx;
+//                 if (extrinsic.method === 'sellAsset') {
+//                     const minSale = new Amount(amount.muln(1 - buffer)).asString(DECIMALS);
+//                     tx = api.tx.cennzx.sellAsset(recipientAddress, fromAsset, toAsset, +sellAmount, 0.0001);
+//                 } else {
+//                     const maxSale = new Amount(amount.muln(1 + buffer)).asString(DECIMALS);
+//                     tx = api.tx.cennzx.buyAsset(recipientAddress, fromAsset, toAsset, +sellAmount, 1000000);
+//                 }
+//                 const signer = injector.signer;
+//
+//                 return tx.signAndSend(signingAccount, {signer}).pipe(
+//                     switchMap(({events, status}: SubmittableResult) => {
+//                         if (status.isInBlock) {
+//                             return of(updateTxHash(tx.hash.toString()), updateStage(Stages.InBlock));
+//                         } else if (status.isFinalized && events) {
+//                             const blockHash = status.asFinalized;
+//                             const extrinsicIndex = events[0].phase.asApplyExtrinsic;
+//                             return of(updateTxEvents(events), updateStage(Stages.Finalised));
+//                         } else {
+//                             return EMPTY;
+//                         }
+//                     }),
+//                     catchError((err: Error) => {
+//                         let extrinsicErr;
+//                         if (err.message === '1010: Invalid Transaction (3)') {
+//                             extrinsicErr = new ExtrinsicFailed(
+//                                 "Sending account's balance is too low to execute this operation."
+//                             );
+//                         } else if (err.message === '1010: Invalid Transaction (0)') {
+//                             extrinsicErr = new ExtrinsicFailed('BadSignature fails the extrinsic');
+//                         } else if (err.message === '1010: Invalid Transaction (1)') {
+//                             extrinsicErr = new ExtrinsicFailed('Nonce too low.');
+//                         } else if (err.message === '1010: Invalid Transaction (2)') {
+//                             extrinsicErr = new ExtrinsicFailed('Nonce too high.');
+//                         } else if (err.message === '1010: Invalid Transaction (4)') {
+//                             extrinsicErr = new ExtrinsicFailed('Block is full, no more extrinsics can be applied.');
+//                         } else {
+//                             extrinsicErr = new ExtrinsicFailed(err.message);
+//                         }
+//                         return of(setDailogError(extrinsicErr));
+//                     })
+//                 );
+//             }
+//         ),
+//         catchError((err: Error) => {
+//             const extrinsicErr = new ExtrinsicFailed(err.message);
+//             return of(setDailogError(extrinsicErr));
+//         })
+//     );
 
 export const submitLiquidityEpic = (
     action$: Observable<Action<any>>,
@@ -226,7 +227,8 @@ export const submitLiquidityEpic = (
                             return of(
                                 updateTxHash(status.asInBlock.toString()),
                                 updateStage(Stages.InBlock),
-                                resetLiquidity()
+                                resetLiquidity(),
+                                updateExtrinsic(extrinsic.method)
                             );
                         } else if (status.isFinalized && events) {
                             return of(updateTxEvents(events), updateStage(Stages.Finalised));
@@ -264,4 +266,4 @@ export const resetTradeOnInBlockCastedStage = (
         })
     );
 
-export default combineEpics(submitTransactionEpic, submitSendEpic, submitLiquidityEpic, resetTradeOnInBlockCastedStage);
+export default combineEpics(submitTransactionEpic, submitLiquidityEpic, resetTradeOnInBlockCastedStage);

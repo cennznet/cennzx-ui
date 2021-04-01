@@ -9,6 +9,7 @@ import TxSummaryEstimatedTxFeeForBody from 'components/TxSummary/TxSummaryEstima
 import React, {FC, useState} from 'react';
 import styled from 'styled-components';
 import {DECIMALS, FormSection} from '../../pages/exchange/exchange';
+import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {Asset} from '../../typings';
 import {Amount} from '../../util/Amount';
 import {getAsset} from '../../util/assets';
@@ -92,6 +93,7 @@ type SummaryOrErrorProps = {
     buffer: number;
     selectOptions: Asset[];
     selectValue: number;
+    assetInfo: AssetDetails[];
 };
 
 const AdvancedSetting: FC<SummaryOrErrorProps> = ({
@@ -107,6 +109,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
     spinner,
     selectOptions,
     selectValue,
+    assetInfo,
 }) => {
     const {
         toAssetAmount,
@@ -153,6 +156,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                         buffer={buffer}
                                         method={extrinsic}
                                         recipientAddress={recipientAddress}
+                                        assetInfo={assetInfo}
                                     />
                                 </P>
                                 {/* <Top>
@@ -170,7 +174,12 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                     showBorder={true}
                                 /> */}
                                 <SummaryBody>
-                                    <SummaryFee txFee={txFee} coreAssetId={coreAssetId} feeAssetId={feeAssetId} />
+                                    <SummaryFee
+                                        txFee={txFee}
+                                        coreAssetId={coreAssetId}
+                                        feeAssetId={feeAssetId}
+                                        assetInfo={assetInfo}
+                                    />
                                 </SummaryBody>
                             </>
                         )}

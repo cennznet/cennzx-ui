@@ -52,6 +52,7 @@ const mapStateToProps = (state: AppState): LiquidityProps => ({
     ...state.ui.liquidity,
     coreAssetId: state.global.coreAssetId,
     feeRate: state.global.feeRate,
+    assetInfo: state.global.assetInfo,
     assetReserve: getAssetReserve(state),
     accountAssetBalance: getAccountAssetBalance(state),
     accountCoreBalance: getAccountCoreBalance(state),

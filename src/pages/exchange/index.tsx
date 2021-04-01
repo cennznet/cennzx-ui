@@ -37,6 +37,7 @@ const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
 
 const mapStateToProps = (state: AppState): ExchangeProps => ({
     ...state.ui.exchange,
+    assetInfo: state.global.assetInfo,
     coreAssetId: state.global.coreAssetId,
     feeRate: state.global.feeRate,
     fromAssetBalance: getFromAssetUserBalance(state),

@@ -21,6 +21,7 @@ import {Icon} from 'semantic-ui-react';
 import styled from 'styled-components';
 import liquidity from '.';
 import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
+import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
 import {LiquidityState} from '../../redux/reducers/ui/liquidity.reducer';
 import {AmountParams, Asset, IFee, IOption, IUserShareInPool, LiquidityFormData} from '../../typings';
@@ -220,7 +221,7 @@ export type LiquidityDispatchProps = {
     handleReset(): void;
     handleExtrinsicChange(type: string): void;
     handleLiquidityAction(type: LiquidityAction): void;
-    openTxDialog(form: LiquidityFormData, estimatedFee: IFee): void;
+    openTxDialog(form: LiquidityFormData, estimatedFee: IFee, assetInfo: []): void;
 };
 
 export type LiquidityProps = {
@@ -241,6 +242,7 @@ export type LiquidityProps = {
     fee: any;
     feeRate: FeeRate;
     userShareInPool: IUserShareInPool;
+    assetInfo: AssetDetails[];
 } & LiquidityState;
 
 const getAssetName = (options, id) => {
@@ -277,6 +279,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         fee,
         txFee,
         userShareInPool,
+        assetInfo,
     } = props;
 
     const {assetId, assetAmount, buffer, coreAmount, extrinsic, feeAssetId, signingAccount, type} = props.form;
@@ -482,7 +485,9 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                         flat
                         primary
                         // disabled={formErrors.size > 0 || !txFee}
-                        onClick={() => props.openTxDialog(props.form as LiquidityFormData, props.txFee)}
+                        onClick={() =>
+                            props.openTxDialog(props.form as LiquidityFormData, props.txFee, props.assetInfo)
+                        }
                     >
                         {state.liquidityAction === LiquidityAction.ADD ? 'Add' : 'Withdraw'}
                     </Button>
@@ -511,6 +516,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     buffer={buffer}
                     selectOptions={assets}
                     selectValue={feeAssetId}
+                    assetInfo={assetInfo}
                 />
             </form>
         </Page>

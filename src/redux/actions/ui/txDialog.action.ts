@@ -68,6 +68,7 @@ export const openDialog = createAction(
         recipientAddress,
         fromAsset,
         fromAssetBalance,
+        assetInfo,
     }: OpenDialog) => ({
         title,
         signingAccount,
@@ -77,6 +78,7 @@ export const openDialog = createAction(
         recipientAddress,
         fromAsset,
         fromAssetBalance,
+        assetInfo,
     })
 );
 
