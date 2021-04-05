@@ -22,7 +22,6 @@ import {
     clearTxFeeEpic,
 } from '../../exchange/clearFields.epic';
 import {EmptyPool} from '../../../../error/error';
-import {getAsset} from '../../../../util/assets';
 
 describe('Clear toAsset amount field when from asset is set', () => {
     const amount = new Amount('2');
@@ -307,7 +306,7 @@ describe('Clear buy/with asset amounts when asset pool is empty', () => {
     if (typeof window !== 'undefined') {
         window.config.ASSETS = [{symbol: 'CENNZ', id: 16000}, {symbol: 'CPAY', id: 16001}, {symbol: 'PLUG', id: 16003}];
     }
-    const triggers = [setExchangeError(new EmptyPool(getAsset(16001)))];
+    const triggers = [setExchangeError(new EmptyPool({symbol: 'CPAY', id: 16001}))];
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {

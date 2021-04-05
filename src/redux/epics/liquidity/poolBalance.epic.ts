@@ -6,7 +6,6 @@ import {catchError, filter, map, switchMap, takeUntil, withLatestFrom} from 'rxj
 import {EmptyPool} from '../../../error/error';
 import {IEpicDependency, IUserShareInPool} from '../../../typings';
 import {Amount} from '../../../util/Amount';
-import {getAsset} from '../../../util/assets';
 import types from '../../actions';
 
 import {

@@ -20,9 +20,7 @@ import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
 import {AmountParams, Asset, ExchangeFormData, IFee, IOption} from '../../typings';
 import {Amount} from '../../util/Amount';
-import {getAsset} from '../../util/assets';
 import getFormErrors from './validation';
-//export const DECIMALS = 4;
 const SWAP_OUTPUT = 'buyAsset';
 const SWAP_INPUT = 'sellAsset';
 
@@ -145,23 +143,6 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
     } = props.form;
     const assetForEmptyPool = error.find(err => err instanceof EmptyPool);
     const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
-    let fee;
-    let assetSymbol;
-    if (coreAssetId) {
-        assetSymbol = getAsset(feeAssetId).symbol;
-        if (coreAssetId === feeAssetId && txFee) {
-            // If fee asset is CPAY use cpayFee
-            fee = txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces);
-        } else if (txFee && txFee.feeInFeeAsset) {
-            fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId].decimalPlaces);
-            // return (
-            //     <>
-            //         Your estimated fee for this transaction is {fee} {assetSymbol}{' '}
-            //         (converted to ${txFee.feeInCpay.asString(DECIMALS)} CPAY)
-            //     </>
-            // );
-        }
-    }
 
     return (
         <Page id={'page'}>

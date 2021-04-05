@@ -1,11 +1,8 @@
-import {hexToString} from '@polkadot/util';
 import React from 'react';
 import {createSelector} from 'reselect';
 import {AppState} from '../../redux/reducers';
 import {Asset, IAssetBalance, IExchangePool} from '../../typings';
 import {Amount} from '../../util/Amount';
-import {getAsset} from '../../util/assets';
-// import {DECIMALS} from './exchange';
 
 const getBuffer = (state: AppState) => state.ui.exchange.form.buffer;
 const getToAsset = (state: AppState) => state.ui.exchange.form.toAsset;
@@ -29,7 +26,7 @@ export const getAssets = createSelector(
         assetInfo &&
             assetInfo.forEach(asset => {
                 const assetObject = {
-                    symbol: hexToString(asset.symbol),
+                    symbol: asset.symbol,
                     id: asset.id,
                 };
                 newAssetList.push(assetObject);
@@ -85,7 +82,7 @@ export const getExchangeRateMsg = createSelector(
     (exchangeRate, assets, fromAsset, toAsset, txFee, coreAsset, feeAssetId, fromeAmount, assetInfo) => {
         if (!fromeAmount || !exchangeRate) return;
         let fee;
-        const assetSymbol = getAsset(feeAssetId).symbol;
+        const assetSymbol = assetInfo[feeAssetId].symbol;
         if (coreAsset && coreAsset === feeAssetId && txFee) {
             fee = `${txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces)} ${assetSymbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {

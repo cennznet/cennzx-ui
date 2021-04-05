@@ -7,14 +7,11 @@ import {AssetDetails} from '../../../redux/reducers/global.reducer';
 import {Stages} from '../../../redux/reducers/ui/txDialog.reducer';
 import {IExtrinsic, IFee} from '../../../typings';
 import {Amount} from '../../../util/Amount';
-import {getAsset} from '../../../util/assets';
 import {ADD_LIQUIDITY, REMOVE_LIQUIDITY, SWAP_INPUT, SWAP_OUTPUT} from '../../../util/extrinsicUtil';
 import {SummaryBuy} from '../../AdvancedSetting/SummaryBuy';
 import SummaryFee from '../../AdvancedSetting/SummaryFee';
 
 type AssetSwapParams = [number, number, Amount, Amount];
-
-//const DECIMALS = 4;
 
 const getCennzScanURL = txHash => `https://www.uncoverexplorer.com/extrinsic/${txHash}`;
 
@@ -45,37 +42,37 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
     assetInfo,
 }) => {
     const [fromAsset, toAsset, fromAssetAmount, toAssetAmount] = params as AssetSwapParams;
+    const toAssetDecimalPlaces = assetInfo[toAsset].decimalPlaces;
+    const toAssetSymbol = assetInfo[toAsset].symbol;
+    const fromAssetDecimalPlaces = assetInfo[fromAsset].decimalPlaces;
+    const fromAssetSymbol = assetInfo[fromAsset].symbol;
 
     let message;
     if (success) {
         switch (method) {
             case SWAP_OUTPUT:
-                message = `You successfully exchanged ${toAssetAmount.asString(assetInfo[toAsset].decimalPlaces)} ${
-                    getAsset(toAsset).symbol
-                } with 
-                    ${fromAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${getAsset(fromAsset).symbol}.`;
+                message = `You successfully exchanged ${toAssetAmount.asString(
+                    toAssetDecimalPlaces
+                )} ${toAssetSymbol} with 
+                    ${fromAssetAmount.asString(fromAssetDecimalPlaces)} ${fromAssetSymbol}.`;
                 break;
             case SWAP_INPUT:
-                message = `You successfully exchanged ${toAssetAmount.asString(assetInfo[toAsset].decimalPlaces)} ${
-                    getAsset(toAsset).symbol
-                } with 
-                    ${fromAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${getAsset(fromAsset).symbol}.`;
+                message = `You successfully exchanged ${toAssetAmount.asString(
+                    toAssetDecimalPlaces
+                )} ${toAssetSymbol} with 
+                    ${fromAssetAmount.asString(fromAssetDecimalPlaces)} ${fromAssetSymbol}.`;
                 break;
             case ADD_LIQUIDITY:
-                message = `You successfully added ${toAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${
-                    getAsset(fromAsset).symbol
-                } and
-                    ${fromAssetAmount.asString(assetInfo[toAsset].decimalPlaces)} ${
-                    getAsset(toAsset).symbol
-                } in the pool.`;
+                message = `You successfully added ${toAssetAmount.asString(
+                    fromAssetDecimalPlaces
+                )} ${fromAssetSymbol} and
+                    ${fromAssetAmount.asString(toAssetDecimalPlaces)} ${toAssetSymbol} in the pool.`;
                 break;
             case REMOVE_LIQUIDITY:
-                message = `You successfully withdraw ${toAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${
-                    getAsset(fromAsset).symbol
-                } and
-                    ${fromAssetAmount.asString(assetInfo[toAsset].decimalPlaces)} ${
-                    getAsset(toAsset).symbol
-                } from the pool.`;
+                message = `You successfully withdraw ${toAssetAmount.asString(
+                    fromAssetDecimalPlaces
+                )} ${fromAssetSymbol} and
+                    ${fromAssetAmount.asString(toAssetDecimalPlaces)} ${toAssetSymbol} from the pool.`;
                 break;
             default:
                 message = '';
@@ -83,36 +80,32 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
     } else {
         switch (method) {
             case SWAP_OUTPUT:
-                message = `Your transaction to exchange ${toAssetAmount.asString(assetInfo[toAsset].decimalPlaces)} ${
-                    getAsset(toAsset).symbol
-                } with 
-                    ${fromAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${
-                    getAsset(fromAsset).symbol
-                } has failed.`;
+                message = `Your transaction to exchange ${toAssetAmount.asString(
+                    toAssetDecimalPlaces
+                )} ${toAssetSymbol} with 
+                    ${fromAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${fromAssetSymbol} has failed.`;
                 break;
             case SWAP_INPUT:
-                message = `Your transaction to exchange  ${toAssetAmount.asString(assetInfo[toAsset].decimalPlaces)} ${
-                    getAsset(toAsset).symbol
-                } with 
-                    ${fromAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${
-                    getAsset(fromAsset).symbol
-                } has failed.`;
+                message = `Your transaction to exchange  ${toAssetAmount.asString(
+                    toAssetDecimalPlaces
+                )} ${toAssetSymbol} with 
+                    ${fromAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${fromAssetSymbol} has failed.`;
                 break;
             case ADD_LIQUIDITY:
                 message = `Your transaction to add liquidity of ${toAssetAmount.asString(
-                    assetInfo[toAsset].decimalPlaces
-                )} ${getAsset(fromAsset).symbol} and
-                    ${fromAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${
-                    getAsset(toAsset).symbol
-                } in the pool failed.`;
+                    toAssetDecimalPlaces
+                )} ${fromAssetSymbol} and
+                    ${fromAssetAmount.asString(
+                        assetInfo[fromAsset].decimalPlaces
+                    )} ${toAssetSymbol} in the pool failed.`;
                 break;
             case REMOVE_LIQUIDITY:
                 message = `Your transaction to withdraw liquidity of ${toAssetAmount.asString(
-                    assetInfo[toAsset].decimalPlaces
-                )} ${getAsset(fromAsset).symbol} and
-                    ${fromAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${
-                    getAsset(toAsset).symbol
-                } from the pool failed.`;
+                    toAssetDecimalPlaces
+                )} ${fromAssetSymbol} and
+                    ${fromAssetAmount.asString(
+                        assetInfo[fromAsset].decimalPlaces
+                    )} ${toAssetSymbol} from the pool failed.`;
                 break;
             default:
                 message = '';
@@ -132,7 +125,7 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
                     : ''}
                 {feeExchangeResult
                     ? `. with ${feeExchangeResult.amount.asString(assetInfo[16001].decimalPlaces, Amount.ROUND_UP)}  ${
-                          getAsset(feeExchangeResult.assetId).symbol
+                          assetInfo[feeExchangeResult.assetId].symbol
                       }`
                     : ''}
                 <br /> Transaction hash:

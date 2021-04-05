@@ -2,9 +2,7 @@ import BN from 'bn.js';
 import React, {FC} from 'react';
 import styled from 'styled-components';
 import {AssetDetails} from '../../redux/reducers/global.reducer';
-// import {DECIMALS} from '../../pages/exchange/exchange';
 import {IFee} from '../../typings';
-import {getAsset} from '../../util/assets';
 
 export interface SummaryFeeProps {
     txFee: IFee;
@@ -20,7 +18,7 @@ const Em = styled.span`
 
 const getFeeMsg = ({txFee, feeAssetId, coreAssetId, assetInfo}: SummaryFeeProps) => {
     let fee;
-    const assetSymbol = getAsset(feeAssetId).symbol;
+    const assetSymbol = assetInfo[feeAssetId].symbol;
 
     if (coreAssetId && coreAssetId === feeAssetId && txFee) {
         // If fee asset is CPAY use cpayFee

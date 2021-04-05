@@ -5,7 +5,6 @@ import {catchError, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
 import {EmptyPool} from '../../../error/error';
 import {IEpicDependency} from '../../../typings';
 import {Amount} from '../../../util/Amount';
-import {getAsset} from '../../../util/assets';
 import types from '../../actions';
 import {
     setExchangeError,
@@ -34,6 +33,7 @@ export const getAssetPoolBalanceEpic = (
         switchMap(
             ([[api, action], store]): Observable<Action<any>> => {
                 const poolAsset = action.payload;
+                const assetInfo = store.global.assetInfo;
                 return api.query.cennzx.coreAssetId().pipe(
                     switchMap(coreAsset => {
                         if (poolAsset.toString() === coreAsset.toString()) {
@@ -48,7 +48,7 @@ export const getAssetPoolBalanceEpic = (
                                 const coreAssetBalance: Amount = new Amount(coreBalance);
                                 const poolAssetBalance: Amount = new Amount(assetBalance);
                                 if (coreAssetBalance.isZero() || poolAssetBalance.isZero()) {
-                                    return of(setExchangeError(new EmptyPool(getAsset(poolAsset))));
+                                    return of(setExchangeError(new EmptyPool(assetInfo[poolAsset])));
                                 }
                                 const poolBalance = {
                                     coreAssetBalance: coreAssetBalance,

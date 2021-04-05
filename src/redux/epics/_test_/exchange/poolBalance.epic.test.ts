@@ -12,7 +12,6 @@ import {of} from 'rxjs/index';
 import BN from 'bn.js';
 import {BaseError, EmptyPool, NodeConnectionTimeOut} from '../../../../error/error';
 import {throwError} from 'rxjs/internal/observable/throwError';
-import {getAsset} from '../../../../util/assets';
 
 const accounts$ = new ReplaySubject<any>(1);
 const account = [
@@ -263,7 +262,7 @@ describe('Test when pool balance is empty', () => {
                 });
 
                 const output$ = getAssetPoolBalanceEpic(action$, state$, dependencies);
-                const err = new EmptyPool(getAsset(asset));
+                const err = new EmptyPool({symbol: 'CENNZ', id: 16000});
                 expectObservable(output$).toBe(expect_, {
                     c: {
                         error: true,
