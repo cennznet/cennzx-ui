@@ -17,7 +17,6 @@ const getFeeAssetId = (state: AppState) => state.ui.exchange.form.feeAssetId;
 const getCoreAsset = (state: AppState) => state.global.coreAssetId;
 const getUserAssetBalance = (state: AppState) => state.ui.exchange.userAssetBalance;
 const getAssetInfo = (state: AppState) => state.global.assetInfo;
-// export const getAssets = () => (typeof window !== 'undefined' ? window.config.ASSETS : []);
 
 export const getAssets = createSelector(
     [getAssetInfo],

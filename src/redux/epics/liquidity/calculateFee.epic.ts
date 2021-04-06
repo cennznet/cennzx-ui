@@ -10,7 +10,6 @@ import types from '../../actions';
 import {setLiquidityError, updateTransactionFee} from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
 
-const DECIMALS = 5;
 export const calculateTxFeeEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,

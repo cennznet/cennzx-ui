@@ -24,7 +24,6 @@ import {
 import {AppState} from '../../reducers';
 import {Stages} from '../../reducers/ui/txDialog.reducer';
 
-const DECIMALS = 4;
 export const submitTransactionEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
@@ -101,81 +100,6 @@ export const submitTransactionEpic = (
         })
     );
 
-/// TODO - Re-introduce this epic once we have exchange assets and sending it to different address
-// export const submitSendEpic = (
-//     action$: Observable<Action<any>>,
-//     store$: Observable<AppState>,
-//     {api$}: IEpicDependency
-// ): Observable<Action<any>> =>
-//     combineLatest([
-//         api$,
-//         action$.pipe(ofType<RequestSubmitSend>(types.ui.TxDialog.TRANSACTION_SUBMIT_SEND)),
-//         from(web3FromSource('polkadot-js')),
-//     ]).pipe(
-//         withLatestFrom(store$),
-//         switchMap(
-//             ([
-//                 [
-//                     api,
-//                     {
-//                         payload: {extrinsic, signingAccount, recipientAddress, buffer, password},
-//                     },
-//                     injector,
-//                 ],
-//                 store,
-//             ]): Observable<Action<any>> => {
-//                 const [fromAsset, toAsset, amount] = extrinsic.params;
-//                 const sellAmount = amount.asString(DECIMALS);
-//                 let tx;
-//                 if (extrinsic.method === 'sellAsset') {
-//                     const minSale = new Amount(amount.muln(1 - buffer)).asString(DECIMALS);
-//                     tx = api.tx.cennzx.sellAsset(recipientAddress, fromAsset, toAsset, +sellAmount, 0.0001);
-//                 } else {
-//                     const maxSale = new Amount(amount.muln(1 + buffer)).asString(DECIMALS);
-//                     tx = api.tx.cennzx.buyAsset(recipientAddress, fromAsset, toAsset, +sellAmount, 1000000);
-//                 }
-//                 const signer = injector.signer;
-//
-//                 return tx.signAndSend(signingAccount, {signer}).pipe(
-//                     switchMap(({events, status}: SubmittableResult) => {
-//                         if (status.isInBlock) {
-//                             return of(updateTxHash(tx.hash.toString()), updateStage(Stages.InBlock));
-//                         } else if (status.isFinalized && events) {
-//                             const blockHash = status.asFinalized;
-//                             const extrinsicIndex = events[0].phase.asApplyExtrinsic;
-//                             return of(updateTxEvents(events), updateStage(Stages.Finalised));
-//                         } else {
-//                             return EMPTY;
-//                         }
-//                     }),
-//                     catchError((err: Error) => {
-//                         let extrinsicErr;
-//                         if (err.message === '1010: Invalid Transaction (3)') {
-//                             extrinsicErr = new ExtrinsicFailed(
-//                                 "Sending account's balance is too low to execute this operation."
-//                             );
-//                         } else if (err.message === '1010: Invalid Transaction (0)') {
-//                             extrinsicErr = new ExtrinsicFailed('BadSignature fails the extrinsic');
-//                         } else if (err.message === '1010: Invalid Transaction (1)') {
-//                             extrinsicErr = new ExtrinsicFailed('Nonce too low.');
-//                         } else if (err.message === '1010: Invalid Transaction (2)') {
-//                             extrinsicErr = new ExtrinsicFailed('Nonce too high.');
-//                         } else if (err.message === '1010: Invalid Transaction (4)') {
-//                             extrinsicErr = new ExtrinsicFailed('Block is full, no more extrinsics can be applied.');
-//                         } else {
-//                             extrinsicErr = new ExtrinsicFailed(err.message);
-//                         }
-//                         return of(setDailogError(extrinsicErr));
-//                     })
-//                 );
-//             }
-//         ),
-//         catchError((err: Error) => {
-//             const extrinsicErr = new ExtrinsicFailed(err.message);
-//             return of(setDailogError(extrinsicErr));
-//         })
-//     );
-
 export const submitLiquidityEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
@@ -201,7 +125,6 @@ export const submitLiquidityEpic = (
                 const [assetId, , coreAmount, assetAmount] = extrinsic.params;
                 const currentExchangePool = store.ui.liquidity.exchangePool.find(ex => ex.assetId === assetId);
                 const coreAssetReserve = currentExchangePool ? currentExchangePool.coreAssetBalance : new Amount(0);
-                // const tradeAssetReserve = currentExchangePool ? currentExchangePool.assetBalance : new Amount(0);
                 const totalLiquidity = store.ui.liquidity.totalLiquidity;
                 let tx;
                 if (extrinsic.method === 'addLiquidity') {

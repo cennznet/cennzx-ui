@@ -85,12 +85,23 @@ const Container = styled.div`
     border-bottom: 1px solid #b5babd !important;
 `;
 
-const getLabel = ({symbol}) => (
-    <Container>
-        <Icon src={require(`./../images/${symbol.toLowerCase()}.png`)} />
-        <Text className="symbol">{symbol}</Text>
-    </Container>
-);
+const getLabel = ({symbol}) => {
+    try {
+        return (
+            <Container>
+                <Icon src={require(`./../images/${symbol.toLowerCase()}.png`)} />
+                <Text className="symbol">{symbol}</Text>
+            </Container>
+        );
+    } catch (e) {
+        // when a new asset is added and image does not exist
+        return (
+            <Container>
+                <Text className="symbol">{symbol}</Text>
+            </Container>
+        );
+    }
+};
 
 const getOptionByValue = (options: Asset[], assetId: number) =>
     options ? options.find(item => item.id === assetId) || null : null;

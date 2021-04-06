@@ -6,8 +6,6 @@ import {ADD_LIQUIDITY, REMOVE_LIQUIDITY, SWAP_INPUT, SWAP_OUTPUT} from '../../ut
 
 type AssetSwapParams = [number, number, Amount, Amount];
 
-//const DECIMALS = 5;
-
 const Em = styled.span`
     color: #1130ff;
 `;

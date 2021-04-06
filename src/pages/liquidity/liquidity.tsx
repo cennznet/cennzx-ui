@@ -28,8 +28,6 @@ import {AmountParams, Asset, IFee, IOption, IUserShareInPool, LiquidityFormData}
 import {Amount} from '../../util/Amount';
 import getFormErrors from './validation';
 
-//export const DECIMALS = 4;
-
 const Line = styled.div`
     border-bottom: 1px solid rgba(17, 48, 255, 0.3);
     height: 1px;
