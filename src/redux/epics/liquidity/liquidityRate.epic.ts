@@ -61,18 +61,11 @@ export const getCoreLiquidityPriceEpic = (
                         .div(tradeAssetReserve)
                         .addn(1);
                 }
-                return (api.rpc as any).cennzx.liquidityPrice(assetId, liquidityAmount).pipe(
-                    switchMap(([coreAmount]) => {
-                        const amount = new Amount(coreAmount);
-                        const retObservable: Action<any>[] = [];
-                        retObservable.push(updateAddAsset2Amount(amount));
-                        retObservable.push(updateLiquidityForWithdrawal(new Amount(liquidityAmount)));
-                        return from(retObservable);
-                    }),
-                    catchError(err => {
-                        return of(setLiquidityError(err));
-                    })
-                );
+                const coreAmount = liquidityAmount.mul(coreAssetReserve).div(totalLiquidity);
+                const retObservable: Action<any>[] = [];
+                retObservable.push(updateAddAsset2Amount(new Amount(coreAmount)));
+                retObservable.push(updateLiquidityForWithdrawal(new Amount(liquidityAmount)));
+                return from(retObservable);
             }
         })
     );
