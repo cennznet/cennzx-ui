@@ -52,10 +52,15 @@ export const getCoreLiquidityPriceEpic = (
                 }
                 return of(updateAddAsset2Amount(new Amount(coreAmount)));
             } else if (liquidityAction === REMOVE_LIQUIDITY) {
-                const liquidityAmount = assetAmount
-                    .mul(totalLiquidity)
-                    .div(tradeAssetReserve)
-                    .addn(1);
+                let liquidityAmount;
+                if (tradeAssetReserve.toString() === coreAssetReserve.toString()) {
+                    liquidityAmount = assetAmount.mul(totalLiquidity).div(tradeAssetReserve);
+                } else {
+                    liquidityAmount = assetAmount
+                        .mul(totalLiquidity)
+                        .div(tradeAssetReserve)
+                        .addn(1);
+                }
                 return (api.rpc as any).cennzx.liquidityPrice(assetId, liquidityAmount).pipe(
                     switchMap(([coreAmount]) => {
                         const amount = new Amount(coreAmount);
@@ -100,22 +105,20 @@ export const getAssetLiquidityPriceEpic = (
                 }
                 return of(updateAddAsset1Amount(new Amount(assetAmount)));
             } else if (liquidityAction === REMOVE_LIQUIDITY) {
-                const liquidityAmount = coreAmount
-                    .mul(totalLiquidity)
-                    .div(coreAssetReserve)
-                    .addn(1);
-                return (api.rpc as any).cennzx.liquidityPrice(assetId, liquidityAmount).pipe(
-                    switchMap(([, assetAmount]) => {
-                        const amount = new Amount(assetAmount);
-                        const retObservable: Action<any>[] = [];
-                        retObservable.push(updateAddAsset1Amount(amount));
-                        retObservable.push(updateLiquidityForWithdrawal(new Amount(liquidityAmount)));
-                        return from(retObservable);
-                    }),
-                    catchError(err => {
-                        return of(setLiquidityError(err));
-                    })
-                );
+                let liquidityAmount;
+                if (tradeAssetReserve.toString() === coreAssetReserve.toString()) {
+                    liquidityAmount = coreAmount.mul(totalLiquidity).div(coreAssetReserve);
+                } else {
+                    liquidityAmount = coreAmount
+                        .mul(totalLiquidity)
+                        .div(coreAssetReserve)
+                        .addn(1);
+                }
+                const assetAmount = liquidityAmount.mul(tradeAssetReserve).div(totalLiquidity);
+                const retObservable: Action<any>[] = [];
+                retObservable.push(updateAddAsset1Amount(new Amount(assetAmount)));
+                retObservable.push(updateLiquidityForWithdrawal(new Amount(liquidityAmount)));
+                return from(retObservable);
             }
         })
     );

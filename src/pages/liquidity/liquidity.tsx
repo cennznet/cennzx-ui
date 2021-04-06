@@ -27,7 +27,7 @@ import {LiquidityState} from '../../redux/reducers/ui/liquidity.reducer';
 import {AmountParams, Asset, IFee, IOption, IUserShareInPool, LiquidityFormData} from '../../typings';
 import {Amount} from '../../util/Amount';
 import getFormErrors from './validation';
-r;
+
 const Line = styled.div`
     border-bottom: 1px solid rgba(17, 48, 255, 0.3);
     height: 1px;
