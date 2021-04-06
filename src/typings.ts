@@ -33,6 +33,7 @@ export interface IAppConfig {
 export interface Asset {
     symbol: string;
     id: number;
+    decimalPlaces?: number;
 }
 
 export interface AmountParams {

@@ -100,9 +100,9 @@ export class UserBalanceNotEnough extends BaseError {
     constructor(asset: Asset, require: Amount, reserve: Amount) {
         super(
             `Not enough ${asset.symbol} in wallet, require: ${require.asString(
-                5,
+                asset.decimalPlaces,
                 Amount.ROUND_UP
-            )}, reserve: ${reserve.asString(5)}`
+            )}, reserve: ${reserve.asString(asset.decimalPlaces)}`
         );
         this.asset = asset;
     }
@@ -118,6 +118,20 @@ export class UserBalanceNotEnoughForFee extends BaseError {
                 require.asString(5, Amount.ROUND_UP)}` /*, reserve: ${reserve.asString(5)}*/
         );
         this.feeAsset = feeAsset;
+    }
+}
+
+export class UserPoolBalanceNotEnough extends BaseError {
+    name: string = 'UserPoolBalanceNotEnough';
+    asset: Asset;
+    constructor(asset: Asset, require: Amount, reserve: Amount) {
+        super(
+            `Not enough ${asset.symbol} in user pool, require: ${require.asString(
+                asset.decimalPlaces,
+                Amount.ROUND_UP
+            )}, reserve: ${reserve.asString(asset.decimalPlaces)}`
+        );
+        this.asset = asset;
     }
 }
 

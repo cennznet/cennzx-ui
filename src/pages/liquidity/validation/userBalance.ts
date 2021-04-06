@@ -1,21 +1,35 @@
-import {UserBalanceNotEnough, UserBalanceNotEnoughForFee} from '../../../error/error';
+import {UserBalanceNotEnough, UserBalanceNotEnoughForFee, UserPoolBalanceNotEnough} from '../../../error/error';
 import {IAssetBalance} from '../../../typings';
 import {Amount} from '../../../util/Amount';
+import {ADD_LIQUIDITY, REMOVE_LIQUIDITY} from '../../../util/extrinsicUtil';
 import {FormSection, LiquidityProps} from '../liquidity';
 import {existErrors, FormErrors, mergeError} from './index';
 
 function checkUserBalance(props: LiquidityProps, errors: FormErrors): void {
     const {
-        form: {assetAmount, assetId},
+        form: {assetAmount, assetId, extrinsic},
         accountAssetBalance,
+        userShareInPool,
         assetInfo,
     } = props;
     // skip when any error exists on assetInput
     if (existErrors(() => true, errors, FormSection.assetInput)) return;
-    if (assetAmount && accountAssetBalance && assetAmount.gt(accountAssetBalance)) {
+    if (extrinsic === ADD_LIQUIDITY && assetAmount && accountAssetBalance && assetAmount.gt(accountAssetBalance)) {
         mergeError(
             FormSection.assetInput,
             new UserBalanceNotEnough(assetInfo[assetId], assetAmount, accountAssetBalance),
+            errors
+        );
+    }
+    if (
+        extrinsic === REMOVE_LIQUIDITY &&
+        assetAmount &&
+        userShareInPool &&
+        assetAmount.gt(userShareInPool.assetBalance)
+    ) {
+        mergeError(
+            FormSection.assetInput,
+            new UserPoolBalanceNotEnough(assetInfo[assetId], assetAmount, userShareInPool.assetBalance),
             errors
         );
     }
