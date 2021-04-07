@@ -54,9 +54,10 @@ interface InputProps {
     placeholder?: string;
     message?: string;
     multiple?: any;
+    type?: string;
 }
 
-const TextInput: FC<InputProps> = ({value, onChange, title, placeholder, message, multiple}) => {
+const TextInput: FC<InputProps> = ({value, onChange, title, placeholder, message, multiple, type = 'text'}) => {
     return (
         <Trade>
             <Top>
@@ -65,7 +66,7 @@ const TextInput: FC<InputProps> = ({value, onChange, title, placeholder, message
                 </span>
             </Top>
             <Input onChange={onChange}>
-                <input value={value} placeholder={placeholder} />
+                <input type={type} value={value} placeholder={placeholder} />
                 {multiple && <Multiple>{multiple}</Multiple>}
             </Input>
             {/* {message && <MessageBox>{message}</MessageBox>} */}

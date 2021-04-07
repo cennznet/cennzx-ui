@@ -148,6 +148,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                         {state.spinner && (
                             <>
                                 <TextInput
+                                    type={'number'}
                                     title={'Slippage'}
                                     placeholder={'Maximum slippage percent'}
                                     value={buffer}
