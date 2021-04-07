@@ -9,7 +9,7 @@ import {existErrors, FormErrors, mergeError} from './index';
 
 function checkFromAssetAmount(props: LiquidityProps, errors: FormErrors): void {
     const {
-        form: {assetAmount, coreAmount},
+        form: {assetAmount, assetId, coreAmount},
     } = props;
     if (existErrors(['PoolBalanceNotEnough', 'FromAssetNotSelected'], errors)) {
         return;
@@ -21,6 +21,9 @@ function checkFromAssetAmount(props: LiquidityProps, errors: FormErrors): void {
         } else {
             mergeError(FormSection.assetAmount, new FromAssetAmountRequired(), errors);
         }
+    }
+    if (!assetId) {
+        mergeError(FormSection.assetAmount, new FieldNotReadyForLiquidity(FormSection.assetInput), errors);
     }
 }
 

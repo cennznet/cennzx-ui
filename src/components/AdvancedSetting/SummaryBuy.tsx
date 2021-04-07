@@ -65,7 +65,7 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                     <p>
                         If the amount of {assetBSymbol} used sits outside{' '}
                         <Em>
-                            {buffer}% ({new Amount(amountB.muln(1 - buffer)).asString(assetBDecimalPlaces)}-
+                            {buffer * 100}% ({new Amount(amountB.muln(1 - buffer)).asString(assetBDecimalPlaces)}-
                             {new Amount(amountB.muln(1 + buffer)).asString(assetBDecimalPlaces)} CPAY)
                         </Em>
                         , the transaction will fail.
@@ -95,7 +95,7 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                     <p>
                         If the amount of {assetASymbol} received sits outside{' '}
                         <Em>
-                            {buffer}% ({new Amount(amountA.muln(1 - buffer)).asString(assetADecimalPlaces)}-
+                            {buffer * 100}% ({new Amount(amountA.muln(1 - buffer)).asString(assetADecimalPlaces)}-
                             {new Amount(amountA.muln(1 + buffer)).asString(assetADecimalPlaces)} {assetASymbol})
                         </Em>
                         , the transaction will fail.
@@ -130,7 +130,7 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                         </Em>{' '}
                         received sits outside{' '}
                         <Em>
-                            {buffer}% ({new Amount(amountA.muln(1 - buffer)).asString(assetADecimalPlaces)}-
+                            {buffer * 100}% ({new Amount(amountA.muln(1 - buffer)).asString(assetADecimalPlaces)}-
                             {new Amount(amountA.muln(1 + buffer)).asString(assetADecimalPlaces)} {assetASymbol}, or{' '}
                             {new Amount(amountB.muln(1 - buffer)).asString(assetBDecimalPlaces)}-
                             {new Amount(amountB.muln(1 + buffer)).asString(assetBDecimalPlaces)} {assetBSymbol})
@@ -173,7 +173,7 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                         </Em>{' '}
                         deposited sits outside{' '}
                         <Em>
-                            {buffer}% (
+                            {buffer * 100}% (
                             {new Amount(investmentAmount.muln(1 - buffer)).asString(investmentAssetDecimalPlaces)}-
                             {new Amount(investmentAmount.muln(1 + buffer)).asString(investmentAssetDecimalPlaces)}{' '}
                             {investmentAssetSymbol},{' '}

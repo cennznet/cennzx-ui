@@ -151,9 +151,9 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                     type={'number'}
                                     title={'Slippage'}
                                     placeholder={'Maximum slippage percent'}
-                                    value={buffer}
+                                    value={buffer * 100}
                                     onChange={e => {
-                                        onBufferChange(Number(e.target.value));
+                                        onBufferChange(Number(e.target.value / 100));
                                     }}
                                     multiple={'%'}
                                 />
