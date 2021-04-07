@@ -1,4 +1,4 @@
-import {Balance} from '@cennznet/types/polkadot';
+import {Balance} from '@cennznet/types';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';

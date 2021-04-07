@@ -506,7 +506,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     <Button
                         flat
                         primary
-                        disabled={formErrors.size > 0 || !txFee}
+                        disabled={formErrors.size > 0}
                         onClick={() =>
                             props.openTxDialog(props.form as LiquidityFormData, props.txFee, props.assetInfo)
                         }

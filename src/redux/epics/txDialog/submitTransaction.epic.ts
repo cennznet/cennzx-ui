@@ -38,7 +38,7 @@ export const submitTransactionEpic = (
                 [
                     api,
                     {
-                        payload: {extrinsic, signingAccount, buffer, password},
+                        payload: {extrinsic, signingAccount, buffer},
                     },
                     injector,
                 ],
@@ -114,7 +114,7 @@ export const submitLiquidityEpic = (
                 [
                     api,
                     {
-                        payload: {extrinsic, signingAccount, add1Asset, add1Amount, add2Amount, buffer, password},
+                        payload: {extrinsic, signingAccount, buffer},
                     },
                     injector,
                 ],
