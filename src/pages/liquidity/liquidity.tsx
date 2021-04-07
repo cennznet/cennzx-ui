@@ -199,6 +199,7 @@ export enum FormSection {
     account = 'account',
     assetAmount = 'assetAmount',
     assetInput = 'assetInput',
+    coreInput = 'coreInput',
     coreAmount = 'coreAmount',
     form = 'generalError',
 }
@@ -451,6 +452,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                                     ? `User's pool balance: ${userCoreShareInPool}`
                                     : `Balance: ${coreBalance || 0}`
                             }
+                            errorBox={<ErrorMessage errors={formErrors} field={FormSection.coreInput} />}
                         />
                     </Flex2>
                     {/* {state.liquidityAction === LiquidityAction.REMOVE && coreAssetId && assetId && (
