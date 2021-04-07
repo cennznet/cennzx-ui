@@ -351,8 +351,8 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const corePool = coreReserve && coreReserve.asString && coreReserve.asString(assetInfo[coreAssetId].decimalPlaces);
 
     const [userAssetShareInPool, userCoreShareInPool] = userShareInPool
-        ? [userShareInPool.assetBalance.asString(), userShareInPool.coreAssetBalance.asString()]
-        : [0, 0];
+        ? [userShareInPool.assetBalance, userShareInPool.coreAssetBalance]
+        : [new Amount(0), new Amount(0)];
 
     const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
 
@@ -400,7 +400,11 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     </Flex>
                     <Flex2>
                         <AssetInputForAdd
-                            max={accountAssetBalance}
+                            max={
+                                state.liquidityAction === LiquidityAction.REMOVE
+                                    ? userAssetShareInPool
+                                    : accountAssetBalance
+                            }
                             value={{amount: assetAmount, assetId}}
                             options={assets.filter(a => a.id !== coreAssetId)}
                             onChange={(amountParams: AmountParams) => {
@@ -424,14 +428,18 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             secondaryTitle={null}
                             message={
                                 state.liquidityAction === LiquidityAction.REMOVE
-                                    ? `User's pool balance: ${userAssetShareInPool}`
+                                    ? `User's pool balance: ${userAssetShareInPool.asString()}`
                                     : `Balance: ${assetBalance || 0}`
                             }
                             errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetInput} />}
                         />
                         <AddIcon></AddIcon>
                         <AssetInputForAdd
-                            max={accountCoreBalance}
+                            max={
+                                state.liquidityAction === LiquidityAction.REMOVE
+                                    ? userCoreShareInPool
+                                    : accountCoreBalance
+                            }
                             value={{amount: coreAmount, assetId: coreAssetId}}
                             options={assets.filter(a => a.id === coreAssetId)}
                             onChange={amountParams => {
@@ -449,7 +457,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             secondaryTitle={null}
                             message={
                                 state.liquidityAction === LiquidityAction.REMOVE
-                                    ? `User's pool balance: ${userCoreShareInPool}`
+                                    ? `User's pool balance: ${userCoreShareInPool.asString()}`
                                     : `Balance: ${coreBalance || 0}`
                             }
                             errorBox={<ErrorMessage errors={formErrors} field={FormSection.coreInput} />}
@@ -495,9 +503,9 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     {poolSummary(
                         assetPool,
                         corePool,
-                        userAssetShareInPool,
+                        userAssetShareInPool.asString(),
                         assetName,
-                        userCoreShareInPool,
+                        userCoreShareInPool.asString(),
                         coreName,
                         exchangeRateMsg,
                         fee,
