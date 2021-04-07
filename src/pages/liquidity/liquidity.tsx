@@ -259,9 +259,49 @@ const selectOption = [
     },
 ];
 
-/// TODO - FIX THIS FUNCTION
-// The function has a cyclomatic complexity of 25 which is higher than the threshold of 20
-// tslint:disable-next-line
+function poolSummary(
+    assetPool: string,
+    corePool: string,
+    userAssetShareInPool,
+    assetName,
+    userCoreShareInPool,
+    coreName,
+    exchangeRateMsg: string,
+    fee,
+    action
+) {
+    return (
+        <>
+            <div>
+                {action === LiquidityAction.ADD
+                    ? coreName && (
+                          <LabelDetail>
+                              To keep the liquidity pool functional, deposits require an equal value of{' '}
+                              {assetName || ' your token'} and {coreName} at the current exchange rate.
+                          </LabelDetail>
+                      )
+                    : coreName && (
+                          <LabelDetail>
+                              To keep the liquidity pool functional, withdrawals will return an equal value of{' '}
+                              {assetName || ' your token'} and {coreName} at the current exchange rate.
+                          </LabelDetail>
+                      )}
+            </div>
+            {assetPool && corePool ? (
+                <Summary>
+                    Your pool share: {userAssetShareInPool} {assetName} + {userCoreShareInPool} {coreName}
+                    <br />
+                    Current pool size: {assetPool} {assetName} + {corePool} {coreName}
+                    <br />
+                    {exchangeRateMsg}
+                    <br />
+                    {fee && `Transaction fee (estimated) : ${fee}`}
+                </Summary>
+            ) : null}
+        </>
+    );
+}
+
 export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const {
         accounts,
@@ -413,21 +453,6 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             }
                         />
                     </Flex2>
-                    <div>
-                        {state.liquidityAction === LiquidityAction.ADD
-                            ? coreName && (
-                                  <LabelDetail>
-                                      To keep the liquidity pool functional, deposits require an equal value of{' '}
-                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
-                                  </LabelDetail>
-                              )
-                            : coreName && (
-                                  <LabelDetail>
-                                      To keep the liquidity pool functional, withdrawals will return an equal value of{' '}
-                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
-                                  </LabelDetail>
-                              )}
-                    </div>
                     {/* {state.liquidityAction === LiquidityAction.REMOVE && coreAssetId && assetId && (
                         <SliderContainer spinner={state.slider.toString()}>
                             <ReactSlider
@@ -465,17 +490,17 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             />
                         </SliderContainer>
                     )} */}
-                    {assetPool && corePool ? (
-                        <Summary>
-                            Your pool share: {userAssetShareInPool} {assetName} + {userCoreShareInPool} {coreName}
-                            <br />
-                            Current pool size: {assetPool} {assetName} + {corePool} {coreName}
-                            <br />
-                            {exchangeRateMsg}
-                            <br />
-                            {fee && `Transaction fee (estimated) : ${fee}`}
-                        </Summary>
-                    ) : null}
+                    {poolSummary(
+                        assetPool,
+                        corePool,
+                        userAssetShareInPool,
+                        assetName,
+                        userCoreShareInPool,
+                        coreName,
+                        exchangeRateMsg,
+                        fee,
+                        state.liquidityAction
+                    )}
                 </PageInside>
                 <Buttons id="buttons">
                     <Button
