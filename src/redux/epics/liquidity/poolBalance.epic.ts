@@ -3,7 +3,6 @@ import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';
 import {catchError, filter, map, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
-import {EmptyPool} from '../../../error/error';
 import {IEpicDependency, IUserShareInPool} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import types from '../../actions';
@@ -110,7 +109,7 @@ export const getTotalLiquidityEpic = (
     combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.TOTAL_LIQUIDITY_REQUEST))]).pipe(
         withLatestFrom(store$),
         switchMap(([[api, action], store]) => {
-            const {totalLiquidity} = store.ui.liquidityPool;
+            const {totalLiquidity} = store.ui.liquidity;
             return api.derive.cennzx.totalLiquidity(action.payload).pipe(
                 filter((liquidity: BN) => !totalLiquidity || !liquidity.eq(totalLiquidity)),
                 map((liquidity: BN) => {

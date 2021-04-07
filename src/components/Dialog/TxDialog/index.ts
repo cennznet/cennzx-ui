@@ -43,15 +43,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     handleClose: () => {
         dispatch(closeDialog());
     },
-    handleExchangeSubmit: ({
-        extrinsic,
-        signingAccount,
-        feeAssetId,
-        feeInFeeAsset,
-        password,
-        recipientAddress,
-        buffer,
-    }) => {
+    handleExchangeSubmit: ({extrinsic, signingAccount, feeAssetId, feeInFeeAsset, buffer}) => {
         dispatch(
             requestSubmitTransaction({
                 extrinsic,
@@ -59,7 +51,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
                 feeAssetId,
                 feeInFeeAsset,
                 buffer,
-                password,
             })
         );
     },
@@ -73,14 +64,12 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         fromAsset,
         toAsset,
         fromAssetAmount,
-        coreAsset,
         fromAssetBalance,
         buffer,
     }) => {
         dispatch(
             requestSubmitSend({
                 extrinsic,
-                coreAsset,
                 signingAccount,
                 feeAssetId,
                 feeInFeeAsset,
@@ -94,32 +83,14 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         );
     },
 
-    handleLiquiditySubmit: ({
-        type,
-        extrinsic,
-        signingAccount,
-        assetId,
-        assetAmount,
-        coreAssetId,
-        coreAmount,
-        feeAssetId,
-        feeInFeeAsset,
-        add1Reserve,
-        buffer,
-    }) => {
+    handleLiquiditySubmit: ({extrinsic, signingAccount, feeAssetId, feeInFeeAsset, buffer}) => {
         dispatch(
             requestSubmitLiquidity({
-                type,
                 extrinsic,
                 signingAccount,
-                assetId,
-                assetAmount,
-                coreAssetId,
-                coreAmount,
                 feeAssetId,
                 buffer,
                 feeInFeeAsset,
-                add1Reserve,
             })
         );
     },

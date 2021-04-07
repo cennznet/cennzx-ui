@@ -14,7 +14,7 @@ export type TxDialogProps = {
     title: string;
     exchange;
     send;
-    buffer: number;
+    buffer?: number;
     liquidity;
     assetInfo: [];
     handleClose: () => void;

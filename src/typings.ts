@@ -50,7 +50,6 @@ export interface IOption {
 declare global {
     interface Window {
         config: IAppConfig;
-        cennznetInjected: CennznetInjectedGlobal;
         __REDUX_DEVTOOLS_EXTENSION__?: any;
     }
 }

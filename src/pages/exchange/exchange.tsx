@@ -1,4 +1,4 @@
-import {FeeRate} from '@cennznet/types/runtime/cennzX';
+import {FeeRate} from '@cennznet/types';
 import BN from 'bn.js';
 import {Button} from 'centrality-react-core';
 import AccountPicker from 'components/AccountPicker';
@@ -268,7 +268,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                                     <Button
                                         flat
                                         primary
-                                        // disabled={formErrors.size > 0 || !txFee}
+                                        disabled={formErrors.size > 0 || !txFee}
                                         onClick={() => props.openTxDialog(props.form as ExchangeFormData, props.txFee)}
                                     >
                                         Exchange

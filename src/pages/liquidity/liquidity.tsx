@@ -13,7 +13,6 @@ import Page from 'components/Page';
 import PageInside from 'components/PageInside';
 import Select from 'components/Select';
 import TextInput from 'components/TextInput';
-import Toggle from 'components/Toggle';
 import {add, values} from 'ramda';
 import React, {FC, useEffect, useState} from 'react';
 import ReactSlider from 'react-slider';
@@ -219,7 +218,7 @@ export type LiquidityDispatchProps = {
     handleReset(): void;
     handleExtrinsicChange(type: string): void;
     handleLiquidityAction(type: LiquidityAction): void;
-    openTxDialog(form: LiquidityFormData, estimatedFee: IFee, assetInfo: []): void;
+    openTxDialog(form: LiquidityFormData, estimatedFee: IFee, assetInfo: AssetDetails[]): void;
 };
 
 export type LiquidityProps = {
@@ -482,7 +481,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     <Button
                         flat
                         primary
-                        // disabled={formErrors.size > 0 || !txFee}
+                        disabled={formErrors.size > 0 || !txFee}
                         onClick={() =>
                             props.openTxDialog(props.form as LiquidityFormData, props.txFee, props.assetInfo)
                         }

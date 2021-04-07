@@ -11,11 +11,9 @@ import types from '../../actions';
 import {resetTrade} from '../../actions/ui/exchange.action';
 import {resetLiquidity, updateExtrinsic} from '../../actions/ui/liquidity.action';
 import {
-    requestActualFee,
     RequestSubmitLiquidity,
-    RequestSubmitSend,
     RequestSubmitTransaction,
-    setDailogError,
+    setDialogError,
     updateStage,
     UpdateStageAction,
     updateTxEvents,
@@ -89,14 +87,14 @@ export const submitTransactionEpic = (
                         } else {
                             extrinsicErr = new ExtrinsicFailed(err.message);
                         }
-                        return of(setDailogError(extrinsicErr));
+                        return of(setDialogError(extrinsicErr));
                     })
                 );
             }
         ),
         catchError((err: Error) => {
             const extrinsicErr = new ExtrinsicFailed(err.message);
-            return of(setDailogError(extrinsicErr));
+            return of(setDialogError(extrinsicErr));
         })
     );
 
@@ -162,14 +160,14 @@ export const submitLiquidityEpic = (
                     catchError((err: Error) => {
                         let extrinsicErr;
                         if (err.message) extrinsicErr = new ExtrinsicFailed(err.message);
-                        return of(setDailogError(extrinsicErr));
+                        return of(setDialogError(extrinsicErr));
                     })
                 );
             }
         ),
         catchError((err: Error) => {
             const extrinsicErr = new ExtrinsicFailed(err.message);
-            return of(setDailogError(extrinsicErr));
+            return of(setDialogError(extrinsicErr));
         })
     );
 

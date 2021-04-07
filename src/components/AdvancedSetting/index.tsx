@@ -4,13 +4,11 @@ import AssetDropDown from 'components/AssetDropDown';
 import ErrorBox from 'components/Error/ErrorBox';
 import PageInside from 'components/PageInside';
 import TextInput from 'components/TextInput';
-import {TxSummaryProps} from 'components/TxSummary/TxSummary';
-import TxSummaryEstimatedTxFeeForBody from 'components/TxSummary/TxSummaryEstimatedTxFeeForBody';
 import React, {FC, useState} from 'react';
 import styled from 'styled-components';
 import {FormSection} from '../../pages/exchange/exchange';
 import {AssetDetails} from '../../redux/reducers/global.reducer';
-import {Asset} from '../../typings';
+import {Asset, IFee} from '../../typings';
 import {Amount} from '../../util/Amount';
 import {FormErrors as ExchangeFormErrors} from './../../pages/exchange/validation';
 import {FormErrors as LiquidityFormErrors} from './../../pages/liquidity/validation';
@@ -78,10 +76,22 @@ const P = styled.p`
     font-size: 14px;
 `;
 
+export interface TxSummaryProps {
+    toAssetAmount: Amount;
+    fromAssetAmount: Amount;
+    toAsset: number;
+    fromAsset: number;
+    buffer: number;
+    txFee: IFee;
+    feeAssetId: number;
+    coreAssetId: number;
+    extrinsic: string;
+}
+
 type SummaryOrErrorProps = {
-    formErrors: LiquidityFormErrors & ExchangeFormErrors;
+    formErrors: LiquidityFormErrors | ExchangeFormErrors;
     summaryProps?: TxSummaryProps;
-    onAssetChange: (assetId: number) => void;
+    onAssetChange?: (assetId: number) => void;
     onBufferChange: (buffer: number) => void;
     assets: Asset[];
     show: boolean;

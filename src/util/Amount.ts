@@ -1,4 +1,3 @@
-import {AnyNumber} from '@cennznet/types/polkadot.types';
 import BigNumber from 'bignumber.js';
 import BN from 'bn.js';
 
@@ -16,7 +15,7 @@ export class Amount extends BN {
     /** Rounds towards zero. */
     static ROUND_DOWN: number = 1;
 
-    constructor(value: AnyNumber, unit: AmountUnit = AmountUnit.UN, decimal: number = DECIMAL) {
+    constructor(value: string | number | BN, unit: AmountUnit = AmountUnit.UN, decimal: number = DECIMAL) {
         if (unit === AmountUnit.UN) {
             super(value.toString ? value.toString() : value);
             // super(isBn(value) ? value.toString() : value);
