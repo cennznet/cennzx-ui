@@ -340,6 +340,9 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
             props.handleLiquidityAction(initState.liquidityAction);
             props.handleExtrinsicChange(initState.liquidityAction);
         }
+        if (accounts.length) {
+            props.handleSelectedAccountChange(accounts[0].value as string);
+        }
     }, []);
 
     // pre populate the asset drop down

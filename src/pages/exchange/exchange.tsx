@@ -148,6 +148,9 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
             props.handleBuyAssetIdChange(assets[0].id, props.form as ExchangeFormData, props.error);
             props.handleWithAssetIdChange(assets[1].id, props.form as ExchangeFormData, props.error);
         }
+        if (accounts.length) {
+            props.handleSelectedAccountChange(accounts[0].value as string);
+        }
     }, [assets]);
 
     const assetForEmptyPool = error.find(err => err instanceof EmptyPool);
