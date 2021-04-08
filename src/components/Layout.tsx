@@ -1,3 +1,4 @@
+import {version as extVersion} from '@polkadot/extension-dapp/package-info.json';
 import {InjectedExtension, MetadataDef} from '@polkadot/extension-inject/types';
 import React, {FC} from 'react';
 import {connect} from 'react-redux';
@@ -31,7 +32,7 @@ interface LayoutProps {
 }
 
 const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, polkadotExtension, metadata}) => {
-    const metaUpdated = localStorage.getItem('EXTENSION_META_UPDATED');
+    const metaUpdated = localStorage.getItem(`${extVersion}-EXTENSION_META_UPDATED`);
     return (
         <React.Fragment>
             <Header />

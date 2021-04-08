@@ -1,3 +1,4 @@
+import {version as extVersion} from '@polkadot/extension-dapp/package-info.json';
 import {InjectedExtension, MetadataDef} from '@polkadot/extension-inject/types';
 import {Link} from '@reach/router';
 import React, {FC, useState} from 'react';
@@ -47,7 +48,7 @@ const getDialogFooter = (
                     onClick={async () => {
                         const metadata = polkadotExtension.metadata;
                         await metadata.provide(metadataDef);
-                        localStorage.setItem('EXTENSION_META_UPDATED', 'true');
+                        localStorage.setItem(`${extVersion}-EXTENSION_META_UPDATED`, 'true');
                         setDialogOpen(false);
                     }}
                 >
