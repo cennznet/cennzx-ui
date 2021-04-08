@@ -18,7 +18,7 @@ import styled from 'styled-components';
 import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
 import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
-import {AmountParams, Asset, ExchangeFormData, IFee, IOption} from '../../typings';
+import {AmountParams, Asset, ExchangeFormData, IFee, IOption, LiquidityFormData} from '../../typings';
 import {Amount} from '../../util/Amount';
 import getFormErrors from './validation';
 const SWAP_OUTPUT = 'buyAsset';
@@ -141,6 +141,15 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
         feeAssetId,
         buffer,
     } = props.form;
+
+    // pre populate the asset drop down
+    useEffect((): void => {
+        if (assets.length) {
+            props.handleBuyAssetIdChange(assets[0].id, props.form as ExchangeFormData, props.error);
+            props.handleWithAssetIdChange(assets[1].id, props.form as ExchangeFormData, props.error);
+        }
+    }, [assets]);
+
     const assetForEmptyPool = error.find(err => err instanceof EmptyPool);
     const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
 

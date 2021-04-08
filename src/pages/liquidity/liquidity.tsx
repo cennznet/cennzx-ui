@@ -342,6 +342,13 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         }
     }, []);
 
+    // pre populate the asset drop down
+    useEffect((): void => {
+        if (assets.length) {
+            props.handleAssetIdChange(assets[0].id, props.form as LiquidityFormData, props.error);
+        }
+    }, [assets]);
+
     const assetBalance = accountAssetBalance && accountAssetBalance.asString(assetInfo[assetId].decimalPlaces);
     const assetName = getAssetName(assets, assetId);
     const assetPool = assetReserve && assetReserve.asString && assetReserve.asString(assetInfo[assetId].decimalPlaces);

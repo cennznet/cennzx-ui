@@ -3,6 +3,7 @@ import {Dispatch} from 'redux';
 import {BaseError, EmptyPool} from '../../error/error';
 import {
     removeExchangeError,
+    resetError,
     resetTrade,
     setFromAssetAmount,
     setToAssetAmount,
@@ -62,10 +63,12 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     handleBuyAssetAmountChange: (amount: Amount) => {
         dispatch(setToAssetAmount(amount));
         dispatch(updateExtrinsic(SWAP_OUTPUT));
+        dispatch(resetError());
     },
     handleWithAssetAmountChange: (amount: Amount) => {
         dispatch(setFromAssetAmount(amount));
         dispatch(updateExtrinsic(SWAP_INPUT));
+        dispatch(resetError());
     },
     handleBuyAssetIdChange: (assetId: number, {fromAsset, toAsset}: ExchangeFormData, error: BaseError[]) => {
         if (fromAsset === assetId) {
