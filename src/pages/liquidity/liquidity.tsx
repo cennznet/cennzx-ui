@@ -449,7 +449,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             secondaryTitle={null}
                             message={
                                 state.liquidityAction === LiquidityAction.REMOVE
-                                    ? `User's pool balance: ${userAssetShareInPool.asString()}`
+                                    ? `Withdrawable: ${userAssetShareInPool.asString()}`
                                     : `Balance: ${assetBalance || 0}`
                             }
                             errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetInput} />}
@@ -478,7 +478,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             secondaryTitle={null}
                             message={
                                 state.liquidityAction === LiquidityAction.REMOVE
-                                    ? `User's pool balance: ${userCoreShareInPool.asString()}`
+                                    ? `Withdrawable: ${userCoreShareInPool.asString()}`
                                     : `Balance: ${coreBalance || 0}`
                             }
                             errorBox={<ErrorMessage errors={formErrors} field={FormSection.coreInput} />}
