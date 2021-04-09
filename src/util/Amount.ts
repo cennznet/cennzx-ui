@@ -38,9 +38,15 @@ export class Amount extends BN {
     asString(decimalPlaces?: number, rounding: number = Amount.ROUND_DOWN): string {
         if (decimalPlaces === undefined) {
             //return this.toAmount().toString(10);
-            return this.toAmount(DECIMAL).toFixed(DECIMAL, rounding as any);
+            // return this.toAmount(DECIMAL).toFixed(DECIMAL, rounding as any);
+            return this.toAmount(DECIMAL)
+                .decimalPlaces(DECIMAL, rounding as any)
+                .toFixed();
         } else {
-            return this.toAmount(decimalPlaces).toFixed(decimalPlaces, rounding as any);
+            // return this.toAmount(decimalPlaces).toFixed(decimalPlaces, rounding as any);
+            return this.toAmount(decimalPlaces)
+                .decimalPlaces(decimalPlaces, rounding as any)
+                .toFixed();
         }
     }
 }
