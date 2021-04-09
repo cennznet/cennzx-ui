@@ -99,10 +99,7 @@ export class UserBalanceNotEnough extends BaseError {
     asset: Asset;
     constructor(asset: Asset, require: Amount, reserve: Amount) {
         super(
-            `Not enough ${asset.symbol} in wallet, require: ${require.asString(
-                asset.decimalPlaces,
-                Amount.ROUND_UP
-            )}, reserve: ${reserve.asString(asset.decimalPlaces)}`
+            `Not enough available, requires ${require.asString(asset.decimalPlaces, Amount.ROUND_UP)} ${asset.symbol}`
         );
         this.asset = asset;
     }

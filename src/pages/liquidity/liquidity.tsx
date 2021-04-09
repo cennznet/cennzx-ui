@@ -80,6 +80,7 @@ const Buttons = styled.div`
     justify-content: center;
 
     button {
+        width: 7em;
         border: 2px solid #1130ff;
         color: #1130ff;
         border-radius: 3px;
