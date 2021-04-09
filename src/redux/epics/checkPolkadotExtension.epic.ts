@@ -4,7 +4,11 @@ import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, from, Observable, of} from 'rxjs';
 import {EMPTY} from 'rxjs/internal/observable/empty';
-import {catchError, switchMap} from 'rxjs/operators';
+import {catchError, switchMap, withLatestFrom} from 'rxjs/operators';
+import {IEpicDependency} from '../../typings';
+import types from '../actions';
+import {updateSelectedAccount as updateSelectedExchangeAccount} from '../actions/ui/exchange.action';
+import {updateSelectedAccount as updateSelectedLiquidityAccount} from '../actions/ui/liquidity.action';
 import {AppState} from '../reducers';
 import action from './../actions';
 import {setExtensionError, updateExAccounts, updateExConnected, updateExDetected} from './../actions/extension.action';
@@ -61,4 +65,26 @@ export const observableAccountsEpic = action$ => {
     );
 };
 
-export default combineEpics(extensionDetectedEpic, observableAccountsEpic);
+export const updateSelectedAccountEpic = (
+    action$: Observable<Action<any>>,
+    store$: Observable<AppState>,
+    {api$}: IEpicDependency
+): Observable<Action<any>> =>
+    combineLatest([api$, action$.pipe(ofType(types.ExtensionActions.ACCOUNTS_UPDATE))]).pipe(
+        withLatestFrom(store$),
+        switchMap(
+            ([, store]): Observable<Action<any>> => {
+                const accounts = store.extension.accounts;
+                if (accounts.length) {
+                    return from([
+                        updateSelectedLiquidityAccount(accounts[0].address),
+                        updateSelectedExchangeAccount(accounts[0].address),
+                    ]);
+                } else {
+                    return from([updateSelectedLiquidityAccount(undefined), updateSelectedExchangeAccount(undefined)]);
+                }
+            }
+        )
+    );
+
+export default combineEpics(updateSelectedAccountEpic, extensionDetectedEpic, observableAccountsEpic);

@@ -61,7 +61,8 @@ const Flex = styled.div`
     display: inline-flex;
 `;
 
-const Flex2 = styled.div`
+export const Flex2 = styled.div`
+    padding: 0.3rem;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -290,9 +291,9 @@ function poolSummary(
             </div>
             {assetPool && corePool ? (
                 <Summary>
-                    Your pool share: {userAssetShareInPool} {assetName} + {userCoreShareInPool} {coreName}
+                    Pool Balance (Yours): {userAssetShareInPool} {assetName} + {userCoreShareInPool} {coreName}
                     <br />
-                    Current pool size: {assetPool} {assetName} + {corePool} {coreName}
+                    Pool Balance (Total): {assetPool} {assetName} + {corePool} {coreName}
                     <br />
                     {exchangeRateMsg}
                     <br />
@@ -300,6 +301,12 @@ function poolSummary(
                 </Summary>
             ) : null}
         </>
+    );
+}
+
+function getBalance(accountAssetBalance: Amount, assetInfo: AssetDetails[], assetId: number) {
+    return (
+        accountAssetBalance && assetInfo.length > 0 && accountAssetBalance.asString(assetInfo[assetId].decimalPlaces)
     );
 }
 
@@ -340,9 +347,6 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
             props.handleLiquidityAction(initState.liquidityAction);
             props.handleExtrinsicChange(initState.liquidityAction);
         }
-        if (accounts.length) {
-            props.handleSelectedAccountChange(accounts[0].value as string);
-        }
     }, []);
 
     // pre populate the asset drop down
@@ -352,11 +356,12 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         }
     }, [assets]);
 
-    const assetBalance = accountAssetBalance && accountAssetBalance.asString(assetInfo[assetId].decimalPlaces);
+    const assetBalance = getBalance(accountAssetBalance, assetInfo, assetId);
     const assetName = getAssetName(assets, assetId);
     const assetPool = assetReserve && assetReserve.asString && assetReserve.asString(assetInfo[assetId].decimalPlaces);
 
-    const coreBalance = accountCoreBalance && accountCoreBalance.asString(assetInfo[coreAssetId].decimalPlaces);
+    const coreBalance = getBalance(accountCoreBalance, assetInfo, coreAssetId);
+
     const coreName = getAssetName(assets, coreAssetId);
     const corePool = coreReserve && coreReserve.asString && coreReserve.asString(assetInfo[coreAssetId].decimalPlaces);
 
@@ -364,7 +369,10 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         ? [userShareInPool.assetBalance, userShareInPool.coreAssetBalance]
         : [new Amount(0), new Amount(0)];
 
-    const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
+    const formErrors =
+        state.touched || !signingAccount || !assetAmount || !coreAmount
+            ? getFormErrors(props)
+            : new Map<FormSection, FormErrorTypes[]>();
 
     return (
         <Page id={'page'}>
@@ -385,7 +393,9 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                         }}
                         message=""
                     />
-                    <ErrorMessage errors={formErrors} field={FormSection.account} />
+                    <Flex2>
+                        <ErrorMessage errors={formErrors} field={FormSection.account} />
+                    </Flex2>
                     <Line />
                     <Flex>
                         <SwapButton
@@ -526,7 +536,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     <Button
                         flat
                         primary
-                        disabled={formErrors.size > 0}
+                        disabled={formErrors.size > 0 || !signingAccount}
                         onClick={() =>
                             props.openTxDialog(props.form as LiquidityFormData, props.txFee, props.assetInfo)
                         }

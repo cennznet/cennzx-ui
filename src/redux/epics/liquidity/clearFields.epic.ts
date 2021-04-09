@@ -8,6 +8,8 @@ import {ExchangeFormData, IEpicDependency} from '../../../typings';
 import {SWAP_INPUT, SWAP_OUTPUT} from '../../../util/extrinsicUtil';
 import types from '../../actions';
 import {
+    updateAddAsset1Amount,
+    updateAddAsset2Amount,
     // SetExchangeErrorAction,
     updateExchangeRate,
     // updateFromAssetAmount,
@@ -67,18 +69,18 @@ export const clearExchangeRateAmountEpic = (
             })
         );
 
-// export const clearAmountEpic = (
-//     action$: Observable<Action<any>>,
-//     store$: Observable<AppState>,
-//     {api$}: IEpicDependency
-// ) =>
-//     action$.pipe(
-//         ofType<SetExchangeErrorAction>(types.ui.Liquidity.ERROR_SET),
-//         filter(action => action.payload instanceof EmptyPool),
-//         switchMap(() => {
-//             return from([updateToAssetAmount(undefined), updateFromAssetAmount(undefined)]);
-//         })
-//     );
+export const clearAmountEpic = (
+    action$: Observable<Action<any>>,
+    store$: Observable<AppState>,
+    {api$}: IEpicDependency
+) =>
+    action$
+        .pipe(ofType(types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE))
+        .pipe(
+            switchMap(() => {
+                return from([updateAddAsset1Amount(undefined), updateAddAsset2Amount(undefined)]);
+            })
+        );
 
 export const clearTxFeeEpic = (
     action$: Observable<Action<any>>,
@@ -99,4 +101,4 @@ export const clearTxFeeEpic = (
         })
     );
 
-export default combineEpics(clearExchangeRateAmountEpic, clearTxFeeEpic);
+export default combineEpics(clearExchangeRateAmountEpic, clearTxFeeEpic, clearAmountEpic);

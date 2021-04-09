@@ -20,6 +20,7 @@ import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
 import {AmountParams, Asset, ExchangeFormData, IFee, IOption, LiquidityFormData} from '../../typings';
 import {Amount} from '../../util/Amount';
+import {Flex2} from '../liquidity/liquidity';
 import getFormErrors from './validation';
 const SWAP_OUTPUT = 'buyAsset';
 const SWAP_INPUT = 'sellAsset';
@@ -148,9 +149,6 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
             props.handleBuyAssetIdChange(assets[0].id, props.form as ExchangeFormData, props.error);
             props.handleWithAssetIdChange(assets[1].id, props.form as ExchangeFormData, props.error);
         }
-        if (accounts.length) {
-            props.handleSelectedAccountChange(accounts[0].value as string);
-        }
     }, [assets]);
 
     const assetForEmptyPool = error.find(err => err instanceof EmptyPool);
@@ -171,7 +169,9 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         }}
                         message=""
                     />
-                    <ErrorMessage errors={formErrors} field={FormSection.account} />
+                    <Flex2>
+                        <ErrorMessage errors={formErrors} field={FormSection.account} />
+                    </Flex2>
                     <Line />
                     <AssetInput
                         disableAmount={!!assetForEmptyPool}
