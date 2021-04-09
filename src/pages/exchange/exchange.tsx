@@ -269,19 +269,6 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                                     <Button
                                         flat
                                         primary
-                                        onClick={() => {
-                                            props.handleReset();
-                                            setState({
-                                                touched: false,
-                                                assetDialogOpen: state.assetDialogOpen,
-                                            });
-                                        }}
-                                    >
-                                        Clear From
-                                    </Button>
-                                    <Button
-                                        flat
-                                        primary
                                         disabled={formErrors.size > 0 || !txFee}
                                         onClick={() => props.openTxDialog(props.form as ExchangeFormData, props.txFee)}
                                     >

@@ -115,7 +115,7 @@ export class UserBalanceNotEnoughForFee extends BaseError {
         super(
             // TODO : need to check with designer on the message.
             `Not enough ${feeAsset.symbol} in wallet to pay transaction fee, requires: ${require &&
-                require.asString(5, Amount.ROUND_UP)}` /*, reserve: ${reserve.asString(5)}*/
+                require.asString(feeAsset.decimalPlaces, Amount.ROUND_UP)}`
         );
         this.feeAsset = feeAsset;
     }
