@@ -5,6 +5,7 @@ import AccountPicker from 'components/AccountPicker';
 import AdvancedSetting from 'components/AdvancedSetting';
 import AssetDropDown from 'components/AssetDropDown';
 import AssetInput from 'components/AssetInput';
+import AssetInputForAdd from 'components/AssetInputForAdd';
 import ErrorMessage from 'components/Error/ErrorMessage';
 import ExchangeIcon from 'components/ExchangeIcon';
 import Nav from 'components/Nav';
@@ -173,7 +174,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         <ErrorMessage errors={formErrors} field={FormSection.account} />
                     </Flex2>
                     <Line />
-                    <AssetInput
+                    <AssetInputForAdd
                         disableAmount={!!assetForEmptyPool}
                         max={outputReserve}
                         value={{amount: toAssetAmount, assetId: toAsset}}
@@ -193,17 +194,18 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         title="Buy"
                         secondaryTitle={extrinsic === SWAP_INPUT ? ESTIMATED_LABEL : null}
                         message={props.exchangeRateMsg}
+                        errorBox={<ErrorMessage errors={formErrors} field={FormSection.toAssetInput} />}
                     />
-                    <ErrorMessage errors={formErrors} field={FormSection.toAssetInput} />
+                    <div>
+                        <ExchangeIcon
+                            onClick={() => {
+                                props.handleSwap();
+                                setState({touched: state.touched, assetDialogOpen: state.assetDialogOpen});
+                            }}
+                        />
+                    </div>
 
-                    <ExchangeIcon
-                        onClick={() => {
-                            props.handleSwap();
-                            setState({touched: state.touched, assetDialogOpen: state.assetDialogOpen});
-                        }}
-                    />
-
-                    <AssetInput
+                    <AssetInputForAdd
                         disableAmount={!!assetForEmptyPool}
                         max={fromAssetBalance}
                         value={{amount: fromAssetAmount, assetId: fromAsset}}
@@ -227,8 +229,8 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                                 ? `Balance: ${fromAssetBalance.asString(assetInfo[fromAsset].decimalPlaces)}`
                                 : ''
                         }
+                        errorBox={<ErrorMessage errors={formErrors} field={FormSection.fromAssetInput} />}
                     />
-                    <ErrorMessage errors={formErrors} field={FormSection.fromAssetInput} />
                 </PageInside>
                 <AdvancedSetting
                     show={!!(toAsset && fromAsset)}
