@@ -134,8 +134,8 @@ export class UserPoolBalanceNotEnough extends BaseError {
 
 export class FromAssetAmountRequired extends BaseError {
     name: string = 'FromAssetAmountRequired';
-    constructor() {
-        super('Please enter an amount');
+    constructor(symbol: string) {
+        super(`Please enter some ${symbol} to proceed the exchange`);
     }
 }
 
@@ -148,8 +148,8 @@ export class RecipientAddress extends BaseError {
 
 export class ToAssetAmountRequired extends BaseError {
     name: string = 'ToAssetAmountRequired';
-    constructor() {
-        super('Please enter an amount');
+    constructor(symbol: string) {
+        super(`Please enter some ${symbol} to proceed the exchange`);
     }
 }
 
