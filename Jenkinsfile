@@ -31,6 +31,7 @@ pipeline {
 		    withCredentials([usernamePassword(credentialsId: 'docker-hub-account-for-cennznet', usernameVariable: 'NUSER', passwordVariable: 'NPASS')]) {
 			sh 'docker login -u ${NUSER} -p ${NPASS}'
 			def customImage = docker.build("cennznet/${SERVICE_NAME}:1.0.${env.BUILD_ID}")
+			customImage.push("cennznet/cennznet-snapshot:tmp")
                         customImage.push()
                         customImage.push('latest')
 		    }
