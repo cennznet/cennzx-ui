@@ -6,7 +6,7 @@ def helm_install(){
     sh 'kubectl create secret generic "${SERVICE_NAME}-secrets" --from-file=secrets.json="${BLANK_SECRET_FN}" --namespace="${NAMESPACE}" | true'
     sh 'kubectl delete configmap "${SERVICE_NAME}-settings" --namespace=${NAMESPACE} | true'
     sh 'kubectl create configmap "${SERVICE_NAME}-settings" --from-file=appsettings.json="helm/${ENV}-${SERVICE_NAME}-settings.json" --namespace=${NAMESPACE}'
-    sh 'helm upgrade --install ${SERVICE_NAME}-release helm -f helm/${ENV}-values.yaml -n ${NAMESPACE} --debug --set k8s_platform=eks --set namespace=cennznet-explorer --set hostname=${HOSTNAME} --set image.tag=1.0.${BUILD_NUMBER}'
+    sh 'helm upgrade --install ${SERVICE_NAME}-release helm -f helm/${ENV}-values.yaml -n ${NAMESPACE} --debug --set k8s_platform=eks --set namespace=${NAMESPACE} --set hostname=${HOSTNAME} --set image.tag=1.0.${BUILD_NUMBER}'
 
 }
 
