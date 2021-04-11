@@ -1,0 +1,81 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    {{- if eq .Values.issueCertificate true }}
+
+    {{- if eq .Values.k8s_platform "tack" }}
+    kubernetes.io/tls-acme: "true"
+    {{- else if eq .Values.k8s_platform "eks" }}
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    {{- else }}
+    certmanager.k8s.io/cluster-issuer: letsencrypt-staging
+    {{- end }}
+
+    {{- end }}
+    nginx.ingress.kubernetes.io/rewrite-target: {{.Values.rewriteTarget | default ""}}
+    {{- if eq .Values.enableWhitelist true }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{.Values.IPCIDRs | default ""}} 
+    {{- end }}
+
+    {{- if eq .Values.enableWebsocketStickyness true }}
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    {{- end }}
+    
+  name: {{.Values.appName}}-ingress
+  namespace: {{.Values.namespace | default "default"}}
+spec:
+  rules:
+  - host:
+    {{- if .Values.customDomain }}
+      {{.Values.customDomain}}
+    {{else}}
+      {{.Values.hostname}}
+    {{- end }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{.Values.appName}}-service
+          servicePort: {{.Values.service.port | default "8080"}}
+        path: {{.Values.httpPath | default "/"}}
+      {{if eq .Values.requiresInternalEndpoint true}}
+      - path: {{.Values.httpPath}}internal
+        backend:
+          serviceName: invalid-service
+          servicePort: 80
+      {{end}}
+
+  - host:
+    {{- if .Values.customDomainWWW }}
+      {{.Values.customDomainWWW}}
+    {{else}}
+      {{.Values.hostname}}
+    {{- end }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{.Values.appName}}-service
+          servicePort: {{.Values.service.port | default "8080"}}
+        path: {{.Values.httpPath | default "/"}}
+      {{if eq .Values.requiresInternalEndpoint true}}
+      - path: {{.Values.httpPath}}internal
+        backend:
+          serviceName: invalid-service
+          servicePort: 80
+      {{end}}
+  tls:
+  {{- if.Values.customDomain }}
+  - secretName: {{.Values.appName}}-tls-certificate
+    hosts:
+    - {{.Values.customDomain}}
+    {{- if.Values.customDomainWWW }}
+    - {{.Values.customDomainWWW}}
+    {{- end }}
+  {{else}}
+  - hosts:
+    - {{.Values.hostname}}
+  {{- end }}
