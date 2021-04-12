@@ -22,6 +22,10 @@ const account = [
 ];
 accounts$.next(account);
 
+const globalAssetList = new Array();
+globalAssetList[16000] = {decimalPlaces: 4, symbol: 'CENNZ', id: 16000};
+globalAssetList[16001] = {decimalPlaces: 4, symbol: 'CPAY', id: 16001};
+
 describe('trigger on pool balance epic works', () => {
     const asset = 16000;
     const triggers = [updateSelectedToAsset(asset)];
@@ -36,41 +40,29 @@ describe('trigger on pool balance epic works', () => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const coreAssetId_              = ' -f-';
+                const getPoolAssetBalance       = ' -b-';
                 // prettier-ignore
-                const getPoolAssetBalance       = '  -b-';
+                const getPoolCoreAssetBalance   = ' -d-';
                 // prettier-ignore
-                const getPoolCoreAssetBalance   = '  -d-';
+                const exchangeAddress           = ' -e-';
                 // prettier-ignore
-                const exchangeAddress           = '  -e-';
-                // prettier-ignore
-                const expect_                   = '---c';
+                const expect_                   = '--c';
 
                 const action$ = hot(action_, {
                     a: action,
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getPoolAssetBalance: () =>
-                            cold(getPoolAssetBalance, {
-                                b: new BN('34220'),
-                            }),
-                        getPoolCoreAssetBalance: () =>
-                            cold(getPoolCoreAssetBalance, {
-                                d: new BN('14220'),
-                            }),
-                    },
-                    query: {
-                        cennzx: {
-                            coreAssetId: () =>
-                                cold(coreAssetId_, {
-                                    f: new BN(16001),
-                                }),
-                        },
-                    },
                     derive: {
                         cennzx: {
+                            poolAssetBalance: () =>
+                                cold(getPoolAssetBalance, {
+                                    b: new BN('34220'),
+                                }),
+                            poolCoreAssetBalance: () =>
+                                cold(getPoolCoreAssetBalance, {
+                                    d: new BN('14220'),
+                                }),
                             exchangeAddress: () =>
                                 cold(exchangeAddress, {
                                     e: '5D35SxvLbdxyQAaQRfRs9XAUR1yqJNqAFmovtQH5AZXh1JAe',
@@ -78,31 +70,20 @@ describe('trigger on pool balance epic works', () => {
                         },
                     },
                 });
-                if (typeof window !== 'undefined') {
-                    window.SingleSource = {
-                        accounts$,
-                        signer: {
-                            sign: async (t, n, e) => {
-                                return 1;
-                            },
-                        },
-                    };
-                }
 
                 const dependencies = ({
                     api$,
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {toAsset: 16000},
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -137,39 +118,27 @@ describe('Return pool balance as empty for core asset', () => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const coreAssetId_              = ' -f-';
-                // prettier-ignore
                 const expect_                   = '';
 
                 const action$ = hot(action_, {
                     a: action,
                 });
 
-                const api$ = of({
-                    query: {
-                        cennzx: {
-                            coreAssetId: () =>
-                                cold(coreAssetId_, {
-                                    f: new BN(16001),
-                                }),
-                        },
-                    },
-                });
+                const api$ = EMPTY;
 
                 const dependencies = ({
                     api$,
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {toAsset: 16001},
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -194,48 +163,29 @@ describe('Test when pool balance is empty', () => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const coreAssetId_              = ' -f-';
+                const getPoolAssetBalance       = ' -b-';
                 // prettier-ignore
-                const getPoolAssetBalance       = '  -b-';
+                const getPoolCoreAssetBalance   = ' -d-';
                 // prettier-ignore
-                const getPoolCoreAssetBalance   = '  -d-';
+                const exchangeAddress           = ' -e-';
                 // prettier-ignore
-                const exchangeAddress           = '  -e-';
-                // prettier-ignore
-                const expect_                   = '---c';
+                const expect_                   = '--c';
 
                 const action$ = hot(action_, {
                     a: action,
                 });
-                if (typeof window !== 'undefined') {
-                    window.config.ASSETS = [
-                        {symbol: 'CENNZ', id: 16000},
-                        {symbol: 'CPAY', id: 16001},
-                        {symbol: 'PLUG', id: 16003},
-                    ];
-                }
 
                 const api$ = of({
-                    cennzx: {
-                        getPoolAssetBalance: () =>
-                            cold(getPoolAssetBalance, {
-                                b: new BN('0'),
-                            }),
-                        getPoolCoreAssetBalance: () =>
-                            cold(getPoolCoreAssetBalance, {
-                                d: new BN('0'),
-                            }),
-                    },
-                    query: {
-                        cennzx: {
-                            coreAssetId: () =>
-                                cold(coreAssetId_, {
-                                    f: new BN(16001),
-                                }),
-                        },
-                    },
                     derive: {
                         cennzx: {
+                            poolAssetBalance: () =>
+                                cold(getPoolAssetBalance, {
+                                    b: new BN('0'),
+                                }),
+                            poolCoreAssetBalance: () =>
+                                cold(getPoolCoreAssetBalance, {
+                                    d: new BN('0'),
+                                }),
                             exchangeAddress: () =>
                                 cold(exchangeAddress, {
                                     e: '5D35SxvLbdxyQAaQRfRs9XAUR1yqJNqAFmovtQH5AZXh1JAe',
@@ -249,15 +199,14 @@ describe('Test when pool balance is empty', () => {
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {toAsset: 16000},
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -289,15 +238,11 @@ describe('Test when api method throws error', () => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const coreAssetId_              = ' -f-';
+                const getPoolCoreAssetBalance   = '-d-';
                 // prettier-ignore
-                const getPoolAssetBalance       = '  -#-';
+                const exchangeAddress           = '-e-';
                 // prettier-ignore
-                const getPoolCoreAssetBalance   = '  -d-';
-                // prettier-ignore
-                const exchangeAddress           = '  -e-';
-                // prettier-ignore
-                const expect_                   = '--c';
+                const expect_                   = '-c';
 
                 const action$ = hot(action_, {
                     a: action,
@@ -305,23 +250,13 @@ describe('Test when api method throws error', () => {
                 const err = new NodeConnectionTimeOut();
 
                 const api$ = of({
-                    cennzx: {
-                        getPoolAssetBalance: () => throwError(err),
-                        getPoolCoreAssetBalance: () =>
-                            cold(getPoolCoreAssetBalance, {
-                                d: new BN('10'),
-                            }),
-                    },
-                    query: {
-                        cennzx: {
-                            coreAssetId: () =>
-                                cold(coreAssetId_, {
-                                    f: new BN(16001),
-                                }),
-                        },
-                    },
                     derive: {
                         cennzx: {
+                            poolAssetBalance: () => throwError(err),
+                            poolCoreAssetBalance: () =>
+                                cold(getPoolCoreAssetBalance, {
+                                    d: new BN('10'),
+                                }),
                             exchangeAddress: () =>
                                 cold(exchangeAddress, {
                                     e: '5D35SxvLbdxyQAaQRfRs9XAUR1yqJNqAFmovtQH5AZXh1JAe',
@@ -335,15 +270,14 @@ describe('Test when api method throws error', () => {
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {toAsset: 16000},
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 

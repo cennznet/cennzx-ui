@@ -248,7 +248,6 @@ describe('Return empty when from new buy/with asset is set but extrinsic is not 
 });
 
 describe('Clear exchange rate when new buy/with asset is set or assets are swapped', () => {
-    const amount = new Amount('2');
     const triggers = [updateSelectedFromAsset(16000), updateSelectedToAsset(16001), swapAsset()];
     triggers.forEach(action => {
         it(action.type, () => {
@@ -303,9 +302,6 @@ describe('Clear exchange rate when new buy/with asset is set or assets are swapp
 });
 
 describe('Clear buy/with asset amounts when asset pool is empty', () => {
-    if (typeof window !== 'undefined') {
-        window.config.ASSETS = [{symbol: 'CENNZ', id: 16000}, {symbol: 'CPAY', id: 16001}, {symbol: 'PLUG', id: 16003}];
-    }
     const triggers = [setExchangeError(new EmptyPool({symbol: 'CPAY', id: 16001}))];
     triggers.forEach(action => {
         it(action.type, () => {
@@ -332,6 +328,10 @@ describe('Clear buy/with asset amounts when asset pool is empty', () => {
                     api$,
                 } as unknown) as IEpicDependency;
 
+                const globalAssetList = new Array();
+                globalAssetList[16000] = {decimalPlaces: 4, symbol: 'CENNZ', id: 16000};
+                globalAssetList[16001] = {decimalPlaces: 4, symbol: 'CPAY', id: 16001};
+
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
                     ui: {
                         exchange: {
@@ -344,6 +344,9 @@ describe('Clear buy/with asset amounts when asset pool is empty', () => {
                                 extrinsic: SWAP_INPUT,
                             },
                         },
+                    },
+                    global: {
+                        assetInfo: globalAssetList,
                     },
                 });
 

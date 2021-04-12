@@ -31,6 +31,10 @@ const account = [
 ];
 accounts$.next(account);
 
+const globalAssetList = new Array();
+globalAssetList[16000] = {decimalPlaces: 4, symbol: 'CENNZ', id: 16000};
+globalAssetList[16001] = {decimalPlaces: 4, symbol: 'CPAY', id: 16001};
+
 describe('Get exchange rate working', () => {
     const triggers = [requestExchangeRate()];
     triggers.forEach(action => {
@@ -44,7 +48,7 @@ describe('Get exchange rate working', () => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const getInputPrice            = ' -b-';
+                const sellPrice                 = ' -b-';
                 // prettier-ignore
                 const expect_                   = '--c';
 
@@ -53,11 +57,13 @@ describe('Get exchange rate working', () => {
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getInputPrice: () =>
-                            cold(getInputPrice, {
-                                b: new BN('22'),
-                            }),
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () =>
+                                cold(sellPrice, {
+                                    b: new BN('22'),
+                                }),
+                        },
                     },
                 });
 
@@ -78,6 +84,9 @@ describe('Get exchange rate working', () => {
                                 toAsset: 16001,
                             },
                         },
+                    },
+                    global: {
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -106,7 +115,7 @@ describe('Update the exchange rate to a different value', () => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const getInputPrice            = ' -b-';
+                const sellPrice                 = ' -b-';
                 // prettier-ignore
                 const expect_                   = '--c';
 
@@ -115,11 +124,13 @@ describe('Update the exchange rate to a different value', () => {
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getInputPrice: () =>
-                            cold(getInputPrice, {
-                                b: new BN('2'),
-                            }),
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () =>
+                                cold(sellPrice, {
+                                    b: new BN('2'),
+                                }),
+                        },
                     },
                 });
 
@@ -141,6 +152,9 @@ describe('Update the exchange rate to a different value', () => {
                             },
                             exchangeRate: new Amount(1),
                         },
+                    },
+                    global: {
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -176,8 +190,10 @@ describe('Test when exchange rate epic throws pool balance low error, should ret
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getInputPrice: () => throwError(new Error('Pool balance is low')),
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () => throwError(new Error('Pool balance is low')),
+                        },
                     },
                 });
 
@@ -198,6 +214,9 @@ describe('Test when exchange rate epic throws pool balance low error, should ret
                                 toAsset: 16001,
                             },
                         },
+                    },
+                    global: {
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -229,8 +248,10 @@ describe('Test when exchange rate epic throws error', () => {
 
                 const err = new NodeConnectionTimeOut();
                 const api$ = of({
-                    cennzx: {
-                        getInputPrice: () => throwError(err),
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () => throwError(err),
+                        },
                     },
                 });
 
@@ -251,6 +272,9 @@ describe('Test when exchange rate epic throws error', () => {
                                 toAsset: 16001,
                             },
                         },
+                    },
+                    global: {
+                        assetInfo: globalAssetList,
                     },
                 });
 

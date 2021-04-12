@@ -22,6 +22,10 @@ const account = [
 ];
 accounts$.next(account);
 
+const globalAssetList = new Array();
+globalAssetList[16000] = {decimalPlaces: 4, symbol: 'CENNZ', id: 16000};
+globalAssetList[16001] = {decimalPlaces: 4, symbol: 'CPAY', id: 16001};
+
 describe('trigger on check input price epic works', () => {
     const inputAmount = new Amount('1', AmountUnit.DISPLAY);
     const triggers = [setFromAssetAmount(inputAmount)];
@@ -45,35 +49,21 @@ describe('trigger on check input price epic works', () => {
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getInputPrice: () =>
-                            cold(getInputPrice, {
-                                b: new BN('2200000'),
-                            }),
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () =>
+                                cold(getInputPrice, {
+                                    b: new BN('2200000'),
+                                }),
+                        },
                     },
                 });
-
-                if (typeof window !== 'undefined') {
-                    window.SingleSource = {
-                        accounts$,
-                        signer: {
-                            sign: async (t, n, e) => {
-                                return 1;
-                            },
-                        },
-                    };
-                }
 
                 const dependencies = ({
                     api$,
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {
@@ -82,6 +72,10 @@ describe('trigger on check input price epic works', () => {
                                 fromAssetAmount: 1,
                             },
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -120,11 +114,13 @@ describe('Update the input price to a different value', () => {
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getInputPrice: () =>
-                            cold(getInputPrice, {
-                                b: new BN('2200000'),
-                            }),
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () =>
+                                cold(getInputPrice, {
+                                    b: new BN('2200000'),
+                                }),
+                        },
                     },
                 });
 
@@ -133,11 +129,6 @@ describe('Update the input price to a different value', () => {
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {
@@ -147,6 +138,10 @@ describe('Update the input price to a different value', () => {
                                 toAssetAmount: new Amount(3),
                             },
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -183,8 +178,10 @@ describe('Test when input price epic throws pool balance low error, should retur
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getInputPrice: () => throwError(new Error('Pool balance is low')),
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () => throwError(new Error('Pool balance is low')),
+                        },
                     },
                 });
 
@@ -193,11 +190,6 @@ describe('Test when input price epic throws pool balance low error, should retur
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {
@@ -207,6 +199,10 @@ describe('Test when input price epic throws pool balance low error, should retur
                                 toAssetAmount: new Amount(3),
                             },
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -239,8 +235,10 @@ describe('Test when input price epic throws', () => {
 
                 const err = new NodeConnectionTimeOut();
                 const api$ = of({
-                    cennzx: {
-                        getInputPrice: () => throwError(err),
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () => throwError(err),
+                        },
                     },
                 });
 
@@ -249,11 +247,6 @@ describe('Test when input price epic throws', () => {
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {
@@ -262,7 +255,12 @@ describe('Test when input price epic throws', () => {
                                 fromAssetAmount: new Amount(1),
                                 toAssetAmount: new Amount(3),
                             },
+                            error: [],
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -302,35 +300,21 @@ describe('Update the output price to a different value', () => {
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getOutputPrice: () =>
-                            cold(getOutputPrice, {
-                                b: new BN('43200'),
-                            }),
+                    rpc: {
+                        cennzx: {
+                            buyPrice: () =>
+                                cold(getOutputPrice, {
+                                    b: new BN('43200'),
+                                }),
+                        },
                     },
                 });
-
-                if (typeof window !== 'undefined') {
-                    window.SingleSource = {
-                        accounts$,
-                        signer: {
-                            sign: async (t, n, e) => {
-                                return 1;
-                            },
-                        },
-                    };
-                }
 
                 const dependencies = ({
                     api$,
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {
@@ -339,6 +323,10 @@ describe('Update the output price to a different value', () => {
                                 toAssetAmount: 2,
                             },
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -377,35 +365,21 @@ describe('trigger on check output price epic works', () => {
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getOutputPrice: () =>
-                            cold(getOutputPrice, {
-                                b: new BN('43200'),
-                            }),
+                    rpc: {
+                        cennzx: {
+                            buyPrice: () =>
+                                cold(getOutputPrice, {
+                                    b: new BN('43200'),
+                                }),
+                        },
                     },
                 });
-
-                if (typeof window !== 'undefined') {
-                    window.SingleSource = {
-                        accounts$,
-                        signer: {
-                            sign: async (t, n, e) => {
-                                return 1;
-                            },
-                        },
-                    };
-                }
 
                 const dependencies = ({
                     api$,
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {
@@ -415,6 +389,10 @@ describe('trigger on check output price epic works', () => {
                                 toAssetAmount: new Amount(3),
                             },
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -451,9 +429,12 @@ describe('Test when output price epic throws', () => {
                 });
 
                 const err = new NodeConnectionTimeOut();
+
                 const api$ = of({
-                    cennzx: {
-                        getOutputPrice: () => throwError(err),
+                    rpc: {
+                        cennzx: {
+                            buyPrice: () => throwError(err),
+                        },
                     },
                 });
 
@@ -462,11 +443,6 @@ describe('Test when output price epic throws', () => {
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {
@@ -475,7 +451,12 @@ describe('Test when output price epic throws', () => {
                                 fromAssetAmount: new Amount(1),
                                 toAssetAmount: new Amount(3),
                             },
+                            error: [],
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -513,8 +494,10 @@ describe('Test when output price epic throws pool balance low error, should retu
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getOutputPrice: () => throwError(new Error('Pool balance is low')),
+                    rpc: {
+                        cennzx: {
+                            buyPrice: () => throwError(new Error('Pool balance is low')),
+                        },
                     },
                 });
 
@@ -523,11 +506,6 @@ describe('Test when output price epic throws pool balance low error, should retu
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {
@@ -536,7 +514,12 @@ describe('Test when output price epic throws pool balance low error, should retu
                                 fromAssetAmount: new Amount(1),
                                 toAssetAmount: new Amount(3),
                             },
+                            error: [],
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 

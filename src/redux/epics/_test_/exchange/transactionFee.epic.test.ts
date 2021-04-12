@@ -18,7 +18,6 @@ import {prepareExchangeExtrinsicParamsWithBuffer, SWAP_INPUT} from '../../../../
 import {prepareTransactionFeeEpic, requestTransactionFeeEpic} from '../../exchange/transactionFee.epic';
 
 describe('Prepare transaction paramater epic working', () => {
-    const inputAmount = new Amount('2');
     const triggers = [requestTransactionFee()];
     const [fromAsset, toAsset, fromAssetAmount, toAssetAmount, buffer] = [
         16000,

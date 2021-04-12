@@ -27,9 +27,6 @@ export function observableEstimatedFee(
     feeAssetId: number,
     api: ApiRx
 ): Observable<[BN, BN]> {
-    // const observableFee = api.rpc.payment.queryInfo(tx.toHex());
-    // return observableFee.pipe(
-    //     switchMap(feeAmtInCPAY => {
     const maxPayment = '50000000000000000';
 
     return api.derive.fees.estimateFee({extrinsic: tx, userFeeAssetId: feeAssetId, maxPayment}).pipe(
@@ -41,8 +38,6 @@ export function observableEstimatedFee(
             console.log('error', err);
         })
     );
-    // })
-    // );
 }
 
 export function observableActualFee(blockHash: Hash, extrinsicIndex: BN, api: ApiRx): Observable<BN> {
