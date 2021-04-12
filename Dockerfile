@@ -7,4 +7,4 @@ RUN yarn install
 ADD . /app
 RUN yarn install
 
-CMD yarn start
+CMD yarn start --hostname 0.0.0.0 --port 8080
