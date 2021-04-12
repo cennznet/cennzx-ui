@@ -6,7 +6,7 @@
     "yarn": "^1.10.1"
   },
   "scripts": {
-    "start": "react-static start",
+    "start": "HOST=0.0.0.0 react-static start",
     "stage": "react-static build --staging",
     "build": "react-static build",
     "bundle": "react-static bundle",
