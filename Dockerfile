@@ -1,4 +1,3 @@
-#FROM node:10.17.0-alpine
 FROM node:10-buster as builder
 
 RUN apt-get update && apt install python3

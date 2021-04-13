@@ -1,7 +1,4 @@
 {
-  "explorerUrl": "https://service.eks.centralityapp.com/cennznet-explorer-api/",
-  "chainWS":  "wss://cennznet.unfrastructure.io/public/ws",
-  "sentry": "https://d29053a891e14ed2bcd1dadf94bd19ac@o119256.ingest.sentry.io/5252144",
   "env": "dev"
 }
 
