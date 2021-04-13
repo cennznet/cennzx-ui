@@ -1,5 +1,4 @@
 import {cennzx} from '@cennznet/types/interfaces/definitions';
-import {web3Enable} from '@polkadot/extension-dapp';
 import {StateObservable} from 'redux-observable';
 import {Observable, ReplaySubject, Subject, of, EMPTY} from 'rxjs';
 import {take} from 'rxjs/operators';
@@ -77,7 +76,10 @@ describe.skip('trigger on init, polkadot extension detected', () => {
                 expectObservable(output$).toBe(expect_, {
                     c: {
                         type: types.ExtensionActions.DETECTION_UPDATE,
-                        payload: {detected: true, polkadotInjected: window.injectedWeb3['polkadot-js']},
+                        payload: {
+                            detected: true,
+                            polkadotInjected: typeof window !== 'undefined' ? window.injectedWeb3['polkadot-js'] : null,
+                        },
                     },
                 });
             });

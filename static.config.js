@@ -3,7 +3,6 @@ import React from 'react'
 export default {
     entry: 'index.tsx',
     //maxThreads: 1,
-    crossOriginLoading: 'anonymous',
     productionSourceMaps: true,
     getSiteData: () => ({
         title: 'Best of CENNZX'
@@ -95,7 +94,10 @@ export default {
                 include: /node_modules/,
                 type: "javascript/auto"
             }
-        ]
+        ],
+    },
+    output: {
+        globalObject: this,
     },
     optimization: {
         runtimeChunk: 'single',

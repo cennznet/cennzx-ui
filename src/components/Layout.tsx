@@ -32,7 +32,10 @@ interface LayoutProps {
 }
 
 const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, polkadotExtension, metadata}) => {
-    const metaUpdated = localStorage.getItem(`${extVersion}-EXTENSION_META_UPDATED`);
+    let metaUpdated = null;
+    if (typeof localStorage !== 'undefined') {
+        metaUpdated = localStorage.getItem(`${extVersion}-EXTENSION_META_UPDATED`);
+    }
     return (
         <React.Fragment>
             <Header />

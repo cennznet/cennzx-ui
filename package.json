@@ -1,10 +1,6 @@
 {
   "name": "SpotX",
   "private": true,
-  "browserslist": [
-    "last 2 version",
-    "> 2%"
-  ],
   "engines": {
     "node": ">=10.13.0",
     "yarn": "^1.10.1"
@@ -71,7 +67,6 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-numeric-separator": "^7.10.4",
-    "@plugnet/dev-react": "^0.30.6",
     "@polkadot/dev": "0.40.19",
     "@types/bignumber.js": "^5.0.0",
     "@types/jest": "^23.3.10",

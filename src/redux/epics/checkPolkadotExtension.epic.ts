@@ -1,4 +1,3 @@
-import {web3AccountsSubscribe, web3Enable} from '@polkadot/extension-dapp';
 import {InjectedAccountWithMeta} from '@polkadot/extension-inject/types';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
@@ -12,6 +11,13 @@ import {updateSelectedAccount as updateSelectedLiquidityAccount} from '../action
 import {AppState} from '../reducers';
 import action from './../actions';
 import {setExtensionError, updateExAccounts, updateExConnected, updateExDetected} from './../actions/extension.action';
+let web3AccountsSubscribe = null;
+let web3Enable = null;
+
+if (typeof window !== 'undefined') {
+    web3Enable = require('@polkadot/extension-dapp').web3Enable;
+    web3AccountsSubscribe = require('@polkadot/extension-dapp').web3AccountsSubscribe;
+}
 
 export const extensionDetectedEpic = (action$: Observable<Action<any>>, store$: Observable<AppState>) =>
     combineLatest([from(web3Enable('cennzx')), action$.pipe(ofType(action.GlobalActions.INIT_APP))]).pipe(

@@ -47,14 +47,7 @@ export const requestTransactionFeeEpic = (
     ]).pipe(
         withLatestFrom(store$),
         filter(
-            ([[, action], store]) =>
-                store.ui.liquidity.form.add2Asset &&
-                store.ui.liquidity.form.add2Asset &&
-                !!store.ui.liquidity.form.add1Amount &&
-                !!store.ui.liquidity.form.add2Amount &&
-                !!store.ui.liquidity.form.signingAccount &&
-                !(store.ui.liquidity.form.fromAssetAmount.isZero() && store.ui.liquidity.form.toAssetAmount.isZero()) &&
-                !!store.ui.liquidity.form.extrinsic
+            ([[, action], store]) => !!store.ui.liquidity.form.signingAccount && !!store.ui.liquidity.form.extrinsic
         ),
         switchMap(([, store]) => {
             return of(requestTransactionFee());

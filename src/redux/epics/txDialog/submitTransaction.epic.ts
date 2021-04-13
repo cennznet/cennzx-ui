@@ -1,5 +1,4 @@
 import {SubmittableResult} from '@cennznet/api';
-import {web3Enable, web3FromSource} from '@polkadot/extension-dapp';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, from, Observable, of} from 'rxjs';
@@ -21,6 +20,12 @@ import {
 } from '../../actions/ui/txDialog.action';
 import {AppState} from '../../reducers';
 import {Stages} from '../../reducers/ui/txDialog.reducer';
+
+let web3FromSource = null;
+
+if (typeof window !== 'undefined') {
+    web3FromSource = require('@polkadot/extension-dapp').web3FromSource;
+}
 
 export const submitTransactionEpic = (
     action$: Observable<Action<any>>,
