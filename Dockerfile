@@ -4,8 +4,8 @@ FROM node:10-buster
 RUN apt-get update && apt install python3
 
 WORKDIR /app
-RUN yarn install
 ADD . /app
 RUN yarn install
+RUN yarn build
 
 CMD yarn start --hostname 0.0.0.0 --port 8080
