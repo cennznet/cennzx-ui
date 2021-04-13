@@ -5,6 +5,8 @@ RUN apt-get update && apt install python3
 
 WORKDIR /app
 ADD . /app
+RUN rm -rf node_modules/*
+RUN rm -rf artifacts/*
 RUN yarn install
 RUN yarn build
 
