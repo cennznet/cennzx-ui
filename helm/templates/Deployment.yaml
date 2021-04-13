@@ -1,0 +1,73 @@
+{{- $root := . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.appName}}-service
+  namespace: {{.Values.namespace}}
+spec:
+  replicas: {{.Values.replicas | default "2"}}
+  revisionHistoryLimit: 2
+  minReadySeconds: 10
+  selector:
+    matchLabels:
+      app: {{.Values.appName}}-service
+  template:
+    metadata:
+      labels:
+        app: {{.Values.appName}}-service
+    spec:
+      containers:
+      - name: {{.Values.appName}}
+        image: {{ .Values.image.repository }}{{ .Values.image.name }}:{{ .Values.image.tag }}
+        readinessProbe:
+          httpGet:
+            path: {{.Values.readinessProbe.httpGet.path}}
+            port: {{.Values.readinessProbe.httpGet.port | default "3000"}}
+          initialDelaySeconds: {{.Values.readinessProbe.initialDelaySeconds | default "5"}}
+          timeoutSeconds: {{.Values.readinessProbe.timeoutSeconds | default "1"}}
+          periodSeconds: {{.Values.readinessProbe.periodSeconds | default "15"}}
+{{if eq .Values.enableLivenessProbe true}}
+        livenessProbe:
+          httpGet:
+            path: {{.Values.livenessProbe.httpGet.path}}
+            port: {{.Values.livenessProbe.httpGet.port | default "3000"}}
+          initialDelaySeconds: {{.Values.livenessProbe.initialDelaySeconds | default "5"}}
+          timeoutSeconds: {{.Values.livenessProbe.timeoutSeconds | default "1"}}
+          periodSeconds: {{.Values.livenessProbe.periodSeconds | default "15"}}
+{{end}}
+        resources:
+          requests:
+            cpu: {{.Values.resources.requests.cpu | default "50m"}}
+            memory: {{.Values.resources.requests.memory | default "128Mi"}}
+          limits:
+            cpu: {{.Values.resources.limits.cpu | default "100m"}}
+            memory: {{.Values.resources.limits.memory | default "256Mi"}}
+        volumeMounts:
+        {{- if .Values.volumeMounts}}               
+        {{- range $i, $vm := .Values.volumeMounts}}        
+          - name:  {{$vm.name}}
+            readyOnly: {{$vm.readOnly}}
+            mountPath: {{$vm.mountPath}}
+        {{- end }}
+        {{else}}
+          - name: secrets
+            readOnly: true
+            mountPath: "/workdir/secrets/"
+          - name: settings
+            readOnly: true
+            mountPath: "/workdir/settings/"
+        {{- end }}
+      volumes:
+        - name: secrets
+          secret:
+            secretName: {{.Values.appName}}-secrets
+        - name: settings
+          configMap:
+            name: {{.Values.appName}}-settings
+       {{if .Values.certificates}}  
+        - name: certificates
+          secret:
+            secretName: {{.Values.appName}}-certificates
+       {{- end }}    
+      imagePullSecrets:
+      - name: registry-secret
