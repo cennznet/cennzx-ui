@@ -1,5 +1,5 @@
 #FROM node:10.17.0-alpine
-FROM node:10-buster
+FROM node:10-buster as builder
 
 RUN apt-get update && apt install python3
 
@@ -9,5 +9,12 @@ RUN rm -rf node_modules/*
 RUN rm -rf artifacts/*
 RUN yarn install
 RUN yarn build
+RUN ls dist/
 
-CMD yarn start --hostname 0.0.0.0 --port 8080
+
+FROM nginx:latest
+COPY --from=builder /app/dist/ /usr/share/nginx/html
+COPY --from=builder /app/default.conf /etc/nginx/conf.d/default.conf
+
+RUN ls /usr/share/nginx/html
+RUN cat /etc/nginx/conf.d/default.conf
