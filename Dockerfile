@@ -8,6 +8,7 @@ RUN rm -rf node_modules/*
 RUN rm -rf artifacts/*
 RUN yarn install
 RUN yarn build
+RUN mv settings dist/
 RUN ls dist/
 
 
