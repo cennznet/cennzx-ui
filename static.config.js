@@ -31,7 +31,7 @@ export default {
                 },
                 {
                     path: '/liquidity',
-                    template: 'src/pages/liquidity',
+                    template: 'src/pages/liquidity/index',
                 },
                 //  A 404 component
                 {
