@@ -54,7 +54,7 @@ export default {
                 children,
                 renderMeta
             } = this.props;
-            let config = "/settings/config.js";
+            const config = "/settings/config.js";
             // if (process.env.NODE_ENV === 'development') {
             //     config = "/settings/config.js";
             // } else {
