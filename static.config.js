@@ -54,12 +54,13 @@ export default {
                 children,
                 renderMeta
             } = this.props;
-            const config = "/settings/config.js";
-            // if (process.env.NODE_ENV === 'development') {
-            //     config = "/settings/config.js";
-            // } else {
-            //     config = "/config/config.js";
-            // }
+            // const config = "/settings/config.js";
+            let config;
+            if (process.env.NODE_ENV === 'development') {
+                config = "/settings/config.js";
+            } else {
+                config = "/config/config.js";
+            }
             return (
                 <Html lang='en-US'>
                <Head>
