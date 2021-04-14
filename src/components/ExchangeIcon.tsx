@@ -30,6 +30,7 @@ const ExchangeIcon = styled(FontAwesomeIcon)<FontAwesomeIconProps>`
 `;
 
 const Container = styled.div`
+    margin-top: 20px;
     width: 100%;
     display: flex;
     flex-direction: row;
