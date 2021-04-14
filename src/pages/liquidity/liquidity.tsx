@@ -311,6 +311,10 @@ function getBalance(accountAssetBalance: Amount, assetInfo: AssetDetails[], asse
     );
 }
 
+function getFormattedPoolBalance(assetReserve: Amount, assetInfo: AssetDetails[], assetId: number) {
+    return assetReserve && assetInfo.length > 0 && assetId && assetReserve.asString(assetInfo[assetId].decimalPlaces);
+}
+
 export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const {
         accounts,
@@ -359,12 +363,12 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
 
     const assetBalance = getBalance(accountAssetBalance, assetInfo, assetId);
     const assetName = getAssetName(assets, assetId);
-    const assetPool = assetReserve && assetReserve.asString && assetReserve.asString(assetInfo[assetId].decimalPlaces);
+    const assetPool = getFormattedPoolBalance(assetReserve, assetInfo, assetId);
 
     const coreBalance = getBalance(accountCoreBalance, assetInfo, coreAssetId);
 
     const coreName = getAssetName(assets, coreAssetId);
-    const corePool = coreReserve && coreReserve.asString && coreReserve.asString(assetInfo[coreAssetId].decimalPlaces);
+    const corePool = getFormattedPoolBalance(coreReserve, assetInfo, coreAssetId);
 
     const [userAssetShareInPool, userCoreShareInPool] = userShareInPool
         ? [userShareInPool.assetBalance, userShareInPool.coreAssetBalance]
