@@ -4,6 +4,7 @@ export default {
     entry: 'index.tsx',
     //maxThreads: 1,
     productionSourceMaps: true,
+    siteRoot: 'https://cennzx.centrality.me',
     getSiteData: () => ({
         title: 'Best of CENNZX'
     }),
