@@ -4,7 +4,7 @@ export default {
     entry: 'index.tsx',
     //maxThreads: 1,
     productionSourceMaps: true,
-    // siteRoot: 'https://cennzx.centrality.me',
+    siteRoot: 'https://cennzx.centrality.me',
     getSiteData: () => ({
         title: 'Best of CENNZX'
     }),
@@ -19,7 +19,7 @@ export default {
 
                 // A route with data
                 {
-                    path: '/exchange',
+                    path: 'exchange',
                     template: 'src/pages/exchange/index',
                 },
 
@@ -31,7 +31,7 @@ export default {
                      template: 'src/pages/exchange/index',
                 },
                 {
-                    path: '/liquidity',
+                    path: 'liquidity',
                     template: 'src/pages/liquidity/index',
                 },
                 //  A 404 component
