@@ -12,7 +12,6 @@
     "bundle": "react-static bundle",
     "export": "react-static export",
     "test:epics": "jest --config jest/jest.config.js --coverage",
-    "serve": "serve dist -p 3000 -s",
     "rm-mjs": "find . -type f | grep -e 'mjs$' | xargs rm"
   },
   "dependencies": {
