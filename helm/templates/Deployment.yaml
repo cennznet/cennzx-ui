@@ -22,7 +22,7 @@ spec:
         readinessProbe:
           httpGet:
             path: {{.Values.readinessProbe.httpGet.path}}
-            port: {{.Values.readinessProbe.httpGet.port | default "3000"}}
+            port: {{.Values.readinessProbe.httpGet.port | default "80"}}
           initialDelaySeconds: {{.Values.readinessProbe.initialDelaySeconds | default "5"}}
           timeoutSeconds: {{.Values.readinessProbe.timeoutSeconds | default "1"}}
           periodSeconds: {{.Values.readinessProbe.periodSeconds | default "15"}}
@@ -30,7 +30,7 @@ spec:
         livenessProbe:
           httpGet:
             path: {{.Values.livenessProbe.httpGet.path}}
-            port: {{.Values.livenessProbe.httpGet.port | default "3000"}}
+            port: {{.Values.livenessProbe.httpGet.port | default "80"}}
           initialDelaySeconds: {{.Values.livenessProbe.initialDelaySeconds | default "5"}}
           timeoutSeconds: {{.Values.livenessProbe.timeoutSeconds | default "1"}}
           periodSeconds: {{.Values.livenessProbe.periodSeconds | default "15"}}

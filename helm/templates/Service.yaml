@@ -7,6 +7,6 @@ metadata:
     app: {{.Values.appName}}-service
 spec:
   ports:
-  - port: {{.Values.service.port | default 3000}}
+  - port: {{.Values.service.port | default 80}}
   selector:
     app: {{.Values.appName}}-service

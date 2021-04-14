@@ -10,14 +10,14 @@ enableLivenessProbe: false
 readinessProbe:
   httpGet:
     path: /
-    port: 3000
+    port: 80
   initialDelaySeconds:
   timeoutSeconds:
   periodSeconds:
 livenessProbe:
   httpGet:
     path:
-    port: 3000
+    port: 80
   initialDelaySeconds:
   timeoutSeconds:
   periodSeconds:
@@ -32,7 +32,7 @@ externalServices:
   - namespace: shared
     name: email-service
 service:
-  port: 3000
+  port: 80
 autoscaling:
   minReplicas:
   maxReplicas:
