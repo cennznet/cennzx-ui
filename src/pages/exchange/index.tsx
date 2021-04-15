@@ -44,7 +44,7 @@ const mapStateToProps = (state: AppState): ExchangeProps => ({
     assets: getAssets(state),
     fromAssetBalance: getFromAssetUserBalance(state),
     accounts: state.extension.accounts.map((account: IAccounts) => ({
-        label: `${account.name}: ${account.address}`,
+        label: `${account.name}`,
         value: account.address,
     })),
     outputReserve: getOutputReserve(state),

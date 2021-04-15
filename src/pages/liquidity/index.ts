@@ -59,7 +59,7 @@ const mapStateToProps = (state: AppState): LiquidityProps => ({
     accountCoreBalance: getAccountCoreBalance(state),
     coreReserve: getCoreReserve(state),
     accounts: state.extension.accounts.map((account: IAccounts) => ({
-        label: `${account.name}: ${account.address}`,
+        label: `${account.name}`,
         value: account.address,
     })),
     fee: getFee(state),

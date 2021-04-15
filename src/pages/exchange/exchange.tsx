@@ -90,6 +90,19 @@ const SectionColumn = styled.div`
     margin-top: 20px;
 `;
 
+export const ShowPublicAddress = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-top: 35px;
+    font-size: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    margin-left: 40px;
+    color: gray;
+    font-weight: 'normal';
+`;
+
 const ESTIMATED_LABEL = '(estimated)';
 
 export enum FormSection {
@@ -170,6 +183,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         }}
                         message=""
                     />
+                    {signingAccount && <ShowPublicAddress>Public Address: {signingAccount}</ShowPublicAddress>}
                     <Flex2>
                         <ErrorMessage errors={formErrors} field={FormSection.account} />
                     </Flex2>

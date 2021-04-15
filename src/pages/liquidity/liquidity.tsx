@@ -25,6 +25,7 @@ import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
 import {LiquidityState} from '../../redux/reducers/ui/liquidity.reducer';
 import {AmountParams, Asset, IFee, IOption, IUserShareInPool, LiquidityFormData} from '../../typings';
 import {Amount} from '../../util/Amount';
+import {ShowPublicAddress} from '../exchange/exchange';
 import getFormErrors from './validation';
 
 const Line = styled.div`
@@ -398,6 +399,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                         }}
                         message=""
                     />
+                    {signingAccount && <ShowPublicAddress>Public Address: {signingAccount}</ShowPublicAddress>}
                     <Flex2>
                         <ErrorMessage errors={formErrors} field={FormSection.account} />
                     </Flex2>
