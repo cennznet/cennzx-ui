@@ -68,6 +68,7 @@ export const Flex2 = styled.div`
     flex-wrap: wrap;
     justify-content: center;
     margin-bottom: 1rem;
+    margin-top: 1.3rem;
 `;
 
 const FullWidthContainer = styled.div`
@@ -458,7 +459,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                                     ? `Withdrawable: ${userAssetShareInPool.asString()}`
                                     : `Balance: ${assetBalance || 0}`
                             }
-                            errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetInput} />}
+                            errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetAmount} />}
                         />
                         <AddIcon></AddIcon>
                         <AssetInputForAdd
@@ -487,7 +488,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                                     ? `Withdrawable: ${userCoreShareInPool.asString()}`
                                     : `Balance: ${coreBalance || 0}`
                             }
-                            errorBox={<ErrorMessage errors={formErrors} field={FormSection.coreInput} />}
+                            errorBox={<ErrorMessage errors={formErrors} field={FormSection.coreAmount} />}
                         />
                     </Flex2>
                     {/* {state.liquidityAction === LiquidityAction.REMOVE && coreAssetId && assetId && (
