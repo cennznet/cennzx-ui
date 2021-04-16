@@ -12,7 +12,7 @@ export interface FontAwesomeIconProps {
 }
 
 const ExchangeIcon = styled(FontAwesomeIcon)<FontAwesomeIconProps>`
-    height: 20px;
+    height: 16px;
     width: 20px;
     color: rgba(17, 48, 255, 0.3);
     font-size: 20px;
@@ -35,7 +35,6 @@ const Container = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: center;
-    width: 16px;
 `;
 
 const ExchangeIconClass: FC<ExchangeIconProps> = ({onClick}) => {

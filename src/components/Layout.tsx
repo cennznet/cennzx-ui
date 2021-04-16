@@ -37,7 +37,7 @@ const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, polkado
         metaUpdated = localStorage.getItem(`${extVersion}-EXTENSION_META_UPDATED`);
     }
     // tslint:disable-next-line:no-console
-    console.log('process.env.MY_VARIABLE::', process.env.MY_VARIABLE);
+    console.log('process.env::', process.env);
     return (
         <React.Fragment>
             <Header />
