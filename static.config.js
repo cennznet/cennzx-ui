@@ -55,9 +55,14 @@ export default {
                 children,
                 state
             } = this.props;
-            console.log('state::',state);
-            console.log('process.env.NODE_ENV:',process.env.NODE_ENV);
-            const config = process.env.NODE_ENV === 'development' ? "/settings/dev-spotx-config.js": "/settings/config.js";
+
+            //const config = process.env.NODE_ENV === 'development' ? "/settings/dev-spotx-config.js": "/settings/config.js";
+            let config;
+            if (window.location.hostname.endsWith('centrality.me')) {
+                config = `${window.location.hostname}/settings/dev-spotx-config.js"`;
+            } else {
+                config = "/settings/config.js";
+            }
             return (
                 <Html lang='en-US'>
                <Head>
