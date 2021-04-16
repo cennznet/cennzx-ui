@@ -1,8 +1,9 @@
 import {SubmittableResult} from '@cennznet/api';
+import {InjectedExtension} from '@polkadot/extension-inject/types';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, from, Observable, of} from 'rxjs';
-import {catchError, switchMap, withLatestFrom} from 'rxjs/operators';
+import {catchError, filter, switchMap, withLatestFrom} from 'rxjs/operators';
 import {ExtrinsicFailed, InsufficientBalanceForOperation} from '../../../error/error';
 import {IEpicDependency} from '../../../typings';
 import {Amount} from '../../../util/Amount';
@@ -27,6 +28,24 @@ if (typeof window !== 'undefined') {
     web3FromSource = require('@polkadot/extension-dapp').web3FromSource;
 }
 
+function getExtrinsicErr(err: Error) {
+    let extrinsicErr;
+    if (err.message === '1010: Invalid Transaction (3)') {
+        extrinsicErr = new ExtrinsicFailed("Sending account's balance is too low to execute this operation.");
+    } else if (err.message === '1010: Invalid Transaction (0)') {
+        extrinsicErr = new ExtrinsicFailed('BadSignature fails the extrinsic');
+    } else if (err.message === '1010: Invalid Transaction (1)') {
+        extrinsicErr = new ExtrinsicFailed('Nonce too low.');
+    } else if (err.message === '1010: Invalid Transaction (2)') {
+        extrinsicErr = new ExtrinsicFailed('Nonce too high.');
+    } else if (err.message === '1010: Invalid Transaction (4)') {
+        extrinsicErr = new ExtrinsicFailed('Block is full, no more extrinsics can be applied.');
+    } else {
+        extrinsicErr = new ExtrinsicFailed(err.message);
+    }
+    return extrinsicErr;
+}
+
 export const submitTransactionEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
@@ -35,7 +54,6 @@ export const submitTransactionEpic = (
     combineLatest([
         api$,
         action$.pipe(ofType<RequestSubmitTransaction>(types.ui.TxDialog.TRANSACTION_SUBMIT_REQUEST)),
-        from(web3FromSource('polkadot-js')),
     ]).pipe(
         withLatestFrom(store$),
         switchMap(
@@ -45,7 +63,6 @@ export const submitTransactionEpic = (
                     {
                         payload: {extrinsic, signingAccount, buffer},
                     },
-                    injector,
                 ],
                 store,
             ]): Observable<Action<any>> => {
@@ -61,39 +78,30 @@ export const submitTransactionEpic = (
                     const recipient = null;
                     tx = api.tx.cennzx.buyAsset(recipient, fromAsset, toAsset, buyAmount, maxSale);
                 }
-                const signer = injector.signer;
 
-                return tx.signAndSend(signingAccount, {signer}).pipe(
-                    switchMap(({events, status}: SubmittableResult) => {
-                        if (status.isInBlock) {
-                            return of(updateTxHash(status.asInBlock.toString()), updateStage(Stages.InBlock));
-                        } else if (status.isFinalized && events) {
-                            const blockHash = status.asFinalized;
-                            const extrinsicIndex = events[0].phase.asApplyExtrinsic;
-                            return of(updateTxEvents(events), updateStage(Stages.Finalised));
-                        } else {
-                            return EMPTY;
-                        }
-                    }),
-                    catchError((err: Error) => {
-                        let extrinsicErr;
-                        if (err.message === '1010: Invalid Transaction (3)') {
-                            extrinsicErr = new ExtrinsicFailed(
-                                "Sending account's balance is too low to execute this operation."
+                return from(web3FromSource('polkadot-js')).pipe(
+                    switchMap(
+                        (injector: InjectedExtension): Observable<Action<any>> => {
+                            const signer = injector.signer;
+                            return tx.signAndSend(signingAccount, {signer}).pipe(
+                                switchMap(({events, status}: SubmittableResult) => {
+                                    if (status.isInBlock) {
+                                        return of(
+                                            updateTxHash(status.asInBlock.toString()),
+                                            updateStage(Stages.InBlock)
+                                        );
+                                    } else if (status.isFinalized && events) {
+                                        return of(updateTxEvents(events), updateStage(Stages.Finalised));
+                                    } else {
+                                        return EMPTY;
+                                    }
+                                }),
+                                catchError((err: Error) => {
+                                    return of(setDialogError(getExtrinsicErr(err)));
+                                })
                             );
-                        } else if (err.message === '1010: Invalid Transaction (0)') {
-                            extrinsicErr = new ExtrinsicFailed('BadSignature fails the extrinsic');
-                        } else if (err.message === '1010: Invalid Transaction (1)') {
-                            extrinsicErr = new ExtrinsicFailed('Nonce too low.');
-                        } else if (err.message === '1010: Invalid Transaction (2)') {
-                            extrinsicErr = new ExtrinsicFailed('Nonce too high.');
-                        } else if (err.message === '1010: Invalid Transaction (4)') {
-                            extrinsicErr = new ExtrinsicFailed('Block is full, no more extrinsics can be applied.');
-                        } else {
-                            extrinsicErr = new ExtrinsicFailed(err.message);
                         }
-                        return of(setDialogError(extrinsicErr));
-                    })
+                    )
                 );
             }
         ),
@@ -111,9 +119,9 @@ export const submitLiquidityEpic = (
     combineLatest([
         api$,
         action$.pipe(ofType<RequestSubmitLiquidity>(types.ui.TxDialog.TRANSACTION_SUBMIT_LIQUIDITY)),
-        from(web3FromSource('polkadot-js')),
     ]).pipe(
         withLatestFrom(store$),
+        filter(([, store]) => !!store.ui.liquidity.totalLiquidity),
         switchMap(
             ([
                 [
@@ -121,7 +129,6 @@ export const submitLiquidityEpic = (
                     {
                         payload: {extrinsic, signingAccount, buffer},
                     },
-                    injector,
                 ],
                 store,
             ]): Observable<Action<any>> => {
@@ -145,28 +152,32 @@ export const submitLiquidityEpic = (
                     const liquidityToWithdraw = store.ui.liquidity.liquidityToWithdraw;
                     tx = api.tx.cennzx.removeLiquidity(assetId, liquidityToWithdraw, minAssetWithdraw, minCoreWithdraw);
                 }
-                const signer = injector.signer;
 
-                return tx.signAndSend(signingAccount, {signer}).pipe(
-                    switchMap(({events, status}) => {
-                        if (status.isInBlock) {
-                            return of(
-                                updateTxHash(status.asInBlock.toString()),
-                                updateStage(Stages.InBlock),
-                                resetLiquidity(),
-                                updateExtrinsic(extrinsic.method)
+                return from(web3FromSource('polkadot-js')).pipe(
+                    switchMap(
+                        (injector: InjectedExtension): Observable<Action<any>> => {
+                            const signer = injector.signer;
+                            return tx.signAndSend(signingAccount, {signer}).pipe(
+                                switchMap(({events, status}) => {
+                                    if (status.isInBlock) {
+                                        return of(
+                                            updateTxHash(status.asInBlock.toString()),
+                                            updateStage(Stages.InBlock),
+                                            resetLiquidity(),
+                                            updateExtrinsic(extrinsic.method)
+                                        );
+                                    } else if (status.isFinalized && events) {
+                                        return of(updateTxEvents(events), updateStage(Stages.Finalised));
+                                    } else {
+                                        return EMPTY;
+                                    }
+                                }),
+                                catchError((err: Error) => {
+                                    return of(setDialogError(getExtrinsicErr(err)));
+                                })
                             );
-                        } else if (status.isFinalized && events) {
-                            return of(updateTxEvents(events), updateStage(Stages.Finalised));
-                        } else {
-                            return EMPTY;
                         }
-                    }),
-                    catchError((err: Error) => {
-                        let extrinsicErr;
-                        if (err.message) extrinsicErr = new ExtrinsicFailed(err.message);
-                        return of(setDialogError(extrinsicErr));
-                    })
+                    )
                 );
             }
         ),

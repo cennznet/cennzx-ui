@@ -1,7 +1,7 @@
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';
-import {catchError, mergeMap, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
+import {catchError, filter, mergeMap, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
 import {EmptyPool} from '../../../error/error';
 import {IEpicDependency} from '../../../typings';
 import {Amount} from '../../../util/Amount';
@@ -30,6 +30,7 @@ export const getAssetPoolBalanceEpic = (
         ),
     ]).pipe(
         withLatestFrom(store$),
+        filter(([, store]) => !!store.global.coreAssetId),
         mergeMap(
             ([[api, action], store]): Observable<Action<any>> => {
                 const poolAsset = action.payload;

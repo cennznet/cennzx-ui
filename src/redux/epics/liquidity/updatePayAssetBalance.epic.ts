@@ -123,7 +123,10 @@ export const prepareBalanceParamsForAdd1AssetEpic = (
     store$: Observable<AppState>,
     {api$}: IEpicDependency
 ): Observable<Action<any>> =>
-    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE))]).pipe(
+    combineLatest([
+        api$,
+        action$.pipe(ofType(types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)),
+    ]).pipe(
         withLatestFrom(store$),
         filter(([, store]) => store.ui.liquidity.form.assetId && !!store.ui.liquidity.form.signingAccount),
         switchMap(

@@ -44,6 +44,7 @@ pipeline {
 	    environment {
 		ENV = 'dev'
 		HOSTNAME = 'service.eks.centrality.me'
+		MY_VARIABLE = 'XYZ'
 	    }
 
 	    when {

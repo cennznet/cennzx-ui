@@ -97,7 +97,10 @@ const AssetInputForAdd: FC<AssetInputProps> = ({
                     value={amount}
                     onChange={value => onChange(getAmountParams(value, assetId, true))}
                 />
-                <MaxButton onClick={() => onChange(getAmountParams(max || new Amount(0), assetId, true))}>
+                <MaxButton
+                    disabled={disableAmount}
+                    onClick={() => onChange(getAmountParams(max || new Amount(0), assetId, true))}
+                >
                     Max
                 </MaxButton>
                 <AssetDropDown

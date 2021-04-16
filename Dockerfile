@@ -1,5 +1,6 @@
 FROM node:10-buster as builder
-
+ARG MY_VARIABLE
+ENV MY_VARIABLE=$MY_VARIABLE
 RUN apt-get update && apt install python3
 
 WORKDIR /app

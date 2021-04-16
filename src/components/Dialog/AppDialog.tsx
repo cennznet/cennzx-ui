@@ -12,7 +12,7 @@ const Container = styled.div`
     justify-content: space-around;
 `;
 
-const getDialogBody = (detected: boolean, connected: boolean) => {
+const getDialogBody = (detected: boolean, connected: boolean, metadata) => {
     if (!detected) {
         return (
             // <React.Fragment>
@@ -29,6 +29,9 @@ const getDialogBody = (detected: boolean, connected: boolean) => {
     } else if (!connected) {
         // Polkadot is not allowed to access this site - show relevant message
         return 'CENNZX is disallowed in your Polkadot extension settings. Go to \'Manage website access\' and allow this site to continue.';
+    } else if (!metadata) {
+        // Update metadata, wait until it gets loaded
+        return 'Please wait.. getting the latest metadata file for the best experience with CENNZX & Polkadot extension.';
     } else {
         // Update metadata
         return 'Install the latest metadata file for the best experience with CENNZX & Polkadot extension.';
@@ -43,7 +46,7 @@ const getDialogFooter = (
 ) => {
     return (
         <Container>
-            {extensionConnected === false ? null : (
+            {extensionConnected === false || metadataDef === undefined ? null : (
                 <BlueButton
                     onClick={async () => {
                         const metadata = polkadotExtension.metadata;
@@ -83,7 +86,7 @@ const AppDialog: FC<AppDialogProps> = props => {
             {...props}
             isOpen={isDialogOpen}
             title={'Connect to Polkadot extension'}
-            body={getDialogBody(extensionDetected, extensionConnected)}
+            body={getDialogBody(extensionDetected, extensionConnected, metadata)}
             footer={getDialogFooter(setDialogOpen, extensionConnected, polkadotExtension, metadata)}
         />
     );
