@@ -55,7 +55,7 @@ export default {
                 children,
                 renderMeta
             } = this.props;
-            const config = process.env.NODE_ENV === 'development' ? "/settings/config.js" : "settings/dev-spotx-config.js";
+            const config = process.env.NODE_ENV === 'development' ? "/settings/dev-spotx-config.js": "/settings/config.js";
             return (
                 <Html lang='en-US'>
                <Head>
