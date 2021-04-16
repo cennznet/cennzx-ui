@@ -18,14 +18,14 @@ function checkUserBalance(props: LiquidityProps, errors: FormErrors): void {
     if (extrinsic === ADD_LIQUIDITY) {
         if (assetAmount && accountAssetBalance && assetAmount.gt(accountAssetBalance)) {
             mergeError(
-                FormSection.assetInput,
+                FormSection.assetAmount,
                 new UserBalanceNotEnough(assetInfo[assetId], assetAmount, accountAssetBalance),
                 errors
             );
         }
         if (coreAmount && accountCoreBalance && coreAmount.gt(accountCoreBalance)) {
             mergeError(
-                FormSection.coreInput,
+                FormSection.coreAmount,
                 new UserBalanceNotEnough(assetInfo[coreAssetId], coreAmount, accountCoreBalance),
                 errors
             );
@@ -38,8 +38,21 @@ function checkUserBalance(props: LiquidityProps, errors: FormErrors): void {
         assetAmount.gt(userShareInPool.assetBalance)
     ) {
         mergeError(
-            FormSection.assetInput,
+            FormSection.assetAmount,
             new UserPoolBalanceNotEnough(assetInfo[assetId], assetAmount, userShareInPool.assetBalance),
+            errors
+        );
+    }
+
+    if (
+        extrinsic === REMOVE_LIQUIDITY &&
+        coreAmount &&
+        userShareInPool &&
+        coreAmount.gt(userShareInPool.coreAssetBalance)
+    ) {
+        mergeError(
+            FormSection.coreAmount,
+            new UserPoolBalanceNotEnough(assetInfo[coreAssetId], coreAmount, userShareInPool.coreAssetBalance),
             errors
         );
     }
