@@ -58,12 +58,10 @@ export default {
 
             //const config = process.env.NODE_ENV === 'development' ? "/settings/dev-spotx-config.js": "/settings/config.js";
             let config;
-            if (typeof window !== 'undefined') {
-                if (window.location.hostname.endsWith('centrality.me')) {
-                    config = `${window.location.hostname}/settings/dev-spotx-config.js"`;
-                } else {
-                    config = "/settings/config.js";
-                }
+            if (process.env.ENV === 'development') {
+                config = 'https://cennzx.centrality.me/settings/dev-spotx-config.js';
+            } else if (process.env.ENV === 'local') {
+                config = "/settings/config.js";
             }
             return (
                 <Html lang='en-US'>

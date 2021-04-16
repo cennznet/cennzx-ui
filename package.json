@@ -6,9 +6,10 @@
     "yarn": "^1.10.1"
   },
   "scripts": {
-    "start": "react-static start",
+    "start": "ENV=local react-static start",
     "stage": "react-static build --staging",
-    "build": "react-static build",
+    "build": "ENV=development react-static build",
+    "build:prod": "ENV=production react-static build",
     "bundle": "react-static bundle",
     "export": "react-static export",
     "test:epics": "jest --config jest/jest.config.js --coverage",
