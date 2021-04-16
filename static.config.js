@@ -53,8 +53,10 @@ export default {
                 Head,
                 Body,
                 children,
-                renderMeta
+                state
             } = this.props;
+            console.log('state::',state);
+            console.log('process.env.NODE_ENV:',process.env.NODE_ENV);
             const config = process.env.NODE_ENV === 'development' ? "/settings/dev-spotx-config.js": "/settings/config.js";
             return (
                 <Html lang='en-US'>
