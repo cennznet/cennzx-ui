@@ -126,7 +126,7 @@ export class UserPoolBalanceNotEnough extends BaseError {
             `Not enough ${asset.symbol} in user pool, require: ${require.asString(
                 asset.decimalPlaces,
                 Amount.ROUND_UP
-            )}, reserve: ${reserve.asString(asset.decimalPlaces)}`
+            )}, available: ${reserve.asString(asset.decimalPlaces)}`
         );
         this.asset = asset;
     }
