@@ -5,7 +5,6 @@ import {ExchangeFormData, IAssetBalance, IExchangePool, IFee} from '../../../typ
 import {Amount} from '../../../util/Amount';
 import ExchangeActions, {
     RemoveExchangeErrorAction,
-    RequestAssetBalanceAction,
     ResetExchangeErrorAction,
     SetExchangeErrorAction,
     SetFromAssetAmountAction,
@@ -73,13 +72,6 @@ export default handleActions<ExchangeState, any>(
         [ExchangeActions.TO_ASSET_AMOUNT_UPDATE]: produce((draft: ExchangeState, action: UpdateToAssetAmountAction) => {
             draft.form.toAssetAmount = action.payload;
         }),
-        // [ExchangeActions.ASSET_BALANCE_REQUEST]: produce(
-        //     (draft: ExchangeState, action: RequestAssetBalanceAction) => {
-        //         const { assetId, signingAccount } = action.payload
-        //         draft.form.signingAccount = signingAccount
-        //         draft.form.signingAccount = signingAccount
-        //     }
-        // ),
         [ExchangeActions.TRANSACTION_FEE_UPDATE]: produce(
             (draft: ExchangeState, action: UpdateTransactionFeeAction) => {
                 draft.txFee = action.payload;

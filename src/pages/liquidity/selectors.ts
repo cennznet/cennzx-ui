@@ -115,8 +115,7 @@ export const getExchangeRateMsg = createSelector(
     [getExchangeRate, getAssets, getCoreAsset, getAsset, getCoreAmount, getAssetInfo],
     (exchangeRate, assets, coreAsset, asset, coreAmount, assetInfo) => {
         if (!coreAmount || !exchangeRate) return;
-        let rate = +exchangeRate.asString(assetInfo[coreAsset].decimalPlaces) / +coreAmount.asString();
-        rate = Math.round(rate * 10000) / 10000;
+        const rate = exchangeRate.asString(assetInfo[asset].decimalPlaces);
         return exchangeRate
             ? `Exchange rate: 1 ${getOptionByValue(assets, coreAsset).symbol} = ${rate} ${
                   getOptionByValue(assets, asset).symbol

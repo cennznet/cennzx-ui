@@ -5,9 +5,9 @@ import types from '../../../actions';
 import {
     requestAssetLiquidityPrice,
     requestCoreLiquidityPrice,
-    setAddAsset1Amount,
-    setAddAsset2Amount,
-    updateSelectedAddAsset1,
+    setAsset1Amount,
+    setAsset2Amount,
+    updateSelectedAsset1,
 } from '../../../actions/ui/liquidity.action';
 import {AppState} from '../../../reducers';
 import {TestScheduler} from 'rxjs/testing';
@@ -21,7 +21,7 @@ import {
     requestCoreLiquidityPriceEpic,
 } from '../../liquidity/liquidityRate.epic';
 
-describe('Get core amount when asset amount is provided', () => {
+describe('Get core amount when asset amount is provided ~ Add Liquidity', () => {
     const triggers = [requestCoreLiquidityPrice()];
     triggers.forEach(action => {
         it(action.type, () => {
@@ -77,7 +77,7 @@ describe('Get core amount when asset amount is provided', () => {
                 const output$ = getCoreLiquidityPriceEpic(action$, state$, dependencies);
                 expectObservable(output$).toBe(expect_, {
                     b: {
-                        type: types.ui.Liquidity.ADD_ASSET2_AMOUNT_UPDATE,
+                        type: types.ui.Liquidity.ASSET2_AMOUNT_UPDATE,
                         payload: new Amount(coreAmount),
                     },
                 });
@@ -86,7 +86,7 @@ describe('Get core amount when asset amount is provided', () => {
     });
 });
 
-describe('Get asset amount when core amount is provided', () => {
+describe('Get asset amount when core amount is provided  ~ Add Liquidity', () => {
     const triggers = [requestAssetLiquidityPrice()];
     triggers.forEach(action => {
         it(action.type, () => {
@@ -150,7 +150,7 @@ describe('Get asset amount when core amount is provided', () => {
                 const output$ = getAssetLiquidityPriceEpic(action$, state$, dependencies);
                 expectObservable(output$).toBe(expect_, {
                     b: {
-                        type: types.ui.Liquidity.ADD_ASSET1_AMOUNT_UPDATE,
+                        type: types.ui.Liquidity.ASSET1_AMOUNT_UPDATE,
                         payload: new Amount(assetAmount),
                     },
                 });
@@ -257,7 +257,7 @@ describe('Test when pool is emtpy, get core liquidity price epic should return e
 
 describe('Request core liquidity price epic working', () => {
     const inputAmount = new Amount('2');
-    const triggers = [setAddAsset1Amount(inputAmount), updateSelectedAddAsset1(16000)];
+    const triggers = [setAsset1Amount(inputAmount), updateSelectedAsset1(16000)];
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
@@ -310,7 +310,7 @@ describe('Request core liquidity price epic working', () => {
 
 describe('Request asset liquidity price epic working', () => {
     const inputAmount = new Amount('2');
-    const triggers = [setAddAsset2Amount(inputAmount)];
+    const triggers = [setAsset2Amount(inputAmount)];
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {

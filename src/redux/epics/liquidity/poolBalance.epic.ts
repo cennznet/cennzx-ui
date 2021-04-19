@@ -11,7 +11,7 @@ import {
     setLiquidityError,
     updatePoolBalance,
     UpdatePoolBalanceAction,
-    UpdateSelectedAddAsset1Action,
+    UpdateSelectedAsset1Action,
     updateTotalLiquidity,
     updateUserPoolShare,
 } from '../../actions/ui/liquidity.action';
@@ -24,7 +24,7 @@ export const getAssetPoolBalanceEpic = (
 ): Observable<UpdatePoolBalanceAction> =>
     combineLatest([
         api$,
-        action$.pipe(ofType<UpdateSelectedAddAsset1Action>(types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE)),
+        action$.pipe(ofType<UpdateSelectedAsset1Action>(types.ui.Liquidity.SELECTED_ASSET1_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
         switchMap(
@@ -50,7 +50,7 @@ export const getAssetPoolBalanceEpic = (
                         };
                         return of(updatePoolBalance(poolBalance));
                     }),
-                    takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),
+                    takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET))),
                     catchError((err: any) => {
                         return of(setLiquidityError(err));
                     })
@@ -66,7 +66,7 @@ export const getUserPoolShareEpic = (
 ): Observable<UpdatePoolBalanceAction> =>
     combineLatest([
         api$,
-        action$.pipe(ofType(types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)),
+        action$.pipe(ofType(types.ui.Liquidity.SELECTED_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
         switchMap(
@@ -92,7 +92,7 @@ export const getUserPoolShareEpic = (
                         };
                         return of(updateUserPoolShare(userShare));
                     }),
-                    takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),
+                    takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET))),
                     catchError((err: any) => {
                         return of(setLiquidityError(err));
                     })

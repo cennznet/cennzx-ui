@@ -13,8 +13,8 @@ import {
     requestAssetLiquidityPrice,
     requestCoreLiquidityPrice,
     setLiquidityError,
-    updateAddAsset1Amount,
-    updateAddAsset2Amount,
+    updateAsset1Amount,
+    updateAsset2Amount,
     updateLiquidityForWithdrawal,
 } from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
@@ -50,7 +50,7 @@ export const getCoreLiquidityPriceEpic = (
                         coreAmount = assetAmount.mul(coreAssetReserve).div(tradeAssetReserve);
                     }
                 }
-                return of(updateAddAsset2Amount(new Amount(coreAmount)));
+                return of(updateAsset2Amount(new Amount(coreAmount)));
             } else if (liquidityAction === REMOVE_LIQUIDITY) {
                 let liquidityAmount;
                 if (tradeAssetReserve.toString() === coreAssetReserve.toString()) {
@@ -63,7 +63,7 @@ export const getCoreLiquidityPriceEpic = (
                 }
                 const coreAmount = liquidityAmount.mul(coreAssetReserve).div(totalLiquidity);
                 const retObservable: Action<any>[] = [];
-                retObservable.push(updateAddAsset2Amount(new Amount(coreAmount)));
+                retObservable.push(updateAsset2Amount(new Amount(coreAmount)));
                 retObservable.push(updateLiquidityForWithdrawal(new Amount(liquidityAmount)));
                 return from(retObservable);
             }
@@ -96,7 +96,7 @@ export const getAssetLiquidityPriceEpic = (
                         .div(coreAssetReserve)
                         .addn(1);
                 }
-                return of(updateAddAsset1Amount(new Amount(assetAmount)));
+                return of(updateAsset1Amount(new Amount(assetAmount)));
             } else if (liquidityAction === REMOVE_LIQUIDITY) {
                 let liquidityAmount;
                 if (tradeAssetReserve.toString() === coreAssetReserve.toString()) {
@@ -109,7 +109,7 @@ export const getAssetLiquidityPriceEpic = (
                 }
                 const assetAmount = liquidityAmount.mul(tradeAssetReserve).div(totalLiquidity);
                 const retObservable: Action<any>[] = [];
-                retObservable.push(updateAddAsset1Amount(new Amount(assetAmount)));
+                retObservable.push(updateAsset1Amount(new Amount(assetAmount)));
                 retObservable.push(updateLiquidityForWithdrawal(new Amount(liquidityAmount)));
                 return from(retObservable);
             }
@@ -121,7 +121,7 @@ export const requestAssetLiquidityPriceEpic = (
     store$: Observable<AppState>,
     {api$}: IEpicDependency
 ): Observable<Action<any>> =>
-    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.ADD_ASSET2_AMOUNT_SET))]).pipe(
+    combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.ASSET2_AMOUNT_SET))]).pipe(
         withLatestFrom(store$),
         filter(
             ([, store]) =>
@@ -143,7 +143,7 @@ export const requestCoreLiquidityPriceEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
-        action$.pipe(ofType(types.ui.Liquidity.ADD_ASSET1_AMOUNT_SET, types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE)),
+        action$.pipe(ofType(types.ui.Liquidity.ASSET1_AMOUNT_SET, types.ui.Liquidity.SELECTED_ASSET1_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
         filter(

@@ -111,7 +111,7 @@ export class UserBalanceNotEnoughForFee extends BaseError {
     constructor(feeAsset: Asset, require: Amount, reserve: Amount) {
         super(
             // TODO : need to check with designer on the message.
-            `Not enough ${feeAsset.symbol} in wallet to pay transaction fee, requires: ${require &&
+            `Not enough ${feeAsset.symbol} in wallet to pay transaction fee, requires additional: ${require &&
                 require.asString(feeAsset.decimalPlaces, Amount.ROUND_UP)}`
         );
         this.feeAsset = feeAsset;
@@ -135,7 +135,7 @@ export class UserPoolBalanceNotEnough extends BaseError {
 export class FromAssetAmountRequired extends BaseError {
     name: string = 'FromAssetAmountRequired';
     constructor(symbol: string) {
-        super(`Please enter some ${symbol}`);
+        super(`Please enter ${symbol}`);
     }
 }
 
@@ -149,7 +149,7 @@ export class RecipientAddress extends BaseError {
 export class ToAssetAmountRequired extends BaseError {
     name: string = 'ToAssetAmountRequired';
     constructor(symbol: string) {
-        super(`Please enter some ${symbol}`);
+        super(`Please enter ${symbol}`);
     }
 }
 

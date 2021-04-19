@@ -17,8 +17,7 @@ export const prepareTransactionFeeEpic = (
         withLatestFrom(store$),
         switchMap(
             ([[api], store]): Observable<Action<any>> => {
-                const {extrinsic} = store.ui.exchange.form as LiquidityFormData;
-
+                const {extrinsic} = store.ui.liquidity.form as LiquidityFormData;
                 const paramList = prepareExchangeExtrinsicParamsWithBuffer(extrinsic, store.ui.liquidity.form);
                 return of(updateTxFeeParameter(paramList));
             }
@@ -34,11 +33,8 @@ export const requestTransactionFeeEpic = (
         api$,
         action$.pipe(
             ofType(
-                types.ui.Liquidity.ADD_ASSET1_AMOUNT_UPDATE,
-                types.ui.Liquidity.ADD_ASSET2_AMOUNT_UPDATE,
-                types.ui.Liquidity.ASSET_SWAP,
-                types.ui.Liquidity.SELECTED_FROM_ASSET_UPDATE,
-                types.ui.Liquidity.SELECTED_TO_ASSET_UPDATE,
+                types.ui.Liquidity.ASSET1_AMOUNT_UPDATE,
+                types.ui.Liquidity.ASSET2_AMOUNT_UPDATE,
                 types.ui.Liquidity.EXTRINSIC_UPDATE,
                 types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE,
                 types.ui.Liquidity.FEE_ASSET_UPDATE
