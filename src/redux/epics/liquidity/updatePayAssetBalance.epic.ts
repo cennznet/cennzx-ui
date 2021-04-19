@@ -37,15 +37,7 @@ export const updateUserAssetBalanceEpic = (
                     switchMap((balance: Balance) => {
                         const userBal = new Amount(balance);
                         const newAssetBalance = {assetId, account: signingAccount, balance: userBal};
-                        const {userAssetBalance} = store.ui.liquidity;
-                        const assetBalance = userAssetBalance.find(
-                            (bal: IAssetBalance) =>
-                                bal.assetId === assetId && bal.account === signingAccount && bal.balance.eq(userBal)
-                        );
-                        if (!assetBalance) {
-                            return of(updateUserAssetBalance(newAssetBalance));
-                        }
-                        return EMPTY;
+                        return of(updateUserAssetBalance(newAssetBalance));
                     }),
                     takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET)))
                 );
