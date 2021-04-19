@@ -15,26 +15,20 @@ const Container = styled.div`
 const getDialogBody = (detected: boolean, connected: boolean, metadata) => {
     if (!detected) {
         return (
-            // <React.Fragment>
             <div>
-                CENNZX requires the Polkadot browser extension to manage transaction signing.
+                CENNZX requires the CENNZnet browser extension to manage transaction signing.
                 <br />
-                you can install it by following the guide
-                <a target="_blank" href={'https://soramitsu.co.jp/validator-plugin'}>
-                    {' '}
-                    here
-                </a>
             </div>
         );
     } else if (!connected) {
         // Polkadot is not allowed to access this site - show relevant message
-        return 'CENNZX is disallowed in your Polkadot extension settings. Go to \'Manage website access\' and allow this site to continue.';
+        return 'CENNZX is disallowed in your CENNZnet extension settings. Go to \'Manage website access\' and allow this site to continue.';
     } else if (!metadata) {
         // Update metadata, wait until it gets loaded
-        return 'Please wait.. getting the latest metadata file for the best experience with CENNZX & Polkadot extension.';
+        return 'Please wait.. getting the latest metadata file for the best experience with CENNZX & CENNZnet extension.';
     } else {
         // Update metadata
-        return 'Install the latest metadata file for the best experience with CENNZX & Polkadot extension.';
+        return 'Install the latest metadata file for the best experience with CENNZX & CENNZnet extension.';
     }
 };
 
@@ -85,7 +79,7 @@ const AppDialog: FC<AppDialogProps> = props => {
         <Dialog
             {...props}
             isOpen={isDialogOpen}
-            title={'Connect to Polkadot extension'}
+            title={'Connect to CENNZnet extension'}
             body={getDialogBody(extensionDetected, extensionConnected, metadata)}
             footer={getDialogFooter(setDialogOpen, extensionConnected, polkadotExtension, metadata)}
         />
