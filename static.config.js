@@ -11,23 +11,14 @@ export default {
     getRoutes: async () => {
         try {
             return [
-                // A simple route
-                {
-                    path: '/about',
-                    template: 'src/pages/about',
-                },
-
                 // A route with data
                 {
                     path: 'exchange',
                     template: 'src/pages/exchange/index',
                 },
-
                 // A route with data and dynamically generated child routes
-
                 {
                     path: '/',
-                    //redirect: 'exchange'
                      template: 'src/pages/exchange/index',
                 },
                 {

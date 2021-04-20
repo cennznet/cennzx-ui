@@ -201,7 +201,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                     <ErrorBox center={true} errors={formErrors.get(FormSection.form)} />
                 </>
             )}
-            {formErrors.size > 0 && <ErrorBox center={true}>Enter all values to continue</ErrorBox>}
+            {formErrors.size > 0 && <ErrorBox center={true}></ErrorBox>}
         </Container>
     );
 };

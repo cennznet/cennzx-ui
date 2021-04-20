@@ -1,19 +1,13 @@
 import {FeeRate} from '@cennznet/types';
-import BN from 'bn.js';
 import {Button} from 'centrality-react-core';
 import AccountPicker from 'components/AccountPicker';
 import AdvancedSetting from 'components/AdvancedSetting';
-import AssetDropDown from 'components/AssetDropDown';
-import AssetInput from 'components/AssetInput';
 import AssetInputForAdd from 'components/AssetInputForAdd';
 import ErrorMessage from 'components/Error/ErrorMessage';
 import ExchangeIcon from 'components/ExchangeIcon';
 import Nav from 'components/Nav';
 import Page from 'components/Page';
 import PageInside from 'components/PageInside';
-import Select from 'components/Select';
-import TextInput from 'components/TextInput';
-import {propSatisfies} from 'ramda';
 import React, {FC, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
@@ -30,6 +24,7 @@ const Line = styled.div`
     border-bottom: 1px solid rgba(17, 48, 255, 0.3);
     height: 1px;
     margin-top: 20px;
+    margin-bottom: 20px;
 `;
 
 const Bottom = styled.div`
@@ -88,19 +83,6 @@ const SectionColumn = styled.div`
     display: flex;
     flex-direction: column;
     margin-top: 20px;
-`;
-
-export const ShowPublicAddress = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin-top: 35px;
-    font-size: 12px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    margin-bottom: 10px;
-    margin-left: 40px;
-    color: gray;
-    font-weight: 'normal';
 `;
 
 const ESTIMATED_LABEL = '(estimated)';
@@ -181,9 +163,8 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({touched: true, assetDialogOpen: state.assetDialogOpen});
                         }}
-                        message=""
+                        message={`Public Address: ${signingAccount}`}
                     />
-                    {signingAccount && <ShowPublicAddress>Public Address: {signingAccount}</ShowPublicAddress>}
                     <Flex2>
                         <ErrorMessage errors={formErrors} field={FormSection.account} />
                     </Flex2>
