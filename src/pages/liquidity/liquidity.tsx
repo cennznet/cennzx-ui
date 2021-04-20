@@ -183,9 +183,9 @@ function poolSummary(
         <>
             {assetPool && corePool ? (
                 <Summary>
-                    Your balance: {userAssetShareInPool} {assetName} + {userCoreShareInPool} {coreName}
+                    Your liquidity: {userAssetShareInPool} {assetName} + {userCoreShareInPool} {coreName}
                     <br />
-                    Pool balance: {assetPool} {assetName} + {corePool} {coreName}
+                    Pool liquidity: {assetPool} {assetName} + {corePool} {coreName}
                     <br />
                     {exchangeRateMsg}
                     {fee && (
@@ -414,7 +414,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             props.openTxDialog(props.form as LiquidityFormData, props.txFee, props.assetInfo)
                         }
                     >
-                        state.liquidityAction
+                        {state.liquidityAction}
                     </Button>
                 </Buttons>
                 <AdvancedSetting

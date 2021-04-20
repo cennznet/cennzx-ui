@@ -54,7 +54,6 @@ const AccountPicker: FC<AccountPickerProps> = ({title, selected, options, onChan
                 options={options}
                 onChange={picked => onChange(picked)}
                 help={getOptionByValue(options, selected)}
-                disabled={true}
             />
             <MessageBox className="message">{message}</MessageBox>
         </AccountWrapper>

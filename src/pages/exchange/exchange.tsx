@@ -227,6 +227,24 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         errorBox={<ErrorMessage errors={formErrors} field={FormSection.fromAssetInput} />}
                     />
                 </PageInside>
+                <PageInside>
+                    <SectionColumn>
+                        <Bottom id="bottom">
+                            <FullWidthContainer>
+                                <Buttons id="buttons">
+                                    <Button
+                                        flat
+                                        primary
+                                        disabled={formErrors.size > 0 || !txFee}
+                                        onClick={() => props.openTxDialog(props.form as ExchangeFormData, props.txFee)}
+                                    >
+                                        Exchange
+                                    </Button>
+                                </Buttons>
+                            </FullWidthContainer>
+                        </Bottom>
+                    </SectionColumn>
+                </PageInside>
                 <AdvancedSetting
                     show={!!(toAsset && fromAsset)}
                     assets={assets}
@@ -256,24 +274,6 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     selectValue={feeAssetId}
                     assetInfo={assetInfo}
                 />
-                <PageInside>
-                    <SectionColumn>
-                        <Bottom id="bottom">
-                            <FullWidthContainer>
-                                <Buttons id="buttons">
-                                    <Button
-                                        flat
-                                        primary
-                                        disabled={formErrors.size > 0 || !txFee}
-                                        onClick={() => props.openTxDialog(props.form as ExchangeFormData, props.txFee)}
-                                    >
-                                        Exchange
-                                    </Button>
-                                </Buttons>
-                            </FullWidthContainer>
-                        </Bottom>
-                    </SectionColumn>
-                </PageInside>
             </form>
         </Page>
     );
