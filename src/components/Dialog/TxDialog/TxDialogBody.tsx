@@ -41,77 +41,41 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
     extrinsic: {method, params, price},
     assetInfo,
 }) => {
-    const [fromAsset, toAsset, fromAssetAmount, toAssetAmount] = params as AssetSwapParams;
-    const toAssetDecimalPlaces = assetInfo[toAsset].decimalPlaces;
-    const toAssetSymbol = assetInfo[toAsset].symbol;
-    const fromAssetDecimalPlaces = assetInfo[fromAsset].decimalPlaces;
-    const fromAssetSymbol = assetInfo[fromAsset].symbol;
-
     let message;
-    if (success) {
-        switch (method) {
-            case SWAP_OUTPUT:
-                message = `You successfully exchanged ${toAssetAmount.asString(
-                    toAssetDecimalPlaces
-                )} ${toAssetSymbol} with 
+    if (method === SWAP_INPUT || method === SWAP_OUTPUT) {
+        const [fromAsset, toAsset, fromAssetAmount, toAssetAmount] = params as AssetSwapParams;
+        const toAssetDecimalPlaces = assetInfo[toAsset].decimalPlaces;
+        const toAssetSymbol = assetInfo[toAsset].symbol;
+        const fromAssetDecimalPlaces = assetInfo[fromAsset].decimalPlaces;
+        const fromAssetSymbol = assetInfo[fromAsset].symbol;
+        if (success) {
+            message = `You successfully exchanged ${toAssetAmount.asString(toAssetDecimalPlaces)} ${toAssetSymbol} with 
                     ${fromAssetAmount.asString(fromAssetDecimalPlaces)} ${fromAssetSymbol}.`;
-                break;
-            case SWAP_INPUT:
-                message = `You successfully exchanged ${toAssetAmount.asString(
-                    toAssetDecimalPlaces
-                )} ${toAssetSymbol} with 
-                    ${fromAssetAmount.asString(fromAssetDecimalPlaces)} ${fromAssetSymbol}.`;
-                break;
-            case ADD_LIQUIDITY:
-                message = `You successfully added ${toAssetAmount.asString(
-                    fromAssetDecimalPlaces
-                )} ${fromAssetSymbol} and
-                    ${fromAssetAmount.asString(toAssetDecimalPlaces)} ${toAssetSymbol} in the pool.`;
-                break;
-            case REMOVE_LIQUIDITY:
-                message = `You successfully withdraw ${toAssetAmount.asString(
-                    fromAssetDecimalPlaces
-                )} ${fromAssetSymbol} and
-                    ${fromAssetAmount.asString(toAssetDecimalPlaces)} ${toAssetSymbol} from the pool.`;
-                break;
-            default:
-                message = '';
+        } else {
+            message = `Your transaction to exchange ${toAssetAmount.asString(
+                toAssetDecimalPlaces
+            )} ${toAssetSymbol} with 
+                    ${fromAssetAmount.asString(fromAssetDecimalPlaces)} ${fromAssetSymbol} has failed.`;
         }
-    } else {
-        switch (method) {
-            case SWAP_OUTPUT:
-                message = `Your transaction to exchange ${toAssetAmount.asString(
-                    toAssetDecimalPlaces
-                )} ${toAssetSymbol} with 
-                    ${fromAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${fromAssetSymbol} has failed.`;
-                break;
-            case SWAP_INPUT:
-                message = `Your transaction to exchange  ${toAssetAmount.asString(
-                    toAssetDecimalPlaces
-                )} ${toAssetSymbol} with 
-                    ${fromAssetAmount.asString(assetInfo[fromAsset].decimalPlaces)} ${fromAssetSymbol} has failed.`;
-                break;
-            case ADD_LIQUIDITY:
-                message = `Your transaction to add liquidity of ${toAssetAmount.asString(
-                    toAssetDecimalPlaces
-                )} ${fromAssetSymbol} and
-                    ${fromAssetAmount.asString(
-                        assetInfo[fromAsset].decimalPlaces
-                    )} ${toAssetSymbol} in the pool failed.`;
-                break;
-            case REMOVE_LIQUIDITY:
-                message = `Your transaction to withdraw liquidity of ${toAssetAmount.asString(
-                    toAssetDecimalPlaces
-                )} ${fromAssetSymbol} and
-                    ${fromAssetAmount.asString(
-                        assetInfo[fromAsset].decimalPlaces
-                    )} ${toAssetSymbol} from the pool failed.`;
-                break;
-            default:
-                message = '';
-                break;
+    } else if (method === ADD_LIQUIDITY || method === REMOVE_LIQUIDITY) {
+        const [assetId, coreAssetId, coreAmount, assetAmount] = params as AssetSwapParams;
+        const coreAssetDecimalPlaces = assetInfo[coreAssetId].decimalPlaces;
+        const coreAssetSymbol = assetInfo[coreAssetId].symbol;
+        const assetDecimalPlaces = assetInfo[assetId].decimalPlaces;
+        const assetSymbol = assetInfo[assetId].symbol;
+        const action = method === ADD_LIQUIDITY ? 'added' : 'withdraw';
+        const place = method === ADD_LIQUIDITY ? 'in' : 'from';
+        if (success) {
+            message = `You successfully ${action} ${assetAmount.asString(assetDecimalPlaces)} ${assetSymbol} and
+                    ${coreAmount.asString(coreAssetDecimalPlaces)} ${coreAssetSymbol} ${place} the pool.`;
+        } else {
+            message = `Your transaction to ${action} liquidity of ${assetAmount.asString(
+                assetDecimalPlaces
+            )} ${assetSymbol} and
+                    ${coreAmount.asString(coreAssetDecimalPlaces)} ${coreAssetSymbol} ${place} the pool failed.`;
         }
     }
+
     if (success) {
         return (
             <div>
