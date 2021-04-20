@@ -3,7 +3,7 @@ import {FormSection, LiquidityProps} from '../liquidity';
 import {existErrors, FormErrors, mergeError} from './index';
 
 function checkCoreAssetAmount(props: LiquidityProps, errors: FormErrors): void {
-    if (existErrors(['PoolBalanceNotEnough'], errors)) {
+    if (existErrors(['PoolBalanceNotEnough', 'UserBalanceNotEnough', 'UserPoolBalanceNotEnough'], errors)) {
         return;
     }
     const {
