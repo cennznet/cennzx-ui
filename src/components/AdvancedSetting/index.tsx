@@ -2,8 +2,8 @@ import {faChevronDown} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import AssetDropDown from 'components/AssetDropDown';
 import ErrorBox from 'components/Error/ErrorBox';
+import InputBox from 'components/InputBox';
 import PageInside from 'components/PageInside';
-import TextInput from 'components/TextInput';
 import React, {FC, useState} from 'react';
 import styled from 'styled-components';
 import {FormSection} from '../../pages/exchange/exchange';
@@ -147,7 +147,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                         </Title>
                         {state.spinner && (
                             <>
-                                <TextInput
+                                <InputBox
                                     type={'number'}
                                     title={'Slippage'}
                                     placeholder={'Maximum slippage percent'}
