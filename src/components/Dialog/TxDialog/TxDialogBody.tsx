@@ -1,7 +1,6 @@
 import {EventRecord} from '@cennznet/types';
 import BN from 'bn.js';
 import ExternalLink from 'components/ExternalLink';
-import TxSummaryEstimatedTxFeeForBody from 'components/TxSummary/TxSummaryEstimatedTxFeeForBody';
 import React, {FC, useState} from 'react';
 import {AssetDetails} from '../../../redux/reducers/global.reducer';
 import {Stages} from '../../../redux/reducers/ui/txDialog.reducer';
@@ -31,6 +30,7 @@ type BodyForFinalisedProps = {
     feeExchangeResult?: any;
     extrinsic: IExtrinsic;
     assetInfo: AssetDetails[];
+    feeAssetId: number;
 };
 const BodyForFinalised: FC<BodyForFinalisedProps> = ({
     success,
@@ -40,6 +40,7 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
     feeExchangeResult,
     extrinsic: {method, params, price},
     assetInfo,
+    feeAssetId,
 }) => {
     let message;
     if (method === SWAP_INPUT || method === SWAP_OUTPUT) {
@@ -83,14 +84,15 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
                 <br />{' '}
                 {actualTxFee
                     ? `The transaction fee was ${actualTxFee.asString(
-                          assetInfo[16001].decimalPlaces,
+                          assetInfo[feeAssetId].decimalPlaces,
                           Amount.ROUND_UP
                       )} CPAY `
                     : ''}
                 {feeExchangeResult
-                    ? `. with ${feeExchangeResult.amount.asString(assetInfo[16001].decimalPlaces, Amount.ROUND_UP)}  ${
-                          assetInfo[feeExchangeResult.assetId].symbol
-                      }`
+                    ? `. with ${feeExchangeResult.amount.asString(
+                          assetInfo[feeAssetId].decimalPlaces,
+                          Amount.ROUND_UP
+                      )}  ${assetInfo[feeExchangeResult.assetId].symbol}`
                     : ''}
                 <br /> Transaction hash:
                 <ExternalLink url={getCennzScanURL(txHash)} text={txHash} />
@@ -183,6 +185,7 @@ export const TxDialogBody: FC<TxDialogBodyProps> = ({
                     txHash={txHash}
                     extrinsic={extrinsic}
                     assetInfo={assetInfo}
+                    feeAssetId={feeAssetId}
                 />
             );
         default:
