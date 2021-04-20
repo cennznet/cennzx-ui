@@ -6,9 +6,9 @@
     "yarn": "^1.10.1"
   },
   "scripts": {
-    "start": "ENV=local react-static start",
+    "start": "react-static start",
     "stage": "react-static build --staging",
-    "build": "ENV=development react-static build",
+    "build": "react-static build",
     "build:prod": "ENV=production react-static build",
     "bundle": "react-static bundle",
     "export": "react-static export",

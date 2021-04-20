@@ -1,7 +1,6 @@
 let ENDPOINT = '', ENV = '';
 if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    console.log('hostname:', hostname);
     if (hostname.endsWith('centrality.me')) {
         ENDPOINT = 'wss://nikau.centrality.me/public/ws';
         ENV = 'DEV';
@@ -12,7 +11,6 @@ if (typeof window !== 'undefined') {
         ENDPOINT = 'ws://127.0.0.1:9944/'
         ENV = 'local';
     }
-    console.log('ENDPOINT::',ENDPOINT);
     window.config = {
         ENDPOINT: ENDPOINT,
         ENV: ENV,
