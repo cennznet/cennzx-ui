@@ -131,7 +131,7 @@ export const getFee = createSelector(
         if (coreAsset && coreAsset === feeAssetId && txFee) {
             fee = `${txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces)} ${assetSymbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {
-            fee = `${txFee.feeInFeeAsset.asString(assetInfo[feeAssetId].decimalPlaces)} CPAY)`;
+            fee = `${txFee.feeInFeeAsset.asString(assetInfo[coreAsset].decimalPlaces)} CPAY)`;
         }
         return fee;
     }

@@ -87,7 +87,7 @@ export const getExchangeRateMsg = createSelector(
         } else if (txFee && txFee.feeInFeeAsset) {
             fee = `${txFee.feeInFeeAsset.asString(
                 assetInfo[feeAssetId].decimalPlaces
-            )} (converted to ${txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces)} CPAY)`;
+            )} (converted to ${txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces)} CPAY)`;
         }
 
         const rate = exchangeRate.asString(assetInfo[toAsset].decimalPlaces);
@@ -111,7 +111,7 @@ export const getTxFeeMessage = createSelector(
             fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId].decimalPlaces, Amount.ROUND_UP);
             return `Transaction fee is ${fee} ${
                 getOptionByValue(assets, feeAssetId).symbol
-            } (converted to ${txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces, Amount.ROUND_UP)} CPAY)`;
+            } (converted to ${txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces, Amount.ROUND_UP)} CPAY)`;
         }
     }
 );
