@@ -3,7 +3,7 @@ import React from 'react'
 export default {
     entry: 'index.tsx',
     //maxThreads: 1,
-    productionSourceMaps: true,
+    productionSourceMaps: false,
     siteRoot: 'https://cennzx.centrality.me',
     getSiteData: () => ({
         title: 'Best of CENNZX'
@@ -56,19 +56,12 @@ export default {
                 state
             } = this.props;
 
-            //const config = process.env.NODE_ENV === 'development' ? "/settings/dev-spotx-config.js": "/settings/config.js";
-            let config;
-            if (process.env.ENV === 'development') {
-                config = 'https://cennzx.centrality.me/settings/dev-spotx-config.js';
-            } else if (process.env.ENV === 'local') {
-                config = "/settings/config.js";
-            }
             return (
                 <Html lang='en-US'>
                <Head>
                    <meta charSet='UTF-8'/>
                    <meta name='viewport' content='width=device-width, initial-scale=1'/>
-                   <script src={config}></script>
+                   <script src={"/settings/config.js"}></script>
                    <link href='https://fonts.googleapis.com/css?family=Open+Sans” rel=“stylesheet'/>
                    <link href='https://fonts.googleapis.com/css?family=Montserrat&display=swap' rel='stylesheet'/>
                    <link href='https://fonts.googleapis.com/css?family=Montserrat:700&display=swap' rel='stylesheet'/>
