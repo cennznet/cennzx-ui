@@ -15,7 +15,7 @@ export class Amount extends BN {
     /** Rounds towards zero. */
     static ROUND_DOWN: number = 1;
 
-    constructor(value: string | number | BN, unit: AmountUnit = AmountUnit.UN, decimal: number = DECIMAL) {
+    constructor(value: string | number | BN, unit: AmountUnit = AmountUnit.UN, decimalPlaces: number = DECIMAL) {
         if (unit === AmountUnit.UN) {
             super(value.toString ? value.toString() : value);
             // super(isBn(value) ? value.toString() : value);
@@ -23,7 +23,7 @@ export class Amount extends BN {
             // TODO: check if value has decimals > 18 and throw
             try {
                 const val = new BigNumber(value.toString());
-                super(val.multipliedBy(Math.pow(10, decimal)).toString(10));
+                super(val.multipliedBy(Math.pow(10, decimalPlaces)).toString(10));
             } catch (e) {
                 super(1);
             }

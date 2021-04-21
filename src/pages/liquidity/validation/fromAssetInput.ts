@@ -12,7 +12,12 @@ function checkFromAssetAmount(props: LiquidityProps, errors: FormErrors): void {
         form: {coreAssetId, coreAmount},
         assetInfo,
     } = props;
-    if (existErrors(['PoolBalanceNotEnough', 'FromAssetNotSelected'], errors)) {
+    if (
+        existErrors(
+            ['PoolBalanceNotEnough', 'FromAssetNotSelected', 'UserBalanceNotEnough', 'UserPoolBalanceNotEnough'],
+            errors
+        )
+    ) {
         return;
     }
 

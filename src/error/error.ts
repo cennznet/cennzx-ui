@@ -97,9 +97,13 @@ export class PoolBalanceNotEnough extends BaseError {
 export class UserBalanceNotEnough extends BaseError {
     name: string = 'UserBalanceNotEnough';
     asset: Asset;
-    constructor(asset: Asset, require: Amount, reserve: Amount) {
+    constructor(asset: Asset, require?: Amount) {
         super(
-            `Not enough available, requires ${require.asString(asset.decimalPlaces, Amount.ROUND_UP)} ${asset.symbol}`
+            require
+                ? `Not enough available, requires ${require.asString(asset.decimalPlaces, Amount.ROUND_UP)} ${
+                      asset.symbol
+                  }`
+                : `Not enough available`
         );
         this.asset = asset;
     }
@@ -110,7 +114,6 @@ export class UserBalanceNotEnoughForFee extends BaseError {
     feeAsset: Asset;
     constructor(feeAsset: Asset, require: Amount, reserve: Amount) {
         super(
-            // TODO : need to check with designer on the message.
             `Not enough ${feeAsset.symbol} in wallet to pay transaction fee, requires additional: ${require &&
                 require.asString(feeAsset.decimalPlaces, Amount.ROUND_UP)}`
         );
@@ -121,12 +124,14 @@ export class UserBalanceNotEnoughForFee extends BaseError {
 export class UserPoolBalanceNotEnough extends BaseError {
     name: string = 'UserPoolBalanceNotEnough';
     asset: Asset;
-    constructor(asset: Asset, require: Amount, reserve: Amount) {
+    constructor(asset: Asset, require?: Amount, reserve?: Amount) {
         super(
-            `Not enough ${asset.symbol} in user pool, require: ${require.asString(
-                asset.decimalPlaces,
-                Amount.ROUND_UP
-            )}, available: ${reserve.asString(asset.decimalPlaces)}`
+            require
+                ? `Not enough ${asset.symbol} in user pool, require: ${require.asString(
+                      asset.decimalPlaces,
+                      Amount.ROUND_UP
+                  )}, available: ${reserve.asString(asset.decimalPlaces)}`
+                : `Not enough ${asset.symbol} in user pool`
         );
         this.asset = asset;
     }

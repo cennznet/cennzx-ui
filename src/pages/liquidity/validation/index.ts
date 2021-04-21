@@ -43,10 +43,10 @@ export function existErrors(
 
 /**
  * priorities:
- * poolBalanceRules > fromAssetInputRules | toAssetInputRules
- * fromAssetInputRules > userBalanceRules
+ * accountRules > userBalanceRules > fromAssetInputRules | toAssetInputRules
+ * fromAssetInputRules
  */
-const rules: ValidationRule[] = [...accountRules, ...toAssetInputRules, ...fromAssetInputRules, ...userBalanceRules];
+const rules: ValidationRule[] = [...accountRules, ...userBalanceRules, ...toAssetInputRules, ...fromAssetInputRules];
 
 export type FormErrors = Map<FormSection, FormErrorTypes[]>;
 

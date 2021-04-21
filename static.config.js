@@ -2,9 +2,7 @@ import React from 'react'
 
 export default {
     entry: 'index.tsx',
-    //maxThreads: 1,
     productionSourceMaps: false,
-    siteRoot: 'https://cennzx.centrality.me',
     getSiteData: () => ({
         title: 'Best of CENNZX'
     }),
@@ -112,7 +110,7 @@ export default {
         }
     },
     devServer: {
-        https: process.env.NODE_ENV === 'development' ? false : true,
+        https: process.env.NODE_ENV !== 'development',
         contentBase: ['.'],
     },
 }

@@ -12,6 +12,7 @@ import PageInside from 'components/PageInside';
 import React, {FC, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {BaseError, FormErrorTypes} from '../../error/error';
+import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
 import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {LiquidityState} from '../../redux/reducers/ui/liquidity.reducer';
 import {AmountParams, Asset, IFee, IOption, IUserShareInPool, LiquidityFormData} from '../../typings';
@@ -210,6 +211,20 @@ function getFormattedPoolBalance(assetReserve: Amount, assetInfo: AssetDetails[]
     return assetReserve && assetInfo.length > 0 && assetId && assetReserve.asString(assetInfo[assetId].decimalPlaces);
 }
 
+function isAssetBoxDisabled(
+    liquidityAction: LiquidityAction,
+    userShareInPool: Amount,
+    assetId: number,
+    accountBalance: Amount
+) {
+    if (liquidityAction === LiquidityAction.REMOVE && userShareInPool && assetId) {
+        return userShareInPool.isZero();
+    } else if (liquidityAction === LiquidityAction.ADD && accountBalance && assetId) {
+        return accountBalance.isZero();
+    }
+    return false;
+}
+
 export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const {
         accounts,
@@ -272,6 +287,19 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         state.touched || !signingAccount || !assetAmount || !coreAmount
             ? getFormErrors(props)
             : new Map<FormSection, FormErrorTypes[]>();
+
+    const disabledAssetTextBox = isAssetBoxDisabled(
+        state.liquidityAction,
+        userAssetShareInPool,
+        assetId,
+        accountAssetBalance
+    );
+    const disabledCoreTextBox = isAssetBoxDisabled(
+        state.liquidityAction,
+        userCoreShareInPool,
+        assetId,
+        accountCoreBalance
+    );
 
     return (
         <Page id={'page'}>
@@ -337,6 +365,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                                     ? userAssetShareInPool
                                     : accountAssetBalance
                             }
+                            disableAmount={disabledAssetTextBox}
                             value={{amount: assetAmount, assetId}}
                             options={assets.filter(a => a.id !== coreAssetId)}
                             onChange={(amountParams: AmountParams) => {
@@ -371,6 +400,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                                     ? userCoreShareInPool
                                     : accountCoreBalance
                             }
+                            disableAmount={disabledCoreTextBox}
                             value={{amount: coreAmount, assetId: coreAssetId}}
                             options={assets.filter(a => a.id === coreAssetId)}
                             onChange={amountParams => {

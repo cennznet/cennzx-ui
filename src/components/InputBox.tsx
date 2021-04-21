@@ -56,7 +56,7 @@ interface InputProps {
     type?: string;
 }
 
-const TextInput: FC<InputProps> = ({value, onChange, title, placeholder, message, multiple, type = 'text'}) => {
+const InputBox: FC<InputProps> = ({value, onChange, title, placeholder, message, multiple, type = 'text'}) => {
     return (
         <Trade>
             <Top>
@@ -73,4 +73,4 @@ const TextInput: FC<InputProps> = ({value, onChange, title, placeholder, message
     );
 };
 
-export default TextInput;
+export default InputBox;

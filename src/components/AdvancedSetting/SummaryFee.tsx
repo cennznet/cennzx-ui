@@ -22,7 +22,7 @@ const getFeeMsg = ({txFee, feeAssetId, coreAssetId, assetInfo}: SummaryFeeProps)
 
     if (coreAssetId && coreAssetId === feeAssetId && txFee) {
         // If fee asset is CPAY use cpayFee
-        fee = txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces);
+        fee = txFee.feeInCpay.asString(assetInfo[coreAssetId].decimalPlaces);
         return (
             <>
                 Transaction fee (estimated):{' '}
@@ -39,7 +39,7 @@ const getFeeMsg = ({txFee, feeAssetId, coreAssetId, assetInfo}: SummaryFeeProps)
                 <Em>
                     {fee} {assetSymbol}
                 </Em>{' '}
-                (converted to ${txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces)} CPAY)
+                (converted to ${txFee.feeInCpay.asString(assetInfo[coreAssetId].decimalPlaces)} CPAY)
             </>
         );
     }
