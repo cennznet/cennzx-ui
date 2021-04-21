@@ -91,7 +91,7 @@ const getLabel = ({symbol}) => {
     try {
         return (
             <Container>
-                <Icon src={require(`./../images/${symbol.toLowerCase()}.png`)} />
+                <Icon src={require(`./../images/${symbol.toLowerCase()}.svg`)} />
                 <Text className="symbol">{symbol}</Text>
             </Container>
         );

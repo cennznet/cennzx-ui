@@ -8,6 +8,7 @@ import {
     updateAsset1Amount,
     updateAsset2Amount,
     updateExchangeRate,
+    updateTotalLiquidity,
     updateTransactionFee,
 } from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
@@ -30,7 +31,11 @@ export const clearAmountEpic = (
 ) =>
     action$.pipe(ofType(types.ui.Liquidity.SELECTED_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)).pipe(
         switchMap(() => {
-            return from([updateAsset1Amount(undefined), updateAsset2Amount(undefined)]);
+            return from([
+                updateAsset1Amount(undefined),
+                updateAsset2Amount(undefined),
+                updateTotalLiquidity(undefined),
+            ]);
         })
     );
 

@@ -57,7 +57,7 @@ export const calculateTxFeeEpic = (
                         }
                         return EMPTY;
                     }),
-                    takeUntil(action$.pipe(ofType(types.ui.Liquidity.TRADE_RESET))),
+                    takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET))),
                     catchError((err: any) => {
                         if (err.message === 'Pool balance is low') {
                             // In case if the fee asset pool balance is low, then converting the fee from CPAY to feeAsset will result in 'Pool balance is low'
