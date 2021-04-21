@@ -24,13 +24,14 @@ const AccountWrapper = styled.div`
         .react-select__value-container--has-value {
             margin-left: 10px;
         }
+        /* select behind identicon */
+        z-index: -1;
     }
 
     .identicon {
         position: relative;
         height: 0;
         top: 8px;
-        z-index: 1;
     }
 
     .message {

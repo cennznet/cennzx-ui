@@ -12,7 +12,6 @@ import PageInside from 'components/PageInside';
 import React, {FC, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {BaseError, FormErrorTypes} from '../../error/error';
-import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
 import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {LiquidityState} from '../../redux/reducers/ui/liquidity.reducer';
 import {AmountParams, Asset, IFee, IOption, IUserShareInPool, LiquidityFormData} from '../../typings';
