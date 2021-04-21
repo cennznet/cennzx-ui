@@ -1,9 +1,38 @@
 import {UserBalanceNotEnough, UserBalanceNotEnoughForFee, UserPoolBalanceNotEnough} from '../../../error/error';
-import {IAssetBalance} from '../../../typings';
+import {AssetDetails} from '../../../redux/reducers/global.reducer';
+import {IAssetBalance, IUserShareInPool} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import {ADD_LIQUIDITY, REMOVE_LIQUIDITY} from '../../../util/extrinsicUtil';
 import {FormSection, LiquidityProps} from '../liquidity';
 import {existErrors, FormErrors, mergeError} from './index';
+
+function getErrorForUserBalance(
+    assetAmount: Amount,
+    accountAssetBalance: Amount,
+    assetInfo: AssetDetails[],
+    assetId: number
+) {
+    if (assetAmount && accountAssetBalance && assetAmount.gt(accountAssetBalance)) {
+        return new UserBalanceNotEnough(assetInfo[assetId], assetAmount);
+    } else if (accountAssetBalance && accountAssetBalance.isZero()) {
+        return new UserBalanceNotEnough(assetInfo[assetId], null);
+    }
+    return null;
+}
+
+function getErrorForPoolBalance(
+    assetAmount: Amount,
+    userShareInPool: IUserShareInPool,
+    assetInfo: AssetDetails[],
+    assetId: number
+) {
+    if (assetAmount && userShareInPool && assetAmount.gt(userShareInPool.assetBalance)) {
+        return new UserPoolBalanceNotEnough(assetInfo[assetId], assetAmount, userShareInPool.assetBalance);
+    } else if (userShareInPool && userShareInPool.assetBalance.isZero()) {
+        return new UserPoolBalanceNotEnough(assetInfo[assetId]);
+    }
+    return null;
+}
 
 function checkUserBalance(props: LiquidityProps, errors: FormErrors): void {
     const {
@@ -16,45 +45,24 @@ function checkUserBalance(props: LiquidityProps, errors: FormErrors): void {
     // skip when any error exists on assetInput
     if (existErrors(() => true, errors, FormSection.assetInput)) return;
     if (extrinsic === ADD_LIQUIDITY) {
-        if (assetAmount && accountAssetBalance && assetAmount.gt(accountAssetBalance)) {
-            mergeError(
-                FormSection.assetAmount,
-                new UserBalanceNotEnough(assetInfo[assetId], assetAmount, accountAssetBalance),
-                errors
-            );
+        const assetBalanceError = getErrorForUserBalance(assetAmount, accountAssetBalance, assetInfo, assetId);
+        if (assetBalanceError) {
+            mergeError(FormSection.assetAmount, assetBalanceError, errors);
         }
-        if (coreAmount && accountCoreBalance && coreAmount.gt(accountCoreBalance)) {
-            mergeError(
-                FormSection.coreAmount,
-                new UserBalanceNotEnough(assetInfo[coreAssetId], coreAmount, accountCoreBalance),
-                errors
-            );
+        const coreBalanceError = getErrorForUserBalance(coreAmount, accountCoreBalance, assetInfo, coreAssetId);
+        if (coreBalanceError) {
+            mergeError(FormSection.coreAmount, coreBalanceError, errors);
         }
     }
-    if (
-        extrinsic === REMOVE_LIQUIDITY &&
-        assetAmount &&
-        userShareInPool &&
-        assetAmount.gt(userShareInPool.assetBalance)
-    ) {
-        mergeError(
-            FormSection.assetAmount,
-            new UserPoolBalanceNotEnough(assetInfo[assetId], assetAmount, userShareInPool.assetBalance),
-            errors
-        );
-    }
-
-    if (
-        extrinsic === REMOVE_LIQUIDITY &&
-        coreAmount &&
-        userShareInPool &&
-        coreAmount.gt(userShareInPool.coreAssetBalance)
-    ) {
-        mergeError(
-            FormSection.coreAmount,
-            new UserPoolBalanceNotEnough(assetInfo[coreAssetId], coreAmount, userShareInPool.coreAssetBalance),
-            errors
-        );
+    if (extrinsic === REMOVE_LIQUIDITY) {
+        const poolBalanceErrorForAsset = getErrorForPoolBalance(assetAmount, userShareInPool, assetInfo, assetId);
+        if (poolBalanceErrorForAsset) {
+            mergeError(FormSection.assetAmount, poolBalanceErrorForAsset, errors);
+        }
+        const poolBalanceErrorForCore = getErrorForPoolBalance(coreAmount, userShareInPool, assetInfo, coreAssetId);
+        if (poolBalanceErrorForCore) {
+            mergeError(FormSection.coreAmount, poolBalanceErrorForCore, errors);
+        }
     }
 }
 

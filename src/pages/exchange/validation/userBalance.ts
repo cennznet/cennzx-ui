@@ -13,11 +13,7 @@ function checkUserBalance(props: ExchangeProps, errors: FormErrors): void {
     //skip when any error exists on fromAssetInput
     if (existErrors(() => true, errors, FormSection.fromAssetInput)) return;
     if (fromAssetAmount && fromAssetBalance && fromAssetAmount.gt(fromAssetBalance)) {
-        mergeError(
-            FormSection.fromAssetInput,
-            new UserBalanceNotEnough(assetInfo[fromAsset], fromAssetAmount, fromAssetBalance),
-            errors
-        );
+        mergeError(FormSection.fromAssetInput, new UserBalanceNotEnough(assetInfo[fromAsset], fromAssetAmount), errors);
     }
 }
 

@@ -99,6 +99,7 @@ const getLabel = ({symbol}) => {
         // when a new asset is added and image does not exist
         return (
             <Container>
+                <Icon src={require(`./../images/logoMissing.png`)} />
                 <Text className="symbol">{symbol}</Text>
             </Container>
         );
