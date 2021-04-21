@@ -205,3 +205,10 @@ export class UnknownFormError extends BaseError {
         this.error = error;
     }
 }
+
+export class IncorrectLiquidity extends BaseError {
+    name: string = 'IncorrectLiquidity';
+    constructor() {
+        super('Amount too small: please select a different amount');
+    }
+}

@@ -4,12 +4,14 @@ import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, from, Observable, of} from 'rxjs';
 import {catchError, filter, map, mergeMap, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
+import {IncorrectLiquidity} from '../../../error/error';
 import {IEpicDependency, LiquidityFormData} from '../../../typings';
 import {Amount, AmountUnit} from '../../../util/Amount';
 import {ADD_LIQUIDITY, REMOVE_LIQUIDITY} from '../../../util/extrinsicUtil';
 import types from '../../actions';
 import {updateExConnected} from '../../actions/extension.action';
 import {
+    removeLiquidityError,
     requestAssetLiquidityPrice,
     requestCoreLiquidityPrice,
     setLiquidityError,
@@ -50,7 +52,13 @@ export const getCoreLiquidityPriceEpic = (
                         coreAmount = assetAmount.mul(coreAssetReserve).div(tradeAssetReserve);
                     }
                 }
-                return of(updateAsset2Amount(new Amount(coreAmount)));
+                if (coreAmount.ltn(0)) {
+                    return from([setLiquidityError(new IncorrectLiquidity()), updateAsset2Amount(undefined)]);
+                }
+                return from([
+                    removeLiquidityError(new IncorrectLiquidity()),
+                    updateAsset2Amount(new Amount(coreAmount)),
+                ]);
             } else if (liquidityAction === REMOVE_LIQUIDITY) {
                 let liquidityAmount;
                 if (tradeAssetReserve.toString() === coreAssetReserve.toString()) {

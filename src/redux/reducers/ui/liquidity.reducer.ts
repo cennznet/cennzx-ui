@@ -136,8 +136,10 @@ export default handleActions<LiquidityState, any>(
             draft.error.push(action.payload);
         }),
         [LiquidityActions.ERROR_REMOVE]: produce((draft: LiquidityState, action: RemoveLiquidityErrorAction) => {
-            const newErrorList = draft.error.filter(err => err !== action.payload);
-            draft.error = newErrorList;
+            const index = draft.error.findIndex((err: BaseError) => err.message === action.payload.message);
+            if (index > -1) {
+                draft.error.splice(index, 1);
+            }
         }),
         [LiquidityActions.ERROR_RESET]: produce((draft: LiquidityState, action: ResetLiquidityErrorAction) => {
             draft.error = [];
