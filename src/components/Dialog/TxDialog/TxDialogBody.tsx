@@ -64,12 +64,13 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
         const coreAssetSymbol = assetInfo[coreAssetId].symbol;
         const assetDecimalPlaces = assetInfo[assetId].decimalPlaces;
         const assetSymbol = assetInfo[assetId].symbol;
-        const action = method === ADD_LIQUIDITY ? 'added' : 'withdraw';
         const place = method === ADD_LIQUIDITY ? 'in' : 'from';
         if (success) {
+            const action = method === ADD_LIQUIDITY ? 'added' : 'withdrew';
             message = `You successfully ${action} ${assetAmount.asString(assetDecimalPlaces)} ${assetSymbol} and
                     ${coreAmount.asString(coreAssetDecimalPlaces)} ${coreAssetSymbol} ${place} the pool.`;
         } else {
+            const action = method === ADD_LIQUIDITY ? 'add' : 'withdraw';
             message = `Your transaction to ${action} liquidity of ${assetAmount.asString(
                 assetDecimalPlaces
             )} ${assetSymbol} and
