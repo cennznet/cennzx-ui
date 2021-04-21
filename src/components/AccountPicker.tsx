@@ -15,14 +15,29 @@ interface AccountPickerProps {
 }
 
 const AccountWrapper = styled.div`
-    max-height: 1rem;
-    display: block;
+    display: flex;
+    flex-wrap: wrap;
 
     .select {
-        max-width: calc(100% - 2.5rem);
-        height: calc(100% - 2.5rem);
-        left: 2.5rem;
-        top: -2.5rem;
+        margin-left: 16px;
+        width: calc(100% - 16px);
+        .react-select__value-container--has-value {
+            margin-left: 10px;
+        }
+        /* select behind identicon */
+        z-index: -1;
+    }
+
+    .identicon {
+        position: relative;
+        height: 0;
+        top: 8px;
+    }
+
+    .message {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 `;
 
@@ -32,8 +47,8 @@ const AccountPicker: FC<AccountPickerProps> = ({title, selected, options, onChan
             {' '}
             <h2>{title}</h2>
         </span>
-        <AccountWrapper className="test">
-            <Identicon value={selected} size={32} theme={'beachball'} />
+        <AccountWrapper className="accountWrapper">
+            <Identicon value={selected} size={32} theme={'beachball'} className="identicon" />
             <DropDown
                 className="select"
                 value={getOptionByValue(options, selected)}
@@ -41,8 +56,8 @@ const AccountPicker: FC<AccountPickerProps> = ({title, selected, options, onChan
                 onChange={picked => onChange(picked)}
                 help={getOptionByValue(options, selected)}
             />
+            <MessageBox className="message">{message}</MessageBox>
         </AccountWrapper>
-        <MessageBox>{message}</MessageBox>
     </div>
 );
 

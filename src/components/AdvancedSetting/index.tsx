@@ -16,10 +16,8 @@ import {SummaryBuy} from './SummaryBuy';
 import SummaryFee from './SummaryFee';
 
 const Container = styled.div`
-    padding: 5%;
     background: #f8f9f9;
     margin-top: 2em;
-    padding: 5px 5%;
 `;
 const SummaryBody = styled.div`
     margin: 20px 0;
@@ -28,7 +26,7 @@ const SummaryBody = styled.div`
 `;
 
 const Inside = styled.div`
-    padding: 25px 0;
+    padding: 24px 0;
 `;
 
 const Title = styled.div`
@@ -201,7 +199,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                     <ErrorBox center={true} errors={formErrors.get(FormSection.form)} />
                 </>
             )}
-            {formErrors.size > 0 && <ErrorBox center={true}>Enter all values to continue</ErrorBox>}
+            {formErrors.size > 0 && <ErrorBox center={true}></ErrorBox>}
         </Container>
     );
 };

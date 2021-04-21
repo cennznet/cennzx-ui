@@ -39,8 +39,10 @@ const StyledSelect = styled(Select)<AssetDropDownStyledProps>`
 
     // remove padding from select option, this padding is added back to the container
     .react-select__option {
-        padding: 0px;
+        padding: 2px;
         background-color: white;
+        border-radius: 4px;
+        cursor: pointer;
     }
 
     .react-select__option--is-selected:hover,

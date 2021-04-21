@@ -24,6 +24,7 @@ const Line = styled.div`
     border-bottom: 1px solid rgba(17, 48, 255, 0.3);
     height: 1px;
     margin-top: 20px;
+    margin-bottom: 20px;
 `;
 
 const Bottom = styled.div`
@@ -82,19 +83,6 @@ const SectionColumn = styled.div`
     display: flex;
     flex-direction: column;
     margin-top: 20px;
-`;
-
-export const ShowPublicAddress = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin-top: 35px;
-    font-size: 12px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    margin-bottom: 10px;
-    margin-left: 40px;
-    color: gray;
-    font-weight: 'normal';
 `;
 
 const ESTIMATED_LABEL = '(estimated)';
@@ -175,9 +163,8 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({touched: true, assetDialogOpen: state.assetDialogOpen});
                         }}
-                        message=""
+                        message={signingAccount ? `Public Address: ${signingAccount}` : ''}
                     />
-                    {signingAccount && <ShowPublicAddress>Public Address: {signingAccount}</ShowPublicAddress>}
                     <Flex2>
                         <ErrorMessage errors={formErrors} field={FormSection.account} />
                     </Flex2>
@@ -240,6 +227,24 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         errorBox={<ErrorMessage errors={formErrors} field={FormSection.fromAssetInput} />}
                     />
                 </PageInside>
+                <PageInside>
+                    <SectionColumn>
+                        <Bottom id="bottom">
+                            <FullWidthContainer>
+                                <Buttons id="buttons">
+                                    <Button
+                                        flat
+                                        primary
+                                        disabled={formErrors.size > 0 || !txFee}
+                                        onClick={() => props.openTxDialog(props.form as ExchangeFormData, props.txFee)}
+                                    >
+                                        Exchange
+                                    </Button>
+                                </Buttons>
+                            </FullWidthContainer>
+                        </Bottom>
+                    </SectionColumn>
+                </PageInside>
                 <AdvancedSetting
                     show={!!(toAsset && fromAsset)}
                     assets={assets}
@@ -269,24 +274,6 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     selectValue={feeAssetId}
                     assetInfo={assetInfo}
                 />
-                <PageInside>
-                    <SectionColumn>
-                        <Bottom id="bottom">
-                            <FullWidthContainer>
-                                <Buttons id="buttons">
-                                    <Button
-                                        flat
-                                        primary
-                                        disabled={formErrors.size > 0 || !txFee}
-                                        onClick={() => props.openTxDialog(props.form as ExchangeFormData, props.txFee)}
-                                    >
-                                        Exchange
-                                    </Button>
-                                </Buttons>
-                            </FullWidthContainer>
-                        </Bottom>
-                    </SectionColumn>
-                </PageInside>
             </form>
         </Page>
     );

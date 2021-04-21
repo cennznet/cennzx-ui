@@ -49,7 +49,7 @@ const SummaryOrError: FC<SummaryOrErrorProps> = ({formErrors, summaryProps, onAs
             </>
         );
     } else if (formErrors.size > 0) {
-        return <ErrorBox center={true}>Enter all values to continue</ErrorBox>;
+        return <ErrorBox center={true}></ErrorBox>;
     } else {
         if (txFee) {
             return (

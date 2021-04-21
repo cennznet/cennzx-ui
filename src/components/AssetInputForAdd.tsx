@@ -12,6 +12,7 @@ const Trade = styled.div`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    width: 100%;
 
     h2 {
         font-size: 16px;
