@@ -56,6 +56,9 @@ export const getInputPriceEpic = (
                         if (err.message === 'Pool balance is low') {
                             return EMPTY;
                         }
+                        if (err.message === '2: Cannot exchange by requested amount.: ') {
+                            err.message = 'Sell price cannot be calculated, issue with the requested amount';
+                        }
                         const ifErrorAlreadyReported = error.find(er => er.message === err.message);
                         if (ifErrorAlreadyReported) {
                             return EMPTY;

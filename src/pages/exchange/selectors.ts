@@ -89,12 +89,13 @@ export const getExchangeRateMsg = createSelector(
                 assetInfo[feeAssetId].decimalPlaces
             )} (converted to ${txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces)} CPAY)`;
         }
+        const feeString = fee ? `Transaction fee (estimated) : ${fee}` : '';
 
         const rate = exchangeRate.asString(assetInfo[toAsset].decimalPlaces);
         return exchangeRate
             ? `Exchange rate: 1 ${getOptionByValue(assets, fromAsset).symbol} = ${rate} ${
                   getOptionByValue(assets, toAsset).symbol
-              }. Transaction fee (estimated) : ${fee}`
+              }. ${feeString}`
             : '';
     }
 );
