@@ -24,14 +24,13 @@ const AccountWrapper = styled.div`
         .react-select__value-container--has-value {
             margin-left: 10px;
         }
-        /* select behind identicon */
-        z-index: -1;
     }
 
     .identicon {
         position: relative;
+        top: -40px;
+        right: 0px;
         height: 0;
-        top: 8px;
     }
 
     .message {
@@ -48,14 +47,15 @@ const AccountPicker: FC<AccountPickerProps> = ({title, selected, options, onChan
             <h2>{title}</h2>
         </span>
         <AccountWrapper className="accountWrapper">
-            <Identicon value={selected} size={32} theme={'beachball'} className="identicon" />
             <DropDown
+                isSearchable={false}
                 className="select"
                 value={getOptionByValue(options, selected)}
                 options={options}
                 onChange={picked => onChange(picked)}
                 help={getOptionByValue(options, selected)}
             />
+            <Identicon value={selected} size={32} theme={'beachball'} className="identicon" />
             <MessageBox className="message">{message}</MessageBox>
         </AccountWrapper>
     </div>
