@@ -290,7 +290,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                                 assetDialogOpen: state.assetDialogOpen,
                             });
                         }}
-                        message={`Public Address: ${signingAccount}`}
+                        message={signingAccount ? `Public Address: ${signingAccount}` : ''}
                     />
                     <Flex2>
                         <ErrorMessage errors={formErrors} field={FormSection.account} />

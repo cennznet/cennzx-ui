@@ -163,7 +163,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({touched: true, assetDialogOpen: state.assetDialogOpen});
                         }}
-                        message={`Public Address: ${signingAccount}`}
+                        message={signingAccount ? `Public Address: ${signingAccount}` : ''}
                     />
                     <Flex2>
                         <ErrorMessage errors={formErrors} field={FormSection.account} />
