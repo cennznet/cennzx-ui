@@ -19,9 +19,9 @@ if (typeof window !== 'undefined') {
     web3AccountsSubscribe = require('@polkadot/extension-dapp').web3AccountsSubscribe;
 }
 
-const stream$ = timer(1000);
+const stream$ = timer(500);
 
-// Updated the extension detected epic to wait for a second before calling web3Enable as it needs sometime load
+// Updated the extension detected epic to wait for a half second before calling web3Enable as it needs sometime load
 export const extensionDetectedEpic = (action$: Observable<Action<any>>, store$: Observable<AppState>) =>
     action$.pipe(ofType(action.GlobalActions.INIT_APP)).pipe(
         switchMap(() => {
