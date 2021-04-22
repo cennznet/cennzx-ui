@@ -81,7 +81,7 @@ describe('Clear amount when asset is changed', () => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const expect_                   = '-(bc)';
+                const expect_                   = '-(bcd)';
 
                 const action$ = hot(action_, {
                     a: action,
@@ -117,6 +117,9 @@ describe('Clear amount when asset is changed', () => {
                     },
                     c: {
                         type: types.ui.Liquidity.ASSET2_AMOUNT_UPDATE,
+                    },
+                    d: {
+                        type: types.ui.Liquidity.TOTAL_LIQUIDITY_UPDATE,
                     },
                 });
             });

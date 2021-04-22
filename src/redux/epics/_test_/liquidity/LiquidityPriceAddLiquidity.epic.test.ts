@@ -1,6 +1,7 @@
 import {StateObservable} from 'redux-observable';
 import {Observable, Subject} from 'rxjs';
 import {ReplaySubject} from 'rxjs';
+import {IncorrectLiquidity} from '../../../../error/error';
 import types from '../../../actions';
 import {
     requestAssetLiquidityPrice,
@@ -34,7 +35,7 @@ describe('Get core amount when asset amount is provided ~ Add Liquidity', () => 
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const expect_                   = '-b-';
+                const expect_                   = '-(bc)-';
 
                 const action$ = hot(action_, {
                     a: action,
@@ -77,6 +78,11 @@ describe('Get core amount when asset amount is provided ~ Add Liquidity', () => 
                 const output$ = getCoreLiquidityPriceEpic(action$, state$, dependencies);
                 expectObservable(output$).toBe(expect_, {
                     b: {
+                        type: types.ui.Liquidity.ERROR_REMOVE,
+                        payload: new IncorrectLiquidity(),
+                        error: true,
+                    },
+                    c: {
                         type: types.ui.Liquidity.ASSET2_AMOUNT_UPDATE,
                         payload: new Amount(coreAmount),
                     },

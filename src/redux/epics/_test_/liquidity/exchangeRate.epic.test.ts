@@ -9,11 +9,7 @@ import {
     requestExchangeRate,
     updateSelectedAccount,
     updateSelectedAsset1,
-    // setFromAssetAmount,
-    // setToAssetAmount,
-    // swapAsset,
-    // updateSelectedFromAsset,
-    // updateSelectedToAsset,
+    updateTotalLiquidity,
 } from '../../../actions/ui/liquidity.action';
 import {Amount, AmountUnit} from '../../../../util/Amount';
 import {of} from 'rxjs/index';
@@ -275,8 +271,8 @@ describe('Test when exchange rate epic throws error', () => {
 });
 
 describe('Request exchange rate working', () => {
-    const inputAmount = new Amount('2');
-    const triggers = [updateSelectedAccount('aa'), updateSelectedAsset1(16000)];
+    const totalLiquidity = new Amount('2');
+    const triggers = [updateTotalLiquidity(totalLiquidity), updateSelectedAsset1(16000)];
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {

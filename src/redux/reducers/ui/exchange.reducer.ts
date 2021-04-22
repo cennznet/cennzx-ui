@@ -134,7 +134,7 @@ export default handleActions<ExchangeState, any>(
             draft.error.push(action.payload);
         }),
         [ExchangeActions.ERROR_REMOVE]: produce((draft: ExchangeState, action: RemoveExchangeErrorAction) => {
-            const newErrorList = draft.error.filter(err => err !== action.payload);
+            const newErrorList = draft.error.filter(err => err.message !== action.payload.message);
             draft.error = newErrorList;
         }),
         [ExchangeActions.ERROR_RESET]: produce((draft: ExchangeState, action: ResetExchangeErrorAction) => {

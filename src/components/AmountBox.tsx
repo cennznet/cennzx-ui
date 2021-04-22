@@ -127,7 +127,7 @@ class AmountBox extends React.Component<AmountBoxProps, AmountBoxState> {
             return;
         }
 
-        if (value.toUpperCase() === 'E') {
+        if (value.toUpperCase() === 'E' || value[0] === '-') {
             return;
         }
 
