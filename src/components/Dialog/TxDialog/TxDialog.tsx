@@ -13,7 +13,6 @@ export type TxDialogProps = {
     success?: boolean;
     title: string;
     exchange;
-    send;
     buffer?: number;
     liquidity;
     assetInfo: [];
@@ -41,7 +40,6 @@ export const TxDialog: FC<TxDialogProps> = ({
     events,
     fromAssetBalance,
     exchange,
-    send,
     liquidity,
     assetInfo,
     handleClose,
@@ -61,7 +59,8 @@ export const TxDialog: FC<TxDialogProps> = ({
                     coreAssetId={coreAssetId}
                     error={error}
                     success={success}
-                    recipientAddress={title === 'send' && send.recipientAddress}
+                    recipientAddress={undefined}
+                    // recipientAddress={title === 'send' && send.recipientAddress}
                     buffer={title === 'exchange' ? exchange.buffer : liquidity.buffer}
                     estimatedTxFee={estimatedTxFee}
                     txHash={txHash}

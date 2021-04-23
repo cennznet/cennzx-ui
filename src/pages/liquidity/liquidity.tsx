@@ -225,7 +225,7 @@ function isAssetBoxDisabled(
 }
 
 export function getDecimalPlaces(assetId: number, assetInfo: AssetDetails[]) {
-    return assetId && assetInfo ? assetInfo[assetId].decimalPlaces : undefined;
+    return assetId && assetInfo.length > 0 ? assetInfo[assetId].decimalPlaces : undefined;
 }
 
 export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {

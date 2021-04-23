@@ -32,7 +32,6 @@ const mapStateToProps = (state: AppState) => ({
     feeAssetId: state.ui.txDialog.feeAssetId,
     recipientAddress: state.ui.txDialog.recipientAddress,
     exchange: state.ui.exchange.form,
-    send: state.ui.send.form,
     fromAssetBalance: state.ui.txDialog.fromAssetBalance,
     liquidity: state.ui.liquidity.form,
     assetInfo: state.global.assetInfo,

@@ -26,8 +26,6 @@ import LiquidityActions, {
     UpdateUserAssetBalanceAction,
     UpdateUserPoolShareAction,
 } from '../../actions/ui/liquidity.action';
-import PoolActions from '../../actions/ui/liquidityPool.action';
-import {LiquidityPoolState} from './liquidityPool.reducer';
 
 export interface LiquidityState {
     exchangeRate?: Amount;

@@ -7,8 +7,6 @@ import localize from './localize.reducer';
 import {ExchangeState} from './ui/exchange.reducer';
 import ui from './ui/index';
 import {LiquidityState} from './ui/liquidity.reducer';
-import {LiquidityPoolState} from './ui/liquidityPool.reducer';
-import {SendState} from './ui/send.reducer';
 import {TxDialogState} from './ui/txDialog.reducer';
 
 let router = null;
@@ -21,7 +19,6 @@ export default combineReducers({
     localize: localize,
     extension: extension,
     global: global,
-    //exchange: exchange,
     ui,
 });
 
@@ -30,9 +27,7 @@ export interface AppState {
     global: GlobalState;
     ui: {
         exchange: ExchangeState;
-        send: SendState;
         liquidity: LiquidityState;
         txDialog: TxDialogState;
-        liquidityPool: LiquidityPoolState;
     };
 }
