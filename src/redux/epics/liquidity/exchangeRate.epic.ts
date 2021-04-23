@@ -40,9 +40,6 @@ export const getExchangeRateEpic = (
                 }),
                 takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET))),
                 catchError((err: any) => {
-                    if (err.message === 'Pool balance is low') {
-                        return EMPTY;
-                    }
                     return of(setLiquidityError(err));
                 })
             );

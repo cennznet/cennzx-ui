@@ -2,6 +2,7 @@ import {StateObservable} from 'redux-observable';
 import {Observable, Subject, EMPTY} from 'rxjs';
 import {ReplaySubject} from 'rxjs';
 import types from '../../../actions';
+import {updateSelectedAccount} from '../../../actions/ui/liquidity.action';
 import {AppState} from '../../../reducers';
 import {getAssetPoolBalanceEpic} from '../../exchange/poolBalance.epic';
 import {TestScheduler} from 'rxjs/testing';
@@ -289,6 +290,52 @@ describe('Test when api method throws error', () => {
                         payload: err,
                     },
                 });
+            });
+        });
+    });
+});
+
+describe('Return empty from get assets pool balance epic when pool id is same as core asset', () => {
+    const triggers = [updateSelectedToAsset(16001)];
+    triggers.forEach(action => {
+        it(action.type, () => {
+            const testScheduler = new TestScheduler((actual, expected) => {
+                // somehow assert the two objects are equal
+                // e.g. with chai `expect(actual).deep.equal(expected)`
+                expect(actual).toEqual(expected);
+            });
+            testScheduler.run(({hot, cold, expectObservable}) => {
+                // prettier-ignore
+                const action_                   = '-a-';
+                // prettier-ignore
+                const expect_                   = '';
+
+                const action$ = hot(action_, {
+                    a: action,
+                });
+
+                const api$ = of({
+                    rpc: {
+                        cennzx: {},
+                    },
+                });
+
+                const dependencies = ({
+                    api$,
+                } as unknown) as IEpicDependency;
+
+                const state$: Observable<AppState> = new StateObservable(new Subject(), {
+                    ui: {
+                        exchange: {},
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
+                    },
+                });
+
+                const output$ = getAssetPoolBalanceEpic(action$, state$, dependencies);
+                expectObservable(output$).toBe(expect_);
             });
         });
     });

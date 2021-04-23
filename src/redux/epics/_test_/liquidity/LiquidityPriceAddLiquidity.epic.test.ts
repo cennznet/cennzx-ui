@@ -1,7 +1,10 @@
 import {StateObservable} from 'redux-observable';
 import {Observable, Subject} from 'rxjs';
-import {ReplaySubject} from 'rxjs';
+import {of} from 'rxjs/index';
+import {TestScheduler} from 'rxjs/testing';
 import {IncorrectLiquidity} from '../../../../error/error';
+import {IEpicDependency} from '../../../../typings';
+import {Amount, AmountUnit} from '../../../../util/Amount';
 import types from '../../../actions';
 import {
     requestAssetLiquidityPrice,
@@ -11,10 +14,6 @@ import {
     updateSelectedAsset1,
 } from '../../../actions/ui/liquidity.action';
 import {AppState} from '../../../reducers';
-import {TestScheduler} from 'rxjs/testing';
-import {IEpicDependency} from '../../../../typings';
-import {Amount, AmountUnit} from '../../../../util/Amount';
-import {of} from 'rxjs/index';
 import {
     getAssetLiquidityPriceEpic,
     getCoreLiquidityPriceEpic,
@@ -85,6 +84,74 @@ describe('Get core amount when asset amount is provided ~ Add Liquidity', () => 
                     c: {
                         type: types.ui.Liquidity.ASSET2_AMOUNT_UPDATE,
                         payload: new Amount(coreAmount),
+                    },
+                });
+            });
+        });
+    });
+});
+
+describe('Get core amount when asset amount is very low 0.0001 ~ Add Liquidity', () => {
+    const triggers = [requestCoreLiquidityPrice()];
+    triggers.forEach(action => {
+        it(action.type, () => {
+            const testScheduler = new TestScheduler((actual, expected) => {
+                // somehow assert the two objects are equal
+                // e.g. with chai `expect(actual).deep.equal(expected)`
+                expect(actual).toEqual(expected);
+            });
+            testScheduler.run(({hot, cold, expectObservable}) => {
+                // prettier-ignore
+                const action_                   = '-a-';
+                // prettier-ignore
+                const expect_                   = '-(bc)-';
+
+                const action$ = hot(action_, {
+                    a: action,
+                });
+
+                const api$ = of({
+                    cennzx: {},
+                });
+
+                const dependencies = ({
+                    api$,
+                } as unknown) as IEpicDependency;
+
+                const assetAmount = new Amount(0, AmountUnit.DISPLAY);
+                const coreAssetReserve = new Amount(1000);
+                const tradeAssetReserve = new Amount(1000);
+                const state$: Observable<AppState> = new StateObservable(new Subject(), {
+                    ui: {
+                        liquidity: {
+                            form: {
+                                assetId: 16000,
+                                assetAmount: assetAmount,
+                                coreAssetId: 16001,
+                                extrinsic: 'addLiquidity',
+                            },
+                            exchangePool: [
+                                {
+                                    coreAssetBalance: coreAssetReserve,
+                                    assetBalance: tradeAssetReserve,
+                                    address: '5DwJXhQP4W9VLR3RoPNLX6mGdtFtJyd7zaWUDf89fS8cP2eg',
+                                    assetId: 16000,
+                                },
+                            ],
+                            totalLiquidity: new Amount(111),
+                        },
+                    },
+                });
+
+                const output$ = getCoreLiquidityPriceEpic(action$, state$, dependencies);
+                expectObservable(output$).toBe(expect_, {
+                    b: {
+                        type: types.ui.Liquidity.ERROR_SET,
+                        payload: new IncorrectLiquidity(),
+                        error: true,
+                    },
+                    c: {
+                        type: types.ui.Liquidity.ASSET2_AMOUNT_UPDATE,
                     },
                 });
             });

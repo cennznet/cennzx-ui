@@ -157,6 +157,65 @@ describe('Update the exchange rate to a different value', () => {
     });
 });
 
+describe('Update the exchange rate to a same value should return empty', () => {
+    const triggers = [requestExchangeRate()];
+    triggers.forEach(action => {
+        it(action.type, () => {
+            const testScheduler = new TestScheduler((actual, expected) => {
+                // somehow assert the two objects are equal
+                // e.g. with chai `expect(actual).deep.equal(expected)`
+                expect(actual).toEqual(expected);
+            });
+            testScheduler.run(({hot, cold, expectObservable}) => {
+                // prettier-ignore
+                const action_                   = '-a-';
+                // prettier-ignore
+                const sellPrice                 = ' -b-';
+                // prettier-ignore
+                const expect_                   = '';
+
+                const action$ = hot(action_, {
+                    a: action,
+                });
+
+                const api$ = of({
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () =>
+                                cold(sellPrice, {
+                                    b: new BN('2'),
+                                }),
+                        },
+                    },
+                });
+
+                const dependencies = ({
+                    api$,
+                } as unknown) as IEpicDependency;
+
+                const state$: Observable<AppState> = new StateObservable(new Subject(), {
+                    ui: {
+                        liquidity: {
+                            form: {
+                                assetId: 16000,
+                                coreAssetId: 16001,
+                            },
+                            exchangeRate: new Amount(2),
+                            totalLiquidity: new Amount(120),
+                        },
+                    },
+                    global: {
+                        assetInfo: globalAssetList,
+                    },
+                });
+
+                const output$ = getExchangeRateEpic(action$, state$, dependencies);
+                expectObservable(output$).toBe(expect_);
+            });
+        });
+    });
+});
+
 describe('Test exchange rate epic when pool is empty, should return empty', () => {
     const triggers = [requestExchangeRate()];
     triggers.forEach(action => {

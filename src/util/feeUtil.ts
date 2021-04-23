@@ -26,16 +26,12 @@ export function observableEstimatedFee(
     signingAccount: string,
     feeAssetId: number,
     api: ApiRx
-): Observable<[BN, BN]> {
+): Observable<BN[]> {
     const maxPayment = '50000000000000000';
 
     return api.derive.fees.estimateFee({extrinsic: tx, userFeeAssetId: feeAssetId, maxPayment}).pipe(
         switchMap(estimatedFeeAssetAmount => {
             return of([estimatedFeeAssetAmount as BN, estimatedFeeAssetAmount as BN]);
-        }),
-        catchError((err: Error) => {
-            // tslint:disable-next-line:no-console
-            console.log('error', err);
         })
     );
 }

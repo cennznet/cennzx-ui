@@ -157,6 +157,62 @@ describe('Update the input price to a different value', () => {
     });
 });
 
+describe('Test when output price epic throws pool balance low error, should return empty', () => {
+    const inputAmount = new Amount('2', AmountUnit.DISPLAY);
+    const triggers = [setToAssetAmount(inputAmount)];
+    triggers.forEach(action => {
+        it(action.type, () => {
+            const testScheduler = new TestScheduler((actual, expected) => {
+                // somehow assert the two objects are equal
+                // e.g. with chai `expect(actual).deep.equal(expected)`
+                expect(actual).toEqual(expected);
+            });
+            testScheduler.run(({hot, cold, expectObservable}) => {
+                // prettier-ignore
+                const action_                   = '-a-';
+                // prettier-ignore
+                const expect_                   = '';
+
+                const action$ = hot(action_, {
+                    a: action,
+                });
+
+                const api$ = of({
+                    rpc: {
+                        cennzx: {
+                            buyPrice: () => throwError(new Error('Pool balance is low')),
+                        },
+                    },
+                });
+
+                const dependencies = ({
+                    api$,
+                } as unknown) as IEpicDependency;
+
+                const state$: Observable<AppState> = new StateObservable(new Subject(), {
+                    ui: {
+                        exchange: {
+                            form: {
+                                fromAsset: 16000,
+                                toAsset: 16001,
+                                fromAssetAmount: new Amount(1),
+                                toAssetAmount: new Amount(3),
+                            },
+                        },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
+                    },
+                });
+
+                const output$ = getOutputPriceEpic(action$, state$, dependencies);
+                expectObservable(output$).toBe(expect_);
+            });
+        });
+    });
+});
+
 describe('Test when input price epic throws pool balance low error, should return empty', () => {
     const inputAmount = new Amount('2', AmountUnit.DISPLAY);
     const triggers = [setFromAssetAmount(inputAmount)];
@@ -207,6 +263,124 @@ describe('Test when input price epic throws pool balance low error, should retur
                 });
 
                 const output$ = getInputPriceEpic(action$, state$, dependencies);
+                expectObservable(output$).toBe(expect_);
+            });
+        });
+    });
+});
+
+describe('Test when error already reported for sell price, should return empty', () => {
+    const inputAmount = new Amount('2', AmountUnit.DISPLAY);
+    const triggers = [setFromAssetAmount(inputAmount)];
+    triggers.forEach(action => {
+        it(action.type, () => {
+            const testScheduler = new TestScheduler((actual, expected) => {
+                // somehow assert the two objects are equal
+                // e.g. with chai `expect(actual).deep.equal(expected)`
+                expect(actual).toEqual(expected);
+            });
+            testScheduler.run(({hot, cold, expectObservable}) => {
+                // prettier-ignore
+                const action_                   = '-a-';
+                // prettier-ignore
+                const expect_                   = '';
+
+                const action$ = hot(action_, {
+                    a: action,
+                });
+
+                const err = new Error('2: Cannot exchange by requested amount.: ');
+
+                const api$ = of({
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () => throwError(err),
+                        },
+                    },
+                });
+
+                const dependencies = ({
+                    api$,
+                } as unknown) as IEpicDependency;
+
+                const state$: Observable<AppState> = new StateObservable(new Subject(), {
+                    ui: {
+                        exchange: {
+                            form: {
+                                fromAsset: 16000,
+                                toAsset: 16001,
+                                fromAssetAmount: new Amount(1),
+                                toAssetAmount: new Amount(3),
+                            },
+                            error: [err],
+                        },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
+                    },
+                });
+
+                const output$ = getInputPriceEpic(action$, state$, dependencies);
+                expectObservable(output$).toBe(expect_);
+            });
+        });
+    });
+});
+
+describe('Test when error already reported for buy price, should return empty', () => {
+    const inputAmount = new Amount('2', AmountUnit.DISPLAY);
+    const triggers = [setToAssetAmount(inputAmount)];
+    triggers.forEach(action => {
+        it(action.type, () => {
+            const testScheduler = new TestScheduler((actual, expected) => {
+                // somehow assert the two objects are equal
+                // e.g. with chai `expect(actual).deep.equal(expected)`
+                expect(actual).toEqual(expected);
+            });
+            testScheduler.run(({hot, cold, expectObservable}) => {
+                // prettier-ignore
+                const action_                   = '-a-';
+                // prettier-ignore
+                const expect_                   = '';
+
+                const action$ = hot(action_, {
+                    a: action,
+                });
+
+                const err = new Error('2: Cannot exchange for requested amount.: ');
+
+                const api$ = of({
+                    rpc: {
+                        cennzx: {
+                            buyPrice: () => throwError(err),
+                        },
+                    },
+                });
+
+                const dependencies = ({
+                    api$,
+                } as unknown) as IEpicDependency;
+
+                const state$: Observable<AppState> = new StateObservable(new Subject(), {
+                    ui: {
+                        exchange: {
+                            form: {
+                                fromAsset: 16000,
+                                toAsset: 16001,
+                                fromAssetAmount: new Amount(1),
+                                toAssetAmount: new Amount(3),
+                            },
+                            error: [err],
+                        },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
+                    },
+                });
+
+                const output$ = getOutputPriceEpic(action$, state$, dependencies);
                 expectObservable(output$).toBe(expect_);
             });
         });
@@ -473,9 +647,9 @@ describe('Test when output price epic throws', () => {
     });
 });
 
-describe('Test when output price epic throws pool balance low error, should return empty', () => {
-    const outputAmount = new Amount('2', AmountUnit.DISPLAY);
-    const triggers = [setToAssetAmount(outputAmount)];
+describe('Test when output price epic throws', () => {
+    const inputAmount = new Amount('2', AmountUnit.DISPLAY);
+    const triggers = [setToAssetAmount(inputAmount)];
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
@@ -487,16 +661,18 @@ describe('Test when output price epic throws pool balance low error, should retu
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const expect_                   = '';
+                const expect_                   = '-c';
 
                 const action$ = hot(action_, {
                     a: action,
                 });
 
+                const err = new NodeConnectionTimeOut();
+
                 const api$ = of({
                     rpc: {
                         cennzx: {
-                            buyPrice: () => throwError(new Error('Pool balance is low')),
+                            buyPrice: () => throwError(err),
                         },
                     },
                 });
@@ -524,7 +700,143 @@ describe('Test when output price epic throws pool balance low error, should retu
                 });
 
                 const output$ = getOutputPriceEpic(action$, state$, dependencies);
-                expectObservable(output$).toBe(expect_);
+                expectObservable(output$).toBe(expect_, {
+                    c: {
+                        error: true,
+                        type: types.ui.Exchange.ERROR_SET,
+                        payload: err,
+                    },
+                });
+            });
+        });
+    });
+});
+
+describe('Test when output price epic throws "Cannot exchange by requested amount" error', () => {
+    const outputAmount = new Amount('2', AmountUnit.DISPLAY);
+    const triggers = [setToAssetAmount(outputAmount)];
+    triggers.forEach(action => {
+        it(action.type, () => {
+            const testScheduler = new TestScheduler((actual, expected) => {
+                // somehow assert the two objects are equal
+                // e.g. with chai `expect(actual).deep.equal(expected)`
+                expect(actual).toEqual(expected);
+            });
+            testScheduler.run(({hot, cold, expectObservable}) => {
+                // prettier-ignore
+                const action_                   = '-a-';
+                // prettier-ignore
+                const expect_                   = '-c';
+
+                const action$ = hot(action_, {
+                    a: action,
+                });
+
+                const err = new Error('2: Cannot exchange for requested amount.: ');
+
+                const api$ = of({
+                    rpc: {
+                        cennzx: {
+                            buyPrice: () => throwError(err),
+                        },
+                    },
+                });
+
+                const dependencies = ({
+                    api$,
+                } as unknown) as IEpicDependency;
+
+                const state$: Observable<AppState> = new StateObservable(new Subject(), {
+                    ui: {
+                        exchange: {
+                            form: {
+                                fromAsset: 16000,
+                                toAsset: 16001,
+                                fromAssetAmount: new Amount(1),
+                                toAssetAmount: new Amount(3),
+                            },
+                            error: [],
+                        },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
+                    },
+                });
+
+                const output$ = getOutputPriceEpic(action$, state$, dependencies);
+                expectObservable(output$).toBe(expect_, {
+                    c: {
+                        error: true,
+                        type: types.ui.Exchange.ERROR_SET,
+                        payload: new Error('Buy price cannot be calculated, issue with the requested amount'),
+                    },
+                });
+            });
+        });
+    });
+});
+
+describe('Test when input price epic throws "Cannot exchange by requested amount" error', () => {
+    const outputAmount = new Amount('2', AmountUnit.DISPLAY);
+    const triggers = [setFromAssetAmount(outputAmount)];
+    triggers.forEach(action => {
+        it(action.type, () => {
+            const testScheduler = new TestScheduler((actual, expected) => {
+                // somehow assert the two objects are equal
+                // e.g. with chai `expect(actual).deep.equal(expected)`
+                expect(actual).toEqual(expected);
+            });
+            testScheduler.run(({hot, cold, expectObservable}) => {
+                // prettier-ignore
+                const action_                   = '-a-';
+                // prettier-ignore
+                const expect_                   = '-c';
+
+                const action$ = hot(action_, {
+                    a: action,
+                });
+
+                const err = new Error('2: Cannot exchange by requested amount.: ');
+
+                const api$ = of({
+                    rpc: {
+                        cennzx: {
+                            sellPrice: () => throwError(err),
+                        },
+                    },
+                });
+
+                const dependencies = ({
+                    api$,
+                } as unknown) as IEpicDependency;
+
+                const state$: Observable<AppState> = new StateObservable(new Subject(), {
+                    ui: {
+                        exchange: {
+                            form: {
+                                fromAsset: 16000,
+                                toAsset: 16001,
+                                fromAssetAmount: new Amount(1),
+                                toAssetAmount: new Amount(3),
+                            },
+                            error: [],
+                        },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
+                    },
+                });
+
+                const output$ = getInputPriceEpic(action$, state$, dependencies);
+                expectObservable(output$).toBe(expect_, {
+                    c: {
+                        error: true,
+                        type: types.ui.Exchange.ERROR_SET,
+                        payload: new Error('Sell price cannot be calculated, issue with the requested amount'),
+                    },
+                });
             });
         });
     });
