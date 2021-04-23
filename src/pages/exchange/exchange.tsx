@@ -15,7 +15,7 @@ import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
 import {AmountParams, Asset, ExchangeFormData, IFee, IOption, LiquidityFormData} from '../../typings';
 import {Amount} from '../../util/Amount';
-import {Flex2} from '../liquidity/liquidity';
+import {Flex2, getDecimalPlaces} from '../liquidity/liquidity';
 import getFormErrors from './validation';
 const SWAP_OUTPUT = 'buyAsset';
 const SWAP_INPUT = 'sellAsset';
@@ -173,6 +173,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         disableAmount={!!assetForEmptyPool}
                         max={outputReserve}
                         value={{amount: toAssetAmount, assetId: toAsset}}
+                        decimalPlaces={getDecimalPlaces(toAsset, assetInfo)}
                         options={assets}
                         onChange={(amountParams: AmountParams) => {
                             if (amountParams.amountChange) {
@@ -204,6 +205,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         disableAmount={!!assetForEmptyPool}
                         max={fromAssetBalance}
                         value={{amount: fromAssetAmount, assetId: fromAsset}}
+                        decimalPlaces={getDecimalPlaces(fromAsset, assetInfo)}
                         options={assets}
                         onChange={amountParams => {
                             if (amountParams.amountChange) {

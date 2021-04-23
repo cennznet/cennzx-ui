@@ -224,6 +224,10 @@ function isAssetBoxDisabled(
     return false;
 }
 
+export function getDecimalPlaces(assetId: number, assetInfo: AssetDetails[]) {
+    return assetId && assetInfo ? assetInfo[assetId].decimalPlaces : undefined;
+}
+
 export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const {
         accounts,
@@ -366,6 +370,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             }
                             disableAmount={disabledAssetTextBox}
                             value={{amount: assetAmount, assetId}}
+                            decimalPlaces={getDecimalPlaces(assetId, assetInfo)}
                             options={assets.filter(a => a.id !== coreAssetId)}
                             onChange={(amountParams: AmountParams) => {
                                 if (amountParams.amountChange) {
@@ -401,6 +406,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             }
                             disableAmount={disabledCoreTextBox}
                             value={{amount: coreAmount, assetId: coreAssetId}}
+                            decimalPlaces={getDecimalPlaces(coreAssetId, assetInfo)}
                             options={assets.filter(a => a.id === coreAssetId)}
                             onChange={amountParams => {
                                 if (amountParams.amountChange) {

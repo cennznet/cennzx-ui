@@ -58,6 +58,7 @@ interface AssetInputProps {
     max?: Amount;
     secondaryTitle?: string;
     disableAmount?: boolean;
+    decimalPlaces?: number;
 }
 
 const Top = styled.div`
@@ -80,6 +81,7 @@ const AssetInputForAdd: FC<AssetInputProps> = ({
     errorBox,
     secondaryTitle,
     disableAmount,
+    decimalPlaces,
 }) => {
     const {assetId, amount} = value;
 
@@ -96,6 +98,7 @@ const AssetInputForAdd: FC<AssetInputProps> = ({
                 <AmountBox
                     readOnly={disableAmount}
                     value={amount}
+                    decimalPlaces={decimalPlaces}
                     onChange={value => onChange(getAmountParams(value, assetId, true))}
                 />
                 <MaxButton
