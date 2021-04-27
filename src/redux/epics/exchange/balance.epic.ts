@@ -8,7 +8,7 @@ import types from '../../actions';
 import {requestAssetBalance} from '../../actions/ui/exchange.action';
 import {AppState} from '../../reducers';
 
-export const prepareBalanceParamsEpic = (
+export const prepareBalanceParamsForToAssetEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
@@ -33,4 +33,29 @@ export const prepareBalanceParamsEpic = (
         )
     );
 
-export default combineEpics(prepareBalanceParamsEpic);
+export const prepareBalanceParamsForBuyAssetEpic = (
+    action$: Observable<Action<any>>,
+    store$: Observable<AppState>,
+    {api$}: IEpicDependency
+): Observable<Action<any>> =>
+    combineLatest([
+        api$,
+        action$.pipe(
+            ofType(
+                types.ui.Exchange.SELECTED_TO_ASSET_UPDATE,
+                types.ui.Exchange.SELECTED_ACCOUNT_UPDATE,
+                types.ui.Exchange.ASSET_SWAP
+            )
+        ),
+    ]).pipe(
+        withLatestFrom(store$),
+        filter(([, store]) => store.ui.exchange.form.toAsset && !!store.ui.exchange.form.signingAccount),
+        switchMap(
+            ([[api], store]): Observable<Action<any>> => {
+                const {toAsset, signingAccount} = store.ui.exchange.form;
+                return of(requestAssetBalance(toAsset, signingAccount));
+            }
+        )
+    );
+
+export default combineEpics(prepareBalanceParamsForToAssetEpic, prepareBalanceParamsForBuyAssetEpic);

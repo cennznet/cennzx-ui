@@ -49,6 +49,21 @@ export const getFromAssetUserBalance = createSelector(
     }
 );
 
+export const getToAssetUserBalance = createSelector(
+    [getToAsset, getUserAssetBalance, getSigningAccount],
+    (toAsset, userBalance, signingAccount) => {
+        if (!toAsset) return null;
+        if (!userBalance.length) return null;
+        const toAssetBalance = userBalance.find(
+            (bal: IAssetBalance) => bal.assetId === toAsset && bal.account === signingAccount
+        );
+        if (toAssetBalance) {
+            return toAssetBalance.balance;
+        }
+        return null;
+    }
+);
+
 export const getOutputReserve = createSelector(
     [getToAsset, getExchangePool, getCoreAsset],
     (toAsset, exchangePool, coreAsset) => {

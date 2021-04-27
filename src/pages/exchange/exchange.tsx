@@ -115,6 +115,7 @@ export type ExchangeProps = {
      * TODO: merge this with userAssetBalance
      */
     fromAssetBalance: Amount;
+    toAssetBalance: Amount;
     assets: Asset[];
     // TODO: merge this with exchangePool
     outputReserve: Amount;
@@ -127,7 +128,17 @@ export type ExchangeProps = {
 
 export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
     const [state, setState] = useState({touched: false, assetDialogOpen: false});
-    const {accounts, assets, fromAssetBalance, error, outputReserve, txFee, coreAssetId, assetInfo} = props;
+    const {
+        accounts,
+        assets,
+        fromAssetBalance,
+        toAssetBalance,
+        error,
+        outputReserve,
+        txFee,
+        coreAssetId,
+        assetInfo,
+    } = props;
     const {
         toAsset,
         toAssetAmount,
@@ -149,6 +160,14 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
 
     const assetForEmptyPool = error.find(err => err instanceof EmptyPool);
     const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
+    let maxBuy;
+    if (outputReserve && toAssetBalance) {
+        // Take minimum of user and pool balance for max Buy amount.
+        maxBuy = outputReserve.gt(toAssetBalance) ? toAssetBalance : outputReserve;
+    } else if (outputReserve) {
+        // when no user is selected use pool balance as max..
+        maxBuy = outputReserve;
+    }
 
     return (
         <Page id={'page'}>
@@ -171,7 +190,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     <Line />
                     <AssetInputForAdd
                         disableAmount={!!assetForEmptyPool}
-                        max={outputReserve}
+                        max={maxBuy}
                         value={{amount: toAssetAmount, assetId: toAsset}}
                         decimalPlaces={getDecimalPlaces(toAsset, assetInfo)}
                         options={assets}
