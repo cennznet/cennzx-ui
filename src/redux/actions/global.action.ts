@@ -10,6 +10,8 @@ export enum GlobalActions {
     ASSET_INFO_UPDATE = 'app/ASSET_INFO_UPDATE',
 }
 
+export const startApp = createAction(GlobalActions.INIT_APP);
+
 export const updateAppError = createAction(GlobalActions.UNKNOWN_ERROR, (err: Error) => err);
 
 export const updateCoreAsset = createAction(GlobalActions.CORE_ASSET_UPDATE, coreAssetId => coreAssetId);
