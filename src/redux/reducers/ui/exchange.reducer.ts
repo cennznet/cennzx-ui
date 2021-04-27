@@ -114,7 +114,7 @@ export default handleActions<ExchangeState, any>(
             (draft: ExchangeState, action: UpdateUserAssetBalanceAction) => {
                 const index = draft.userAssetBalance.findIndex(
                     (assetData: IAssetBalance) =>
-                        assetData.assetId === draft.form.feeAssetId && assetData.account === draft.form.signingAccount
+                        assetData.assetId === action.payload.assetId && assetData.account === action.payload.account
                 );
                 if (index === -1) {
                     draft.userAssetBalance.push(action.payload);

@@ -1,4 +1,5 @@
 import {FeeRate} from '@cennznet/types';
+import BN from 'bn.js';
 import {Button} from 'centrality-react-core';
 import AccountPicker from 'components/AccountPicker';
 import AdvancedSetting from 'components/AdvancedSetting';
@@ -163,10 +164,10 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
     let maxBuy;
     if (outputReserve && toAssetBalance) {
         // Take minimum of user and pool balance for max Buy amount.
-        maxBuy = outputReserve.gt(toAssetBalance) ? toAssetBalance : outputReserve;
+        maxBuy = new Amount(BN.min(new BN(outputReserve), new BN(toAssetBalance)));
     } else if (outputReserve) {
-        // when no user is selected use pool balance as max..
-        maxBuy = outputReserve;
+        // when no user is selected use 0 as max..
+        maxBuy = new Amount(0);
     }
 
     return (
