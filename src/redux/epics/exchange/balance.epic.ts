@@ -8,7 +8,7 @@ import types from '../../actions';
 import {requestAssetBalance} from '../../actions/ui/exchange.action';
 import {AppState} from '../../reducers';
 
-export const prepareBalanceParamsForToAssetEpic = (
+export const prepareBalanceParamsForSellAssetEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
@@ -58,4 +58,4 @@ export const prepareBalanceParamsForBuyAssetEpic = (
         )
     );
 
-export default combineEpics(prepareBalanceParamsForToAssetEpic, prepareBalanceParamsForBuyAssetEpic);
+export default combineEpics(prepareBalanceParamsForSellAssetEpic, prepareBalanceParamsForBuyAssetEpic);
