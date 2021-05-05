@@ -4,9 +4,9 @@ import {createSelector} from 'reselect';
 import {resetTrade} from '../../../redux/actions/ui/exchange.action';
 import {
     closeDialog,
-    requestSubmitTransaction,
-    requestSubmitSend,
     requestSubmitLiquidity,
+    requestSubmitSend,
+    requestSubmitTransaction,
 } from '../../../redux/actions/ui/txDialog.action';
 import {AppState} from '../../../redux/reducers';
 import {Amount} from '../../../util/Amount';
@@ -19,7 +19,6 @@ const isTxSuccessSelector = createSelector(
 
 const mapStateToProps = (state: AppState) => ({
     signingAccount: state.ui.txDialog.signingAccount,
-    isAccountLocked: state.ui.txDialog.isAccountLocked,
     coreAssetId: state.global.coreAssetId,
     title: state.ui.txDialog.title,
     error: state.ui.txDialog.error,
@@ -33,9 +32,9 @@ const mapStateToProps = (state: AppState) => ({
     feeAssetId: state.ui.txDialog.feeAssetId,
     recipientAddress: state.ui.txDialog.recipientAddress,
     exchange: state.ui.exchange.form,
-    send: state.ui.send.form,
     fromAssetBalance: state.ui.txDialog.fromAssetBalance,
     liquidity: state.ui.liquidity.form,
+    assetInfo: state.global.assetInfo,
     success: isTxSuccessSelector(state),
 });
 
@@ -43,15 +42,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     handleClose: () => {
         dispatch(closeDialog());
     },
-    handleExchangeSubmit: ({
-        extrinsic,
-        signingAccount,
-        feeAssetId,
-        feeInFeeAsset,
-        password,
-        recipientAddress,
-        buffer,
-    }) => {
+    handleExchangeSubmit: ({extrinsic, signingAccount, feeAssetId, feeInFeeAsset, buffer}) => {
         dispatch(
             requestSubmitTransaction({
                 extrinsic,
@@ -59,7 +50,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
                 feeAssetId,
                 feeInFeeAsset,
                 buffer,
-                password,
             })
         );
     },
@@ -73,15 +63,12 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         fromAsset,
         toAsset,
         fromAssetAmount,
-        coreAsset,
         fromAssetBalance,
         buffer,
-        password,
     }) => {
         dispatch(
             requestSubmitSend({
                 extrinsic,
-                coreAsset,
                 signingAccount,
                 feeAssetId,
                 feeInFeeAsset,
@@ -91,39 +78,18 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
                 buffer,
                 fromAssetAmount,
                 fromAssetBalance,
-                password,
             })
         );
     },
 
-    handleLiquiditySubmit: ({
-        type,
-        extrinsic,
-        signingAccount,
-        assetId,
-        assetAmount,
-        coreAssetId,
-        coreAmount,
-        feeAssetId,
-        feeInFeeAsset,
-        add1Reserve,
-        buffer,
-        password,
-    }) => {
+    handleLiquiditySubmit: ({extrinsic, signingAccount, feeAssetId, feeInFeeAsset, buffer}) => {
         dispatch(
             requestSubmitLiquidity({
-                type,
                 extrinsic,
                 signingAccount,
-                assetId,
-                assetAmount,
-                coreAssetId,
-                coreAmount,
                 feeAssetId,
                 buffer,
                 feeInFeeAsset,
-                add1Reserve,
-                password,
             })
         );
     },

@@ -11,7 +11,6 @@ export type StyledInputProps = InputProps & {
 
 const StyledInput = styled(Input)<StyledInputProps>`
     background-color: ${props => (props.readOnly ? '#EBECED' : 'white')};
-    flex: 1;
     color: black;
     height: 100%;
     border: none;
@@ -19,7 +18,6 @@ const StyledInput = styled(Input)<StyledInputProps>`
     margin-top: auto;
     margin-bottom: auto;
     min-width: 0px !important;
-    max-width: 160px;
 
     :hover {
         border: none;
@@ -32,6 +30,8 @@ const StyledInput = styled(Input)<StyledInputProps>`
 
 const StyledInputParent = styled.div`
     min-width: 0px !important;
+    flex: 1 0 60%;
+
     div {
         margin-top: 0px;
         height: 100%;
@@ -44,6 +44,7 @@ interface AmountBoxProps {
     value: Amount;
     onChange: Function;
     readOnly: boolean;
+    decimalPlaces?: number;
 }
 
 interface AmountBoxState {
@@ -96,7 +97,9 @@ class AmountBox extends React.Component<AmountBoxProps, AmountBoxState> {
                 valid
                 readOnly={this.props.readOnly}
                 value={this.state.displayValue}
-                onChange={e => this.maybeSetValue((e.target as HTMLInputElement).value, this.props.value)}
+                onChange={e =>
+                    this.maybeSetValue((e.target as HTMLInputElement).value, this.props.value, this.props.decimalPlaces)
+                }
             />
         </StyledInputParent>
     );
@@ -107,7 +110,7 @@ class AmountBox extends React.Component<AmountBoxProps, AmountBoxState> {
 
     // wherever return is below it means , totally ignore the change, as in those situations the character is invalid
     // and the display value and the amount value should not be updated
-    maybeSetValue = (valueIn: any, oldAmount: Amount) => {
+    maybeSetValue = (valueIn: any, oldAmount: Amount, decimalPlaces: number) => {
         let value = valueIn;
 
         // disallow spaces
@@ -127,10 +130,14 @@ class AmountBox extends React.Component<AmountBoxProps, AmountBoxState> {
             return;
         }
 
-        if (value.toUpperCase() === 'E') {
+        if (value.toUpperCase() === 'E' || value[0] === '-') {
             return;
         }
 
+        const stringAfterDecimalPlace = value.split('.')[1];
+        if (stringAfterDecimalPlace && decimalPlaces && stringAfterDecimalPlace.length > decimalPlaces) {
+            return;
+        }
         // only allow numbers
         if (isNaN(value)) {
             return;

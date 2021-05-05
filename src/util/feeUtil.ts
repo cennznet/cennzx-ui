@@ -2,8 +2,8 @@ import {ApiRx, SubmittableResult} from '@cennznet/api';
 import {SubmittableExtrinsic} from '@cennznet/api/types';
 import {Hash} from '@plugnet/types/interfaces';
 import BN from 'bn.js';
-import {Observable, of, async} from 'rxjs';
-import {map, mergeMap, switchMap, catchError} from 'rxjs/operators';
+import {async, Observable, of} from 'rxjs';
+import {catchError, map, mergeMap, switchMap} from 'rxjs/operators';
 import {Amount, AmountUnit} from './Amount';
 
 /**
@@ -26,44 +26,12 @@ export function observableEstimatedFee(
     signingAccount: string,
     feeAssetId: number,
     api: ApiRx
-): Observable<[BN, BN]> {
-    // const CPAY = {id: 11}
-    // const isFeeAssetNotCPAY = feeAssetId !== CPAY.id;
-    // First time use maxPayment as constant
-    //1630000000000000
-    const assetAmount = new Amount('0.00163', AmountUnit.DISPLAY);
-    // if (isFeeAssetNotCPAY) {
-    //     tx.addFeeExchangeOpt({
-    //         assetId: feeAssetId,
-    //         maxPayment: assetAmount,
-    //     });
-    // }
+): Observable<BN[]> {
+    const maxPayment = '50000000000000000';
 
-    const encodedLengthFirstTime = tx.encodedLength;
-
-    const observableFee = api.rpc.payment.queryInfo(tx.toHex());
-    // if (!isFeeAssetNotCPAY) {
-    //     return observableFee.pipe(map((fee): [BN, BN] => [fee, null]));
-    // }
-    return observableFee.pipe(
-        switchMap(feeAmtInCPAY => {
-            const maxPayment = '50000000000000000';
-            // const extrinsic = api.tx.genericAsset.transfer(feeAssetId, signingAccount, 10000);
-
-            return api.derive.fees.estimateFee({extrinsic: tx, userFeeAssetId: feeAssetId, maxPayment}).pipe(
-                switchMap(estimatedFeeAssetAmount => {
-                    // const maxPayment = addBufer(estimatedFeeAssetAmount);
-                    // const encodedLengthSecondTime = tx.encodedLength;
-                    // if (encodedLengthFirstTime === encodedLengthSecondTime) {
-                    return of([feeAmtInCPAY.partialFee as BN, estimatedFeeAssetAmount as BN]);
-                    // } else {
-                    //     return tx.fee(signingAccount).pipe(map((fee): [BN, BN] => [fee as BN, maxPayment as BN]));
-                    // }
-                }),
-                catchError((err: Error) => {
-                    console.log('error', err);
-                })
-            );
+    return api.derive.fees.estimateFee({extrinsic: tx, userFeeAssetId: feeAssetId, maxPayment}).pipe(
+        switchMap(estimatedFeeAssetAmount => {
+            return of([estimatedFeeAssetAmount as BN, estimatedFeeAssetAmount as BN]);
         })
     );
 }

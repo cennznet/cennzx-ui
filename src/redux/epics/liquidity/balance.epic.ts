@@ -4,11 +4,12 @@ import {combineLatest, Observable} from 'rxjs';
 import {of} from 'rxjs/internal/observable/of';
 import {filter, map, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
 import {IEpicDependency} from '../../../typings';
+import {ADD_LIQUIDITY} from '../../../util/extrinsicUtil';
 import types from '../../actions';
-import {requestAssetBalance} from '../../actions/ui/liquidity.action';
+import {requestUserAssetBalance} from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
 
-export const prepareBalanceParamsEpic = (
+export const prepareRequestUserBalanceEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
@@ -17,20 +18,25 @@ export const prepareBalanceParamsEpic = (
         api$,
         action$.pipe(
             ofType(
-                types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE,
+                types.ui.Liquidity.SELECTED_ASSET1_UPDATE,
                 types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE,
-                types.ui.Liquidity.ASSET_SWAP
+                types.ui.Liquidity.EXTRINSIC_UPDATE
             )
         ),
     ]).pipe(
         withLatestFrom(store$),
-        filter(([, store]) => store.ui.liquidity.form.assetId && !!store.ui.liquidity.form.signingAccount),
+        filter(
+            ([, store]) =>
+                store.ui.liquidity.form.assetId &&
+                !!store.ui.liquidity.form.signingAccount &&
+                store.ui.liquidity.form.extrinsic === ADD_LIQUIDITY
+        ),
         switchMap(
             ([[api], store]): Observable<Action<any>> => {
                 const {assetId, signingAccount} = store.ui.liquidity.form;
-                return of(requestAssetBalance(assetId, signingAccount));
+                return of(requestUserAssetBalance(assetId, signingAccount));
             }
         )
     );
 
-export default combineEpics(prepareBalanceParamsEpic);
+export default combineEpics(prepareRequestUserBalanceEpic);

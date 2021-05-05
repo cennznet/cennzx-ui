@@ -4,17 +4,18 @@ import {existErrors, FormErrors, mergeError} from './index';
 
 function checkFromAssetAmount(props: ExchangeProps, errors: FormErrors): void {
     const {
-        form: {toAssetAmount, fromAssetAmount},
+        form: {toAssetAmount, fromAssetAmount, fromAsset},
+        assetInfo,
     } = props;
     if (existErrors(['PoolBalanceNotEnough', 'FromAssetNotSelected'], errors)) {
         return;
     }
 
     if (!fromAssetAmount) {
-        if (toAssetAmount) {
+        if (toAssetAmount && toAssetAmount.gtn(0)) {
             mergeError(FormSection.fromAssetInput, new FieldNotReady(FormSection.fromAssetInput), errors);
         } else {
-            mergeError(FormSection.fromAssetInput, new FromAssetAmountRequired(), errors);
+            mergeError(FormSection.fromAssetInput, new FromAssetAmountRequired(assetInfo[fromAsset].symbol), errors);
         }
     }
 }

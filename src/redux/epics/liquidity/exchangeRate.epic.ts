@@ -3,34 +3,33 @@ import BN from 'bn.js';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs';
-import {catchError, filter, map, mergeMap, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
-import {LiquidityFormData, IEpicDependency} from '../../../typings';
+import {catchError, filter, map, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
+import {ExchangeFormData, IEpicDependency} from '../../../typings';
 import {Amount, AmountUnit} from '../../../util/Amount';
 import types from '../../actions';
-import {
-    requestExchangeRate,
-    setLiquidityError,
-    SetLiquidityErrorAction,
-    updateExchangeRate,
-    UpdateExchangeRateAction,
-    setAdd1Amount,
-} from '../../actions/ui/liquidity.action';
+import {requestExchangeRate, setLiquidityError, updateExchangeRate} from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
-import {LiquidityState} from '../../reducers/ui/liquidity.reducer';
 
 export const getExchangeRateEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
-): Observable<UpdateExchangeRateAction | SetLiquidityErrorAction> =>
+): Observable<any> =>
     combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.EXCHANGE_RATE_REQUEST))]).pipe(
         withLatestFrom(store$),
         switchMap(([obj, store]) => {
             const api: ApiRx = obj[0];
-            const {exchangeRate} = store.ui.liquidity as LiquidityState;
-            const {coreAsset, assetId, assetAmount, coreAmount} = store.ui.liquidity.form as LiquidityFormData;
-            // ### sellPrice(AssetToSell: `AssetId`, Amount: `Balance`, AssetToPayout: `AssetId`): `u64`
-            return api.rpc.cennzx.sellPrice(assetId, coreAmount, coreAsset).pipe(
+            const {exchangeRate} = store.ui.liquidity;
+            const {assetInfo} = store.global;
+            const totalLiquidity = store.ui.liquidity.totalLiquidity;
+            if (!totalLiquidity || totalLiquidity.isZero()) {
+                return EMPTY;
+            }
+            const {assetId, coreAssetId} = store.ui.liquidity.form;
+            const asset = assetInfo ? assetInfo[assetId] : undefined;
+            const assetDecimal = asset ? asset.decimalPlaces : 0;
+            const amount = new Amount(1, AmountUnit.DISPLAY, assetDecimal);
+            return api.rpc.cennzx.sellPrice(coreAssetId, amount, assetId).pipe(
                 filter(
                     (exchangeRateFromAPI: BN) =>
                         !exchangeRate || !new Amount(exchangeRateFromAPI.toString()).eq(exchangeRate)
@@ -39,11 +38,8 @@ export const getExchangeRateEpic = (
                     const exRate = new Amount(exchangeRateFromAPI.toString(), AmountUnit.UN);
                     return updateExchangeRate(exRate);
                 }),
-                takeUntil(action$.pipe(ofType(types.ui.Liquidity.TRADE_RESET))),
+                takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET))),
                 catchError((err: any) => {
-                    if (err.message === 'Pool balance is low') {
-                        return EMPTY;
-                    }
                     return of(setLiquidityError(err));
                 })
             );
@@ -57,22 +53,9 @@ export const requestExchangeRateEpic = (
 ): Observable<Action<any>> =>
     combineLatest([
         api$,
-        action$.pipe(
-            ofType(
-                types.ui.Liquidity.ADD1_ASSET_AMOUNT_SET,
-                types.ui.Liquidity.ADD2_ASSET_AMOUNT_SET,
-                types.ui.Liquidity.SELECTED_ADD1_ASSET_UPDATE,
-                types.ui.Liquidity.ASSET_SWAP
-            )
-        ),
+        action$.pipe(ofType(types.ui.Liquidity.SELECTED_ASSET1_UPDATE, types.ui.Liquidity.TOTAL_LIQUIDITY_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
-        filter(
-            ([, store]) =>
-                store.ui.liquidity.form.assetId &&
-                store.ui.liquidity.form.coreAssetId &&
-                !!store.ui.liquidity.form.coreAmount
-        ),
         switchMap(
             ([, store]): Observable<Action<any>> => {
                 return of(requestExchangeRate());

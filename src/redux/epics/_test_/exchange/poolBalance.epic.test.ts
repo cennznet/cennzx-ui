@@ -2,6 +2,7 @@ import {StateObservable} from 'redux-observable';
 import {Observable, Subject, EMPTY} from 'rxjs';
 import {ReplaySubject} from 'rxjs';
 import types from '../../../actions';
+import {updateSelectedAccount} from '../../../actions/ui/liquidity.action';
 import {AppState} from '../../../reducers';
 import {getAssetPoolBalanceEpic} from '../../exchange/poolBalance.epic';
 import {TestScheduler} from 'rxjs/testing';
@@ -12,7 +13,6 @@ import {of} from 'rxjs/index';
 import BN from 'bn.js';
 import {BaseError, EmptyPool, NodeConnectionTimeOut} from '../../../../error/error';
 import {throwError} from 'rxjs/internal/observable/throwError';
-import {getAsset} from '../../../../util/assets';
 
 const accounts$ = new ReplaySubject<any>(1);
 const account = [
@@ -23,55 +23,45 @@ const account = [
 ];
 accounts$.next(account);
 
+const globalAssetList = new Array();
+globalAssetList[16000] = {decimalPlaces: 4, symbol: 'CENNZ', id: 16000};
+globalAssetList[16001] = {decimalPlaces: 4, symbol: 'CPAY', id: 16001};
+
 describe('trigger on pool balance epic works', () => {
     const asset = 16000;
     const triggers = [updateSelectedToAsset(asset)];
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const coreAssetId_              = ' -f-';
+                const getPoolAssetBalance       = ' -b-';
                 // prettier-ignore
-                const getPoolAssetBalance       = '  -b-';
+                const getPoolCoreAssetBalance   = ' -d-';
                 // prettier-ignore
-                const getPoolCoreAssetBalance   = '  -d-';
+                const exchangeAddress           = ' -e-';
                 // prettier-ignore
-                const exchangeAddress           = '  -e-';
-                // prettier-ignore
-                const expect_                   = '---c';
+                const expect_                   = '--c';
 
                 const action$ = hot(action_, {
                     a: action,
                 });
 
                 const api$ = of({
-                    cennzx: {
-                        getPoolAssetBalance: () =>
-                            cold(getPoolAssetBalance, {
-                                b: new BN('34220'),
-                            }),
-                        getPoolCoreAssetBalance: () =>
-                            cold(getPoolCoreAssetBalance, {
-                                d: new BN('14220'),
-                            }),
-                    },
-                    query: {
-                        cennzx: {
-                            coreAssetId: () =>
-                                cold(coreAssetId_, {
-                                    f: new BN(16001),
-                                }),
-                        },
-                    },
                     derive: {
                         cennzx: {
+                            poolAssetBalance: () =>
+                                cold(getPoolAssetBalance, {
+                                    b: new BN('34220'),
+                                }),
+                            poolCoreAssetBalance: () =>
+                                cold(getPoolCoreAssetBalance, {
+                                    d: new BN('14220'),
+                                }),
                             exchangeAddress: () =>
                                 cold(exchangeAddress, {
                                     e: '5D35SxvLbdxyQAaQRfRs9XAUR1yqJNqAFmovtQH5AZXh1JAe',
@@ -79,31 +69,20 @@ describe('trigger on pool balance epic works', () => {
                         },
                     },
                 });
-                if (typeof window !== 'undefined') {
-                    window.SingleSource = {
-                        accounts$,
-                        signer: {
-                            sign: async (t, n, e) => {
-                                return 1;
-                            },
-                        },
-                    };
-                }
 
                 const dependencies = ({
                     api$,
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {toAsset: 16000},
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -130,15 +109,11 @@ describe('Return pool balance as empty for core asset', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
                 // prettier-ignore
                 const action_                   = '-a-';
-                // prettier-ignore
-                const coreAssetId_              = ' -f-';
                 // prettier-ignore
                 const expect_                   = '';
 
@@ -146,31 +121,21 @@ describe('Return pool balance as empty for core asset', () => {
                     a: action,
                 });
 
-                const api$ = of({
-                    query: {
-                        cennzx: {
-                            coreAssetId: () =>
-                                cold(coreAssetId_, {
-                                    f: new BN(16001),
-                                }),
-                        },
-                    },
-                });
+                const api$ = EMPTY;
 
                 const dependencies = ({
                     api$,
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {toAsset: 16001},
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -187,56 +152,35 @@ describe('Test when pool balance is empty', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const coreAssetId_              = ' -f-';
+                const getPoolAssetBalance       = ' -b-';
                 // prettier-ignore
-                const getPoolAssetBalance       = '  -b-';
+                const getPoolCoreAssetBalance   = ' -d-';
                 // prettier-ignore
-                const getPoolCoreAssetBalance   = '  -d-';
+                const exchangeAddress           = ' -e-';
                 // prettier-ignore
-                const exchangeAddress           = '  -e-';
-                // prettier-ignore
-                const expect_                   = '---c';
+                const expect_                   = '--c';
 
                 const action$ = hot(action_, {
                     a: action,
                 });
-                if (typeof window !== 'undefined') {
-                    window.config.ASSETS = [
-                        {symbol: 'CENNZ', id: 16000},
-                        {symbol: 'CPAY', id: 16001},
-                        {symbol: 'PLUG', id: 16003},
-                    ];
-                }
 
                 const api$ = of({
-                    cennzx: {
-                        getPoolAssetBalance: () =>
-                            cold(getPoolAssetBalance, {
-                                b: new BN('0'),
-                            }),
-                        getPoolCoreAssetBalance: () =>
-                            cold(getPoolCoreAssetBalance, {
-                                d: new BN('0'),
-                            }),
-                    },
-                    query: {
-                        cennzx: {
-                            coreAssetId: () =>
-                                cold(coreAssetId_, {
-                                    f: new BN(16001),
-                                }),
-                        },
-                    },
                     derive: {
                         cennzx: {
+                            poolAssetBalance: () =>
+                                cold(getPoolAssetBalance, {
+                                    b: new BN('0'),
+                                }),
+                            poolCoreAssetBalance: () =>
+                                cold(getPoolCoreAssetBalance, {
+                                    d: new BN('0'),
+                                }),
                             exchangeAddress: () =>
                                 cold(exchangeAddress, {
                                     e: '5D35SxvLbdxyQAaQRfRs9XAUR1yqJNqAFmovtQH5AZXh1JAe',
@@ -250,20 +194,19 @@ describe('Test when pool balance is empty', () => {
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {toAsset: 16000},
                         },
                     },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
+                    },
                 });
 
                 const output$ = getAssetPoolBalanceEpic(action$, state$, dependencies);
-                const err = new EmptyPool(getAsset(asset));
+                const err = new EmptyPool({symbol: 'CENNZ', id: 16000});
                 expectObservable(output$).toBe(expect_, {
                     c: {
                         error: true,
@@ -282,23 +225,17 @@ describe('Test when api method throws error', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const coreAssetId_              = ' -f-';
+                const getPoolCoreAssetBalance   = '-d-';
                 // prettier-ignore
-                const getPoolAssetBalance       = '  -#-';
+                const exchangeAddress           = '-e-';
                 // prettier-ignore
-                const getPoolCoreAssetBalance   = '  -d-';
-                // prettier-ignore
-                const exchangeAddress           = '  -e-';
-                // prettier-ignore
-                const expect_                   = '--c';
+                const expect_                   = '-c';
 
                 const action$ = hot(action_, {
                     a: action,
@@ -306,23 +243,13 @@ describe('Test when api method throws error', () => {
                 const err = new NodeConnectionTimeOut();
 
                 const api$ = of({
-                    cennzx: {
-                        getPoolAssetBalance: () => throwError(err),
-                        getPoolCoreAssetBalance: () =>
-                            cold(getPoolCoreAssetBalance, {
-                                d: new BN('10'),
-                            }),
-                    },
-                    query: {
-                        cennzx: {
-                            coreAssetId: () =>
-                                cold(coreAssetId_, {
-                                    f: new BN(16001),
-                                }),
-                        },
-                    },
                     derive: {
                         cennzx: {
+                            poolAssetBalance: () => throwError(err),
+                            poolCoreAssetBalance: () =>
+                                cold(getPoolCoreAssetBalance, {
+                                    d: new BN('10'),
+                                }),
                             exchangeAddress: () =>
                                 cold(exchangeAddress, {
                                     e: '5D35SxvLbdxyQAaQRfRs9XAUR1yqJNqAFmovtQH5AZXh1JAe',
@@ -336,15 +263,14 @@ describe('Test when api method throws error', () => {
                 } as unknown) as IEpicDependency;
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
-                    extension: {
-                        extensionDetected: false,
-                        extensionConnected: false,
-                        accounts: [],
-                    },
                     ui: {
                         exchange: {
                             form: {toAsset: 16000},
                         },
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -356,6 +282,50 @@ describe('Test when api method throws error', () => {
                         payload: err,
                     },
                 });
+            });
+        });
+    });
+});
+
+describe('Return empty from get assets pool balance epic when pool id is same as core asset', () => {
+    const triggers = [updateSelectedToAsset(16001)];
+    triggers.forEach(action => {
+        it(action.type, () => {
+            const testScheduler = new TestScheduler((actual, expected) => {
+                expect(actual).toEqual(expected);
+            });
+            testScheduler.run(({hot, cold, expectObservable}) => {
+                // prettier-ignore
+                const action_                   = '-a-';
+                // prettier-ignore
+                const expect_                   = '';
+
+                const action$ = hot(action_, {
+                    a: action,
+                });
+
+                const api$ = of({
+                    rpc: {
+                        cennzx: {},
+                    },
+                });
+
+                const dependencies = ({
+                    api$,
+                } as unknown) as IEpicDependency;
+
+                const state$: Observable<AppState> = new StateObservable(new Subject(), {
+                    ui: {
+                        exchange: {},
+                    },
+                    global: {
+                        coreAssetId: 16001,
+                        assetInfo: globalAssetList,
+                    },
+                });
+
+                const output$ = getAssetPoolBalanceEpic(action$, state$, dependencies);
+                expectObservable(output$).toBe(expect_);
             });
         });
     });

@@ -1,34 +1,22 @@
 import {FeeRate} from '@cennznet/types/interfaces/cennzx';
-import BN from 'bn.js';
+import {faExchangeAlt} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Button} from 'centrality-react-core';
 import AccountPicker from 'components/AccountPicker';
+import AdvancedSetting from 'components/AdvancedSetting';
 import AssetInputForAdd from 'components/AssetInputForAdd';
+import ErrorMessage from 'components/Error/ErrorMessageForLiquidity';
 import Nav from 'components/Nav';
 import Page from 'components/Page';
 import PageInside from 'components/PageInside';
-import ErrorMessage from 'components/Error/ErrorMessageForLiquidity';
-import React, {FC, useState, useEffect} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
-import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
+import {BaseError, FormErrorTypes} from '../../error/error';
+import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {LiquidityState} from '../../redux/reducers/ui/liquidity.reducer';
-import {AmountParams, Asset, LiquidityFormData, IFee, IOption} from '../../typings';
-import ReactSlider from 'react-slider';
-import {faExchangeAlt} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {AmountParams, Asset, IFee, IOption, IUserShareInPool, LiquidityFormData} from '../../typings';
 import {Amount} from '../../util/Amount';
 import getFormErrors from './validation';
-import Select from 'components/Select';
-import TextInput from 'components/TextInput';
-import AdvancedSetting from 'components/AdvancedSetting';
-import keyring from '@polkadot/ui-keyring';
-import liquidity from '.';
-import {add, values} from 'ramda';
-import Toggle from 'components/Toggle';
-import {Icon} from 'semantic-ui-react';
-import ExchangeIconClass from 'components/ExchangeIcon';
-
-export const DECIMALS = 4;
 
 const Line = styled.div`
     border-bottom: 1px solid rgba(17, 48, 255, 0.3);
@@ -37,42 +25,15 @@ const Line = styled.div`
     margin-bottom: 20px;
 `;
 
-const AddIcon = styled.span`
-    color: #1130ff;
-    font-size: 20px;
-    font-weight: 700;
-    margin-top: auto;
-    margin-right: 2px;
-    margin-left: 2px;
-    margin-bottom: auto;
-`;
-
-const Bottom = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-
-    h3 {
-        font-size: 14px;
-        text-align: center;
-        color: #4e5458;
-    }
-`;
-
 const Flex = styled.div`
     align-items: center;
     display: inline-flex;
 `;
 
-const Flex2 = styled.div`
+export const Flex2 = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 1rem;
-`;
-
-const FullWidthContainer = styled.div`
-    width: 100%;
 `;
 
 const Buttons = styled.div`
@@ -82,6 +43,7 @@ const Buttons = styled.div`
     justify-content: center;
 
     button {
+        width: 7em;
         border: 2px solid #1130ff;
         color: #1130ff;
         border-radius: 3px;
@@ -107,12 +69,6 @@ const Buttons = styled.div`
             border: 2px solid #ebeced;
         }
     }
-`;
-
-const SectionColumn = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin-top: 20px;
 `;
 
 const SwapButton = styled(Button)`
@@ -143,73 +99,35 @@ const LabelDetail = styled.p`
 const Summary = styled.p`
     font-weight: normal;
     font-size: 14px;
-    line-height: 21px;
+    line-height: 24px;
     color: #7f878d;
     background: #f8f9f9;
-    padding: 20px;
+    text-align: left;
+    padding: 1em 0 1em 2em;
+    margin-top: 2em;
 `;
 export interface FontAwesomeIconProps {
     // can't pass in boolean, it complains, so use string as boolean
     spinner: string;
 }
-const SliderContainer = styled.div<FontAwesomeIconProps>`
-    margin: 20px 0 50px;
-    position: relative;
-    z-index: 0;
-    > div {
-        height: 2px;
-        background: ${props => (props.spinner === 'true' ? '#1130ff' : '#7f878d')};
-    }
-    .example-mark {
-        position: absolute;
-        background: ${props => (props.spinner === 'true' ? '#1130ff' : '#7f878d')};
-        top: -3px;
-        width: 8px;
-        height: 8px;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    .point {
-        width: 10px;
-        height: 10px;
-        border-radius: 7px;
-        border: 2px solid ${props => (props.spinner === 'true' ? '#1130ff' : '#7f878d')};
-        background: #fff;
-        cursor: pointer;
-        position: absolute;
-        top: -5px;
-    }
-    .tooltip {
-        margin-top: 15px;
-        margin-left: -20px;
-        background: #ffffff;
-        width: 50px;
-        border: 1px solid ${props => (props.spinner === 'true' ? '#1130ff' : '#7f878d')};
-        border-radius: 3px;
-        color: ${props => (props.spinner === 'true' ? '#1130ff' : '#7f878d')};
-        padding: 5px 0;
-        text-align: center;
-    }
-`;
 
 const SwapIcon = styled(FontAwesomeIcon)`
     font-size: 16px;
 `;
 
-const ESTIMATED_LABEL = '(estimated)';
-
 export enum FormSection {
     account = 'account',
     assetAmount = 'assetAmount',
     assetInput = 'assetInput',
+    coreInput = 'coreInput',
     coreAmount = 'coreAmount',
     form = 'generalError',
 }
 
 // The liquidity action to take
 export enum LiquidityAction {
-    ADD = 'add',
-    REMOVE = 'remove',
+    ADD = 'Add',
+    REMOVE = 'Withdraw',
 }
 
 export type LiquidityDispatchProps = {
@@ -221,7 +139,7 @@ export type LiquidityDispatchProps = {
     handleReset(): void;
     handleExtrinsicChange(type: string): void;
     handleLiquidityAction(type: LiquidityAction): void;
-    openTxDialog(form: LiquidityFormData, estimatedFee: IFee): void;
+    openTxDialog(form: LiquidityFormData, estimatedFee: IFee, assetInfo: AssetDetails[]): void;
 };
 
 export type LiquidityProps = {
@@ -241,6 +159,8 @@ export type LiquidityProps = {
     coreAssetId: number;
     fee: any;
     feeRate: FeeRate;
+    userShareInPool: IUserShareInPool;
+    assetInfo: AssetDetails[];
 } & LiquidityState;
 
 const getAssetName = (options, id) => {
@@ -249,16 +169,64 @@ const getAssetName = (options, id) => {
     return name && name.symbol;
 };
 
-const selectOption = [
-    {
-        label: 'Add liquidity',
-        value: LiquidityAction.ADD,
-    },
-    {
-        label: 'Withdraw liquidity',
-        value: LiquidityAction.REMOVE,
-    },
-];
+function poolSummary(
+    assetPool: string,
+    corePool: string,
+    userAssetShareInPool,
+    assetName,
+    userCoreShareInPool,
+    coreName,
+    exchangeRateMsg: string,
+    fee
+) {
+    return (
+        <>
+            {assetPool && corePool ? (
+                <Summary>
+                    Your liquidity: {userAssetShareInPool} {assetName} + {userCoreShareInPool} {coreName}
+                    <br />
+                    Pool liquidity: {assetPool} {assetName} + {corePool} {coreName}
+                    <br />
+                    {exchangeRateMsg}
+                    {fee && (
+                        <>
+                            <br />
+                            {`Transaction fee (estimated) : ${fee}`}
+                        </>
+                    )}
+                </Summary>
+            ) : null}
+        </>
+    );
+}
+
+function getBalance(accountAssetBalance: Amount, assetInfo: AssetDetails[], assetId: number) {
+    return (
+        accountAssetBalance && assetInfo.length > 0 && accountAssetBalance.asString(assetInfo[assetId].decimalPlaces)
+    );
+}
+
+function getFormattedPoolBalance(assetReserve: Amount, assetInfo: AssetDetails[], assetId: number) {
+    return assetReserve && assetInfo.length > 0 && assetId && assetReserve.asString(assetInfo[assetId].decimalPlaces);
+}
+
+function isAssetBoxDisabled(
+    liquidityAction: LiquidityAction,
+    userShareInPool: Amount,
+    assetId: number,
+    accountBalance: Amount
+) {
+    if (liquidityAction === LiquidityAction.REMOVE && userShareInPool && assetId) {
+        return userShareInPool.isZero();
+    } else if (liquidityAction === LiquidityAction.ADD && accountBalance && assetId) {
+        return accountBalance.isZero();
+    }
+    return false;
+}
+
+export function getDecimalPlaces(assetId: number, assetInfo: AssetDetails[]) {
+    return assetId && assetInfo.length > 0 ? assetInfo[assetId].decimalPlaces : undefined;
+}
 
 export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const {
@@ -269,10 +237,11 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         assetReserve,
         coreAssetId,
         coreReserve,
-        error,
         exchangeRateMsg,
         fee,
         txFee,
+        userShareInPool,
+        assetInfo,
     } = props;
 
     const {assetId, assetAmount, buffer, coreAmount, extrinsic, feeAssetId, signingAccount, type} = props.form;
@@ -289,17 +258,6 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         sliderP: 0,
     };
 
-    const addresses = keyring.getAccounts();
-    const accountList = addresses.map(value => {
-        const name = value.meta.name ? value.meta.name : value.address;
-        const address = value.address;
-        const labelValue = `${name}: ${address}`;
-        return {
-            label: labelValue,
-            value: address,
-        };
-    });
-
     const [state, setState] = useState(initState);
     useEffect((): void => {
         if (!type) {
@@ -308,15 +266,43 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         }
     }, []);
 
-    const assetBalance = accountAssetBalance && accountAssetBalance.asString(DECIMALS);
+    // pre populate the asset drop down
+    useEffect((): void => {
+        if (assets.length) {
+            props.handleAssetIdChange(assets[0].id, props.form as LiquidityFormData, props.error);
+        }
+    }, [assets]);
+
+    const assetBalance = getBalance(accountAssetBalance, assetInfo, assetId);
     const assetName = getAssetName(assets, assetId);
-    const assetPool = assetReserve && assetReserve.asString && assetReserve.asString(DECIMALS);
+    const assetPool = getFormattedPoolBalance(assetReserve, assetInfo, assetId);
 
-    const coreBalance = accountCoreBalance && accountCoreBalance.asString(DECIMALS);
+    const coreBalance = getBalance(accountCoreBalance, assetInfo, coreAssetId);
+
     const coreName = getAssetName(assets, coreAssetId);
-    const corePool = coreReserve && coreReserve.asString && coreReserve.asString(DECIMALS);
+    const corePool = getFormattedPoolBalance(coreReserve, assetInfo, coreAssetId);
 
-    const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
+    const [userAssetShareInPool, userCoreShareInPool] = userShareInPool
+        ? [userShareInPool.assetBalance, userShareInPool.coreAssetBalance]
+        : [new Amount(0), new Amount(0)];
+
+    const formErrors =
+        state.touched || !signingAccount || !assetAmount || !coreAmount
+            ? getFormErrors(props)
+            : new Map<FormSection, FormErrorTypes[]>();
+
+    const disabledAssetTextBox = isAssetBoxDisabled(
+        state.liquidityAction,
+        userAssetShareInPool,
+        assetId,
+        accountAssetBalance
+    );
+    const disabledCoreTextBox = isAssetBoxDisabled(
+        state.liquidityAction,
+        userCoreShareInPool,
+        assetId,
+        accountCoreBalance
+    );
 
     return (
         <Page id={'page'}>
@@ -326,7 +312,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     <AccountPicker
                         title="Choose account"
                         selected={signingAccount}
-                        options={accountList}
+                        options={accounts}
                         onChange={(picked: {label: string; value: string}) => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({
@@ -335,15 +321,17 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                                 assetDialogOpen: state.assetDialogOpen,
                             });
                         }}
-                        message=""
+                        message={signingAccount ? `Public Address: ${signingAccount}` : ''}
                     />
-                    <ErrorMessage errors={formErrors} field={FormSection.account} />
+                    <Flex2>
+                        <ErrorMessage errors={formErrors} field={FormSection.account} />
+                    </Flex2>
                     <Line />
                     <Flex>
                         <SwapButton
                             onClick={() => {
                                 // just flip the action
-                                let action =
+                                const action =
                                     state.liquidityAction === LiquidityAction.REMOVE
                                         ? LiquidityAction.ADD
                                         : LiquidityAction.REMOVE;
@@ -356,14 +344,33 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                         >
                             <SwapIcon icon={faExchangeAlt} />
                         </SwapButton>
-                        <Label>
-                            {state.liquidityAction === LiquidityAction.REMOVE ? 'Withdraw liquidity' : 'Add liquidity'}
-                        </Label>
+                        <Label>{`${state.liquidityAction} liquidity`}</Label>
                     </Flex>
+                    <div>
+                        {state.liquidityAction === LiquidityAction.ADD
+                            ? coreName && (
+                                  <LabelDetail>
+                                      To keep the liquidity pool functional, deposits require an equal value of{' '}
+                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
+                                  </LabelDetail>
+                              )
+                            : coreName && (
+                                  <LabelDetail>
+                                      To keep the liquidity pool functional, withdrawals will return an equal value of{' '}
+                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
+                                  </LabelDetail>
+                              )}
+                    </div>
                     <Flex2>
                         <AssetInputForAdd
-                            max={accountAssetBalance}
+                            max={
+                                state.liquidityAction === LiquidityAction.REMOVE
+                                    ? userAssetShareInPool
+                                    : accountAssetBalance
+                            }
+                            disableAmount={disabledAssetTextBox}
                             value={{amount: assetAmount, assetId}}
+                            decimalPlaces={getDecimalPlaces(assetId, assetInfo)}
                             options={assets.filter(a => a.id !== coreAssetId)}
                             onChange={(amountParams: AmountParams) => {
                                 if (amountParams.amountChange) {
@@ -384,13 +391,22 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             }}
                             title=""
                             secondaryTitle={null}
-                            message={`Balance: ${assetBalance || 0}`}
-                            errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetInput} />}
+                            message={
+                                state.liquidityAction === LiquidityAction.REMOVE
+                                    ? `Withdrawable: ${userAssetShareInPool.asString()}`
+                                    : `Balance: ${assetBalance || 0}`
+                            }
+                            errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetAmount} />}
                         />
-                        <AddIcon></AddIcon>
                         <AssetInputForAdd
-                            max={accountCoreBalance}
+                            max={
+                                state.liquidityAction === LiquidityAction.REMOVE
+                                    ? userCoreShareInPool
+                                    : accountCoreBalance
+                            }
+                            disableAmount={disabledCoreTextBox}
                             value={{amount: coreAmount, assetId: coreAssetId}}
+                            decimalPlaces={getDecimalPlaces(coreAssetId, assetInfo)}
                             options={assets.filter(a => a.id === coreAssetId)}
                             onChange={amountParams => {
                                 if (amountParams.amountChange) {
@@ -405,97 +421,35 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             }}
                             title=""
                             secondaryTitle={null}
-                            message={`Balance: ${coreBalance || 0}`}
+                            message={
+                                state.liquidityAction === LiquidityAction.REMOVE
+                                    ? `Withdrawable: ${userCoreShareInPool.asString()}`
+                                    : `Balance: ${coreBalance || 0}`
+                            }
+                            errorBox={<ErrorMessage errors={formErrors} field={FormSection.coreAmount} />}
                         />
                     </Flex2>
-                    <div>
-                        {state.liquidityAction === LiquidityAction.ADD
-                            ? coreName && (
-                                  <LabelDetail>
-                                      To keep the liquidity pool functional, deposits require an equal value of{' '}
-                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
-                                  </LabelDetail>
-                              )
-                            : coreName && (
-                                  <LabelDetail>
-                                      To keep the liquidity pool functional, withdrawals will return an equal value of{' '}
-                                      {assetName || ' your token'} and {coreName} at the current exchange rate.
-                                  </LabelDetail>
-                              )}
-                    </div>
-                    {/* {state.liquidityAction === LiquidityAction.REMOVE && coreAssetId && assetId && (
-                        <SliderContainer spinner={state.slider.toString()}>
-                            <ReactSlider
-                                className="horizontal-slider"
-                                marks={[0, 25, 50, 75, 101]}
-                                markClassName="example-mark"
-                                min={0}
-                                max={100}
-                                thumbClassName="example-thumb"
-                                trackClassName="example-track"
-                                onChange={value => {
-                                    const percent = value / 100;
-
-                                    let value1 = +assetPool * percent;
-                                    value1 = Math.round(value1 * 10000) / 10000 + '';
-
-                                    let value2 = Number(coreReserve.asString(DECIMALS)) * percent;
-                                    value2 = Math.round(value2 * 10000) / 10000 + '';
-                                    const setNewAmount1 = setNewAmount(value1, assetAmount, assetId);
-                                    const setNewAmount2 = setNewAmount(value2, coreAmount, coreAssetId);
-                                    props.handleAssetAmountChange(setNewAmount1.amount);
-                                    props.handleCoreAmountChange(setNewAmount2.amount);
-
-                                    setState({
-                                        ...state,
-                                        slider: true,
-                                        sliderP: percent,
-                                    });
-                                }}
-                                renderThumb={(props, state) => (
-                                    <div {...props} className="point">
-                                        <div className="tooltip">{state.valueNow}%</div>
-                                    </div>
-                                )}
-                            />
-                        </SliderContainer>
-                    )} */}
-                    {assetPool &&
-                        corePool &&
-                        (state.liquidityAction === LiquidityAction.ADD ? (
-                            <Summary>
-                                Your pool share: {assetPool} {assetName} + {corePool} {coreName}
-                                <br />
-                                `Current pool size: ${assetPool} ${assetName} + ${corePool} ${coreName}`
-                                <br />
-                                {exchangeRateMsg}
-                                <br />
-                                {fee && `Transaction fee (estimated) : ${fee}`}
-                            </Summary>
-                        ) : (
-                            <Summary>
-                                {assetAmount &&
-                                    coreAmount &&
-                                    `Your pool share (${state.sliderP * 100}%): ${assetAmount.asString(
-                                        DECIMALS
-                                    )} ${assetName} + ${coreAmount.asString(DECIMALS)} ${coreName}`}
-                                <br />
-                                Current pool size: {assetPool} {assetName} + {corePool} {coreName}
-                                <br />
-                                {exchangeRateMsg}
-                                <br />
-                                {fee && `Transaction fee (estimated) : ${fee}`}
-                            </Summary>
-                        ))}
+                    {poolSummary(
+                        assetPool,
+                        corePool,
+                        userAssetShareInPool.asString(),
+                        assetName,
+                        userCoreShareInPool.asString(),
+                        coreName,
+                        exchangeRateMsg,
+                        fee
+                    )}
                 </PageInside>
                 <Buttons id="buttons">
                     <Button
                         flat
                         primary
-                        // disabled={formErrors.size > 0 || !txFee}
-                        onClick={() => props.openTxDialog(props.form as LiquidityFormData, props.txFee)}
+                        disabled={formErrors.size > 0 || !signingAccount}
+                        onClick={() =>
+                            props.openTxDialog(props.form as LiquidityFormData, props.txFee, props.assetInfo)
+                        }
                     >
-                        {state.liquidityAction === LiquidityAction.ADD ? 'Add' : 'Withdraw'}
+                        {state.liquidityAction}
                     </Button>
                 </Buttons>
                 <AdvancedSetting
@@ -522,6 +476,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     buffer={buffer}
                     selectOptions={assets}
                     selectValue={feeAssetId}
+                    assetInfo={assetInfo}
                 />
             </form>
         </Page>

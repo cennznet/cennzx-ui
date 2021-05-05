@@ -1,9 +1,9 @@
-import {FeeRate} from '@cennznet/types/runtime/cennzX';
-import AssetDropDown from 'components/AssetDropDown';
+import {FeeRate} from '@cennznet/types';
 import BN from 'bn.js';
 import {Button} from 'centrality-react-core';
 import AccountPicker from 'components/AccountPicker';
-import AssetInput from 'components/AssetInput';
+import AdvancedSetting from 'components/AdvancedSetting';
+import AssetInputForAdd from 'components/AssetInputForAdd';
 import ErrorMessage from 'components/Error/ErrorMessage';
 import ExchangeIcon from 'components/ExchangeIcon';
 import Nav from 'components/Nav';
@@ -12,17 +12,12 @@ import PageInside from 'components/PageInside';
 import React, {FC, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
+import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
-import {AmountParams, Asset, ExchangeFormData, IFee, IOption} from '../../typings';
+import {AmountParams, Asset, ExchangeFormData, IFee, IOption, LiquidityFormData} from '../../typings';
 import {Amount} from '../../util/Amount';
+import {Flex2, getDecimalPlaces} from '../liquidity/liquidity';
 import getFormErrors from './validation';
-import Select from 'components/Select';
-import TextInput from 'components/TextInput';
-import AdvancedSetting from 'components/AdvancedSetting';
-import {getAsset} from '../../util/assets';
-import keyring from '@polkadot/ui-keyring';
-import {propSatisfies} from 'ramda';
-export const DECIMALS = 4;
 const SWAP_OUTPUT = 'buyAsset';
 const SWAP_INPUT = 'sellAsset';
 
@@ -30,6 +25,7 @@ const Line = styled.div`
     border-bottom: 1px solid rgba(17, 48, 255, 0.3);
     height: 1px;
     margin-top: 20px;
+    margin-bottom: 20px;
 `;
 
 const Bottom = styled.div`
@@ -120,6 +116,7 @@ export type ExchangeProps = {
      * TODO: merge this with userAssetBalance
      */
     fromAssetBalance: Amount;
+    toAssetBalance: Amount;
     assets: Asset[];
     // TODO: merge this with exchangePool
     outputReserve: Amount;
@@ -127,21 +124,22 @@ export type ExchangeProps = {
     txFeeMsg: string;
     coreAssetId: number;
     feeRate: FeeRate;
+    assetInfo: AssetDetails[];
 } & ExchangeState;
 
 export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
     const [state, setState] = useState({touched: false, assetDialogOpen: false});
-    const {accounts, assets, fromAssetBalance, error, outputReserve, txFee, coreAssetId} = props;
-    const addresses = keyring.getAccounts();
-    const accountList = addresses.map(value => {
-        const name = value.meta.name ? value.meta.name : value.address;
-        const address = value.address;
-        const labelValue = `${name}: ${address}`;
-        return {
-            label: labelValue,
-            value: address,
-        };
-    });
+    const {
+        accounts,
+        assets,
+        fromAssetBalance,
+        toAssetBalance,
+        error,
+        outputReserve,
+        txFee,
+        coreAssetId,
+        assetInfo,
+    } = props;
     const {
         toAsset,
         toAssetAmount,
@@ -152,24 +150,24 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
         feeAssetId,
         buffer,
     } = props.form;
+
+    // pre populate the asset drop down
+    useEffect((): void => {
+        if (assets.length) {
+            props.handleBuyAssetIdChange(assets[0].id, props.form as ExchangeFormData, props.error);
+            props.handleWithAssetIdChange(assets[1].id, props.form as ExchangeFormData, props.error);
+        }
+    }, [assets]);
+
     const assetForEmptyPool = error.find(err => err instanceof EmptyPool);
     const formErrors = state.touched ? getFormErrors(props) : new Map<FormSection, FormErrorTypes[]>();
-    let fee;
-    let assetSymbol;
-    if (coreAssetId && coreAssetId.eqn) {
-        assetSymbol = getAsset(feeAssetId).symbol;
-        if (coreAssetId.eqn(feeAssetId) && txFee) {
-            // If fee asset is CPAY use cpayFee
-            fee = txFee.feeInCpay.asString(DECIMALS);
-        } else if (txFee && txFee.feeInFeeAsset) {
-            fee = txFee.feeInFeeAsset.asString(DECIMALS);
-            // return (
-            //     <>
-            //         Your estimated fee for this transaction is {fee} {assetSymbol}{' '}
-            //         (converted to ${txFee.feeInCpay.asString(DECIMALS)} CPAY)
-            //     </>
-            // );
-        }
+    let maxBuy;
+    if (outputReserve && toAssetBalance) {
+        // Take minimum of user and pool balance for max Buy amount.
+        maxBuy = new Amount(BN.min(new BN(outputReserve), new BN(toAssetBalance)));
+    } else if (outputReserve) {
+        // when no user is selected use 0 as max..
+        maxBuy = new Amount(0);
     }
 
     return (
@@ -180,19 +178,22 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     <AccountPicker
                         title="Choose account"
                         selected={signingAccount}
-                        options={accountList}
+                        options={accounts}
                         onChange={(picked: {label: string; value: string}) => {
                             props.handleSelectedAccountChange(picked.value);
                             setState({touched: true, assetDialogOpen: state.assetDialogOpen});
                         }}
-                        message=""
+                        message={signingAccount ? `Public Address: ${signingAccount}` : ''}
                     />
-                    <ErrorMessage errors={formErrors} field={FormSection.account} />
+                    <Flex2>
+                        <ErrorMessage errors={formErrors} field={FormSection.account} />
+                    </Flex2>
                     <Line />
-                    <AssetInput
+                    <AssetInputForAdd
                         disableAmount={!!assetForEmptyPool}
-                        max={outputReserve}
+                        max={maxBuy}
                         value={{amount: toAssetAmount, assetId: toAsset}}
+                        decimalPlaces={getDecimalPlaces(toAsset, assetInfo)}
                         options={assets}
                         onChange={(amountParams: AmountParams) => {
                             if (amountParams.amountChange) {
@@ -209,20 +210,22 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         title="Buy"
                         secondaryTitle={extrinsic === SWAP_INPUT ? ESTIMATED_LABEL : null}
                         message={props.exchangeRateMsg}
+                        errorBox={<ErrorMessage errors={formErrors} field={FormSection.toAssetInput} />}
                     />
-                    <ErrorMessage errors={formErrors} field={FormSection.toAssetInput} />
+                    <div>
+                        <ExchangeIcon
+                            onClick={() => {
+                                props.handleSwap();
+                                setState({touched: state.touched, assetDialogOpen: state.assetDialogOpen});
+                            }}
+                        />
+                    </div>
 
-                    <ExchangeIcon
-                        onClick={() => {
-                            props.handleSwap();
-                            setState({touched: state.touched, assetDialogOpen: state.assetDialogOpen});
-                        }}
-                    />
-
-                    <AssetInput
+                    <AssetInputForAdd
                         disableAmount={!!assetForEmptyPool}
                         max={fromAssetBalance}
                         value={{amount: fromAssetAmount, assetId: fromAsset}}
+                        decimalPlaces={getDecimalPlaces(fromAsset, assetInfo)}
                         options={assets}
                         onChange={amountParams => {
                             if (amountParams.amountChange) {
@@ -238,9 +241,31 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         }}
                         title="With"
                         secondaryTitle={extrinsic === SWAP_OUTPUT ? ESTIMATED_LABEL : null}
-                        message={fromAssetBalance ? `Balance: ${fromAssetBalance.asString(DECIMALS)}` : ''}
+                        message={
+                            fromAssetBalance
+                                ? `Balance: ${fromAssetBalance.asString(assetInfo[fromAsset].decimalPlaces)}`
+                                : ''
+                        }
+                        errorBox={<ErrorMessage errors={formErrors} field={FormSection.fromAssetInput} />}
                     />
-                    <ErrorMessage errors={formErrors} field={FormSection.fromAssetInput} />
+                </PageInside>
+                <PageInside>
+                    <SectionColumn>
+                        <Bottom id="bottom">
+                            <FullWidthContainer>
+                                <Buttons id="buttons">
+                                    <Button
+                                        flat
+                                        primary
+                                        disabled={formErrors.size > 0 || !txFee}
+                                        onClick={() => props.openTxDialog(props.form as ExchangeFormData, props.txFee)}
+                                    >
+                                        Exchange
+                                    </Button>
+                                </Buttons>
+                            </FullWidthContainer>
+                        </Bottom>
+                    </SectionColumn>
                 </PageInside>
                 <AdvancedSetting
                     show={!!(toAsset && fromAsset)}
@@ -269,38 +294,8 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     buffer={buffer}
                     selectOptions={assets}
                     selectValue={feeAssetId}
+                    assetInfo={assetInfo}
                 />
-                <PageInside>
-                    <SectionColumn>
-                        <Bottom id="bottom">
-                            <FullWidthContainer>
-                                <Buttons id="buttons">
-                                    <Button
-                                        flat
-                                        primary
-                                        onClick={() => {
-                                            props.handleReset();
-                                            setState({
-                                                touched: false,
-                                                assetDialogOpen: state.assetDialogOpen,
-                                            });
-                                        }}
-                                    >
-                                        Clear From
-                                    </Button>
-                                    <Button
-                                        flat
-                                        primary
-                                        // disabled={formErrors.size > 0 || !txFee}
-                                        onClick={() => props.openTxDialog(props.form as ExchangeFormData, props.txFee)}
-                                    >
-                                        Exchange
-                                    </Button>
-                                </Buttons>
-                            </FullWidthContainer>
-                        </Bottom>
-                    </SectionColumn>
-                </PageInside>
             </form>
         </Page>
     );

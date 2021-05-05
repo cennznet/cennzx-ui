@@ -10,7 +10,6 @@ import types from '../../actions';
 import {setLiquidityError, updateTransactionFee} from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
 
-const DECIMALS = 5;
 export const calculateTxFeeEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
@@ -36,19 +35,10 @@ export const calculateTxFeeEpic = (
                 if (extrinsic === 'addLiquidity') {
                     const min_liquidity = new Amount(assetAmount.muln(1 - buffer));
                     const max_asset_amount = new Amount(assetAmount.muln(1 + buffer));
-                    // ### addLiquidity(asset_id: `Compact<AssetId>`, min_liquidity: `Compact<BalanceOf>`,
-                    // max_asset_amount: `Compact<BalanceOf>`, core_amount: `Compact<BalanceOf>`)
-                    // .addLiquidity(CENNZ, minLiquidity, amount, coreAmount)
-
-                    // {"asset_id":"Compact<AssetId>","min_liquidity":"Compact<BalanceOf>","max_asset_amount":"Compact<BalanceOf>","core_amount":"Compact<BalanceOf>"}:: Struct: failed on min_liquidity: Compact<BalanceOf>:: Balance: Negative number passed to unsigned type
-
                     tx = api.tx.cennzx.addLiquidity(assetId, min_liquidity, max_asset_amount, coreAmount);
                 } else {
                     const min_asset_withdraw = new Amount(assetAmount.muln(1 - buffer));
                     const min_core_withdraw = new Amount(coreAmount.muln(1 - buffer));
-                    // ### removeLiquidity(asset_id: `Compact<AssetId>`, liquidity_to_withdraw: `Compact<BalanceOf>`,
-                    // min_asset_withdraw: `Compact<BalanceOf>`, min_core_withdraw: `Compact<BalanceOf>`)
-                    // .removeLiquidity(assetA, removeLiquidity, minAssetWithdraw, minCoreWithdraw)
                     tx = api.tx.cennzx.removeLiquidity(assetId, assetAmount, min_asset_withdraw, min_core_withdraw);
                 }
                 return observableEstimatedFee(tx, signingAccount, feeAssetId, api).pipe(
@@ -67,7 +57,7 @@ export const calculateTxFeeEpic = (
                         }
                         return EMPTY;
                     }),
-                    takeUntil(action$.pipe(ofType(types.ui.Liquidity.TRADE_RESET))),
+                    takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET))),
                     catchError((err: any) => {
                         if (err.message === 'Pool balance is low') {
                             // In case if the fee asset pool balance is low, then converting the fee from CPAY to feeAsset will result in 'Pool balance is low'

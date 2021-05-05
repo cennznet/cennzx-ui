@@ -1,27 +1,23 @@
-import AssetDropDown from 'components/AssetDropDown';
-import ErrorBox from 'components/Error/ErrorBox';
-import PageInside from 'components/PageInside';
-import TextInput from 'components/TextInput';
-import {TxSummaryProps} from 'components/TxSummary/TxSummary';
-import TxSummaryEstimatedTxFeeForBody from 'components/TxSummary/TxSummaryEstimatedTxFeeForBody';
-import {Asset} from '../../typings';
-import {Amount} from '../../util/Amount';
-import {DECIMALS, FormSection} from '../../pages/exchange/exchange';
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {FormErrors as ExchangeFormErrors} from './../../pages/exchange/validation';
-import {FormErrors as LiquidityFormErrors} from './../../pages/liquidity/validation';
-import {getAsset} from '../../util/assets';
-import {SummaryBuy} from './SummaryBuy';
-import SummaryFee from './SummaryFee';
+import AssetDropDown from 'components/AssetDropDown';
+import ErrorBox from 'components/Error/ErrorBox';
+import InputBox from 'components/InputBox';
+import PageInside from 'components/PageInside';
 import React, {FC, useState} from 'react';
 import styled from 'styled-components';
+import {FormSection} from '../../pages/exchange/exchange';
+import {AssetDetails} from '../../redux/reducers/global.reducer';
+import {Asset, IFee} from '../../typings';
+import {Amount} from '../../util/Amount';
+import {FormErrors as ExchangeFormErrors} from './../../pages/exchange/validation';
+import {FormErrors as LiquidityFormErrors} from './../../pages/liquidity/validation';
+import {SummaryBuy} from './SummaryBuy';
+import SummaryFee from './SummaryFee';
 
 const Container = styled.div`
-    padding: 5%;
     background: #f8f9f9;
-    margin-top: 20px;
-    padding: 5px 5%;
+    margin-top: 2em;
 `;
 const SummaryBody = styled.div`
     margin: 20px 0;
@@ -30,7 +26,7 @@ const SummaryBody = styled.div`
 `;
 
 const Inside = styled.div`
-    padding: 25px 0;
+    padding: 24px 0;
 `;
 
 const Title = styled.div`
@@ -78,10 +74,22 @@ const P = styled.p`
     font-size: 14px;
 `;
 
+export interface TxSummaryProps {
+    toAssetAmount: Amount;
+    fromAssetAmount: Amount;
+    toAsset: number;
+    fromAsset: number;
+    buffer: number;
+    txFee: IFee;
+    feeAssetId: number;
+    coreAssetId: number;
+    extrinsic: string;
+}
+
 type SummaryOrErrorProps = {
-    formErrors: LiquidityFormErrors & ExchangeFormErrors;
+    formErrors: LiquidityFormErrors | ExchangeFormErrors;
     summaryProps?: TxSummaryProps;
-    onAssetChange: (assetId: number) => void;
+    onAssetChange?: (assetId: number) => void;
     onBufferChange: (buffer: number) => void;
     assets: Asset[];
     show: boolean;
@@ -92,6 +100,7 @@ type SummaryOrErrorProps = {
     buffer: number;
     selectOptions: Asset[];
     selectValue: number;
+    assetInfo: AssetDetails[];
 };
 
 const AdvancedSetting: FC<SummaryOrErrorProps> = ({
@@ -107,6 +116,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
     spinner,
     selectOptions,
     selectValue,
+    assetInfo,
 }) => {
     const {
         toAssetAmount,
@@ -135,12 +145,13 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                         </Title>
                         {state.spinner && (
                             <>
-                                <TextInput
+                                <InputBox
+                                    type={'number'}
                                     title={'Slippage'}
                                     placeholder={'Maximum slippage percent'}
-                                    value={buffer}
+                                    value={buffer * 100}
                                     onChange={e => {
-                                        onBufferChange(Number(e.target.value));
+                                        onBufferChange(Number(e.target.value / 100));
                                     }}
                                     multiple={'%'}
                                 />
@@ -153,6 +164,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                         buffer={buffer}
                                         method={extrinsic}
                                         recipientAddress={recipientAddress}
+                                        assetInfo={assetInfo}
                                     />
                                 </P>
                                 {/* <Top>
@@ -170,7 +182,12 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                     showBorder={true}
                                 /> */}
                                 <SummaryBody>
-                                    <SummaryFee txFee={txFee} coreAssetId={coreAssetId} feeAssetId={feeAssetId} />
+                                    <SummaryFee
+                                        txFee={txFee}
+                                        coreAssetId={coreAssetId}
+                                        feeAssetId={feeAssetId}
+                                        assetInfo={assetInfo}
+                                    />
                                 </SummaryBody>
                             </>
                         )}
@@ -182,7 +199,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                     <ErrorBox center={true} errors={formErrors.get(FormSection.form)} />
                 </>
             )}
-            {formErrors.size > 0 && <ErrorBox center={true}>Enter all values to continue</ErrorBox>}
+            {formErrors.size > 0 && <ErrorBox center={true}></ErrorBox>}
         </Container>
     );
 };

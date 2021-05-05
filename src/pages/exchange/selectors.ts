@@ -3,8 +3,6 @@ import {createSelector} from 'reselect';
 import {AppState} from '../../redux/reducers';
 import {Asset, IAssetBalance, IExchangePool} from '../../typings';
 import {Amount} from '../../util/Amount';
-import {DECIMALS} from './exchange';
-import {getAsset} from '../../util/assets';
 
 const getBuffer = (state: AppState) => state.ui.exchange.form.buffer;
 const getToAsset = (state: AppState) => state.ui.exchange.form.toAsset;
@@ -18,7 +16,23 @@ const getTxFee = (state: AppState) => state.ui.exchange.txFee;
 const getFeeAssetId = (state: AppState) => state.ui.exchange.form.feeAssetId;
 const getCoreAsset = (state: AppState) => state.global.coreAssetId;
 const getUserAssetBalance = (state: AppState) => state.ui.exchange.userAssetBalance;
-export const getAssets = () => (typeof window !== 'undefined' ? window.config.ASSETS : []);
+const getAssetInfo = (state: AppState) => state.global.assetInfo;
+
+export const getAssets = createSelector(
+    [getAssetInfo],
+    assetInfo => {
+        const newAssetList = [];
+        assetInfo &&
+            assetInfo.forEach(asset => {
+                const assetObject = {
+                    symbol: asset.symbol,
+                    id: asset.id,
+                };
+                newAssetList.push(assetObject);
+            });
+        return newAssetList;
+    }
+);
 
 export const getFromAssetUserBalance = createSelector(
     [getFromAsset, getUserAssetBalance, getSigningAccount],
@@ -30,6 +44,21 @@ export const getFromAssetUserBalance = createSelector(
         );
         if (fromAssetBalance) {
             return fromAssetBalance.balance;
+        }
+        return null;
+    }
+);
+
+export const getToAssetUserBalance = createSelector(
+    [getToAsset, getUserAssetBalance, getSigningAccount],
+    (toAsset, userBalance, signingAccount) => {
+        if (!toAsset) return null;
+        if (!userBalance.length) return null;
+        const toAssetBalance = userBalance.find(
+            (bal: IAssetBalance) => bal.assetId === toAsset && bal.account === signingAccount
+        );
+        if (toAssetBalance) {
+            return toAssetBalance.balance;
         }
         return null;
     }
@@ -53,39 +82,52 @@ const getOptionByValue = (options: Asset[], valueOfSelectedItem: number) =>
     options ? options.find(item => item.id === valueOfSelectedItem) || null : null;
 
 export const getExchangeRateMsg = createSelector(
-    [getExchangeRate, getAssets, getFromAsset, getToAsset, getTxFee, getCoreAsset, getFeeAssetId, getFromAssetAmount],
-    (exchangeRate, assets, fromAsset, toAsset, txFee, coreAsset, feeAssetId, fromeAmount) => {
+    [
+        getExchangeRate,
+        getAssets,
+        getFromAsset,
+        getToAsset,
+        getTxFee,
+        getCoreAsset,
+        getFeeAssetId,
+        getFromAssetAmount,
+        getAssetInfo,
+    ],
+    (exchangeRate, assets, fromAsset, toAsset, txFee, coreAsset, feeAssetId, fromeAmount, assetInfo) => {
         if (!fromeAmount || !exchangeRate) return;
         let fee;
-        const assetSymbol = getAsset(feeAssetId).symbol;
-        if (coreAsset && coreAsset.eqn && coreAsset.eqn(feeAssetId) && txFee) {
-            fee = `${txFee.feeInCpay.asString(DECIMALS)} ${assetSymbol}`;
+        const assetSymbol = assetInfo[feeAssetId].symbol;
+        if (coreAsset && coreAsset === feeAssetId && txFee) {
+            fee = `${txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces)} ${assetSymbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {
-            fee = `${txFee.feeInFeeAsset.asString(DECIMALS)} (converted to ${txFee.feeInCpay.asString(DECIMALS)} CPAY)`;
+            fee = `${txFee.feeInFeeAsset.asString(
+                assetInfo[feeAssetId].decimalPlaces
+            )} (converted to ${txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces)} CPAY)`;
         }
-        let rate = +exchangeRate.asString(DECIMALS) / +fromeAmount.asString();
-        rate = Math.round(rate * 10000) / 10000;
+        const feeString = fee ? `Transaction fee (estimated) : ${fee}` : '';
+
+        const rate = exchangeRate.asString(assetInfo[toAsset].decimalPlaces);
         return exchangeRate
             ? `Exchange rate: 1 ${getOptionByValue(assets, fromAsset).symbol} = ${rate} ${
                   getOptionByValue(assets, toAsset).symbol
-              }. Transaction fee (estimated) : ${fee}`
+              }. ${feeString}`
             : '';
     }
 );
 
 export const getTxFeeMessage = createSelector(
-    [getTxFee, getAssets, getFeeAssetId, getCoreAsset],
-    (txFee, assets, feeAssetId, coreAsset) => {
+    [getTxFee, getAssets, getFeeAssetId, getCoreAsset, getAssetInfo],
+    (txFee, assets, feeAssetId, coreAsset, assetInfo) => {
         let fee;
         if (String(feeAssetId) === String(coreAsset) && txFee) {
             // If fee asset is CPAY use cpayFee
-            fee = txFee.feeInCpay.asString(DECIMALS, Amount.ROUND_UP);
+            fee = txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces, Amount.ROUND_UP);
             return `Transaction fee is ${fee} ${getOptionByValue(assets, feeAssetId).symbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {
-            fee = txFee.feeInFeeAsset.asString(DECIMALS, Amount.ROUND_UP);
+            fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId].decimalPlaces, Amount.ROUND_UP);
             return `Transaction fee is ${fee} ${
                 getOptionByValue(assets, feeAssetId).symbol
-            } (converted to ${txFee.feeInCpay.asString(DECIMALS, Amount.ROUND_UP)} CPAY)`;
+            } (converted to ${txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces, Amount.ROUND_UP)} CPAY)`;
         }
     }
 );

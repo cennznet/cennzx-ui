@@ -1,4 +1,4 @@
-import {EventRecord} from '@plugnet/types';
+import {EventRecord} from '@cennznet/types';
 import produce from 'immer';
 import {handleActions} from 'redux-actions';
 import {BaseError} from '../../../error/error';
@@ -6,27 +6,26 @@ import {IExtrinsic, IFee} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import TxDialogActions, {
     OpenTxDialogAction,
-    SetDailogErrorAction,
+    RequestSubmitLiquidity,
+    RequestSubmitSend,
+    RequestSubmitTransaction,
+    ResetErrorAction,
+    SetDialogErrorAction,
     UpdateActualFeeAction,
     UpdateStageAction,
     UpdateTxEventsAction,
     UpdateTxHashAction,
-    RequestSubmitTransaction,
-    RequestSubmitSend,
-    RequestSubmitLiquidity,
 } from '../../actions/ui/txDialog.action';
-import keyring from '@polkadot/ui-keyring';
 
 export enum Stages {
     Signing = 'signing',
-    Broadcasted = 'broadcasted',
+    InBlock = 'inBlock',
     Finalised = 'finalised',
 }
 
 export interface TxDialogState {
     title?: string;
     signingAccount: string;
-    isAccountLocked: boolean;
     extrinsic?: IExtrinsic;
     estimatedTxFee?: IFee;
     stage?: Stages;
@@ -45,7 +44,6 @@ export const initialState: TxDialogState = {
     title: '',
     events: [],
     signingAccount: '',
-    isAccountLocked: true,
 };
 
 export default handleActions<TxDialogState, any>(
@@ -58,7 +56,6 @@ export default handleActions<TxDialogState, any>(
         }),
         [TxDialogActions.DIALOG_OPEN]: produce((draft: TxDialogState, action: OpenTxDialogAction) => {
             const {title, signingAccount, extrinsic, feeInFeeAsset, feeAssetId, fromAssetBalance} = action.payload;
-            const pair = keyring.getPair(signingAccount);
             draft.title = title;
             draft.extrinsic = extrinsic;
             draft.estimatedTxFee = feeInFeeAsset;
@@ -66,7 +63,6 @@ export default handleActions<TxDialogState, any>(
             draft.stage = Stages.Signing;
             draft.feeAssetId = feeAssetId;
             draft.fromAssetBalance = fromAssetBalance;
-            draft.isAccountLocked = pair.isLocked;
         }),
         [TxDialogActions.TX_ACTUAL_FEE_UPDATE]: produce((draft: TxDialogState, action: UpdateActualFeeAction) => {
             draft.actualTxFee = action.payload;
@@ -77,7 +73,7 @@ export default handleActions<TxDialogState, any>(
         [TxDialogActions.TX_HASH_UPDATE]: produce((draft: TxDialogState, action: UpdateTxHashAction) => {
             draft.txHash = action.payload;
         }),
-        [TxDialogActions.ERROR_SET]: produce((draft: TxDialogState, action: SetDailogErrorAction) => {
+        [TxDialogActions.ERROR_SET]: produce((draft: TxDialogState, action: SetDialogErrorAction) => {
             draft.error = action.payload;
         }),
         [TxDialogActions.TRANSACTION_SUBMIT_REQUEST]: produce(
@@ -90,12 +86,15 @@ export default handleActions<TxDialogState, any>(
                 draft.buffer = buffer;
             }
         ),
+        [TxDialogActions.ERROR_RESET]: produce((draft: TxDialogState, action: ResetErrorAction) => {
+            draft.error = null;
+        }),
         [TxDialogActions.TRANSACTION_SUBMIT_SEND]: produce((draft: TxDialogState, action: RequestSubmitSend) => {
             const {extrinsic, signingAccount, feeAssetId, feeInFeeAsset, fromAssetBalance} = action.payload;
             draft.extrinsic = extrinsic;
             draft.signingAccount = signingAccount;
             draft.feeAssetId = feeAssetId;
-            draft.feeInFeeAsset = feeInFeeAsset;
+            draft.feeInFeeAsset = feeInFeeAsset ? feeInFeeAsset.feeInFeeAsset : null;
             draft.fromAssetBalance = fromAssetBalance;
         }),
         [TxDialogActions.TRANSACTION_SUBMIT_LIQUIDITY]: produce(
@@ -105,7 +104,7 @@ export default handleActions<TxDialogState, any>(
                 draft.signingAccount = signingAccount;
                 draft.feeAssetId = feeAssetId;
                 draft.buffer = buffer;
-                draft.feeInFeeAsset = feeInFeeAsset;
+                draft.feeInFeeAsset = feeInFeeAsset ? feeInFeeAsset.feeInFeeAsset : null;
             }
         ),
     },

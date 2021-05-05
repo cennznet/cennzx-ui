@@ -1,11 +1,11 @@
 import {
     AddLiquidityFormData,
     ExchangeFormData,
-    SendFormData,
-    LiquidityFormData,
     IAddLiquidity,
     IRemoveLiquidity,
+    LiquidityFormData,
     RemoveLiquidityFormData,
+    SendFormData,
 } from '../typings';
 import {Amount} from './Amount';
 
@@ -28,31 +28,33 @@ export function prepareExchangeExtrinsicParamsWithBuffer(
     switch (extrinsic) {
         case ADD_LIQUIDITY:
             return [
-                (params as AddLiquidityFormData).asset,
-                (params as AddLiquidityFormData).coreAmount, // # of pool liquidity shares to mint
-                (params as AddLiquidityFormData).assetAmount, // max asset deposit
-                (params as AddLiquidityFormData).coreAmount, // core amount
+                (params as LiquidityFormData).assetId,
+                (params as LiquidityFormData).coreAssetId,
+                (params as LiquidityFormData).coreAmount, // # of pool liquidity shares to mint
+                (params as LiquidityFormData).assetAmount, // max asset deposit
             ];
         case REMOVE_LIQUIDITY:
             return [
-                (params as RemoveLiquidityFormData).asset,
-                (params as RemoveLiquidityFormData).liquidity,
-                (params as RemoveLiquidityFormData).minAssetYield,
-                (params as RemoveLiquidityFormData).minCoreYield,
+                (params as LiquidityFormData).assetId,
+                (params as LiquidityFormData).coreAssetId,
+                (params as LiquidityFormData).coreAmount, // min core amount to withdraw
+                (params as LiquidityFormData).assetAmount, // min asset amount to withdraw
             ];
         case SWAP_OUTPUT:
             return [
                 (params as ExchangeFormData).fromAsset,
                 (params as ExchangeFormData).toAsset,
+                (params as ExchangeFormData).fromAssetAmount,
+                // new Amount((params as ExchangeFormData).fromAssetAmount.muln(1 + (params as ExchangeFormData).buffer)),
                 (params as ExchangeFormData).toAssetAmount,
-                new Amount((params as ExchangeFormData).fromAssetAmount.muln(1 + (params as ExchangeFormData).buffer)),
             ];
         case SWAP_INPUT:
             return [
                 (params as ExchangeFormData).fromAsset,
                 (params as ExchangeFormData).toAsset,
                 (params as ExchangeFormData).fromAssetAmount,
-                new Amount((params as ExchangeFormData).toAssetAmount.muln(1 - (params as ExchangeFormData).buffer)),
+                // new Amount((params as ExchangeFormData).toAssetAmount.muln(1 - (params as ExchangeFormData).buffer)),
+                (params as ExchangeFormData).toAssetAmount,
             ];
         default:
             return [];

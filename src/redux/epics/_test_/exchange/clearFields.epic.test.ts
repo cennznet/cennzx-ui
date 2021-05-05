@@ -22,7 +22,6 @@ import {
     clearTxFeeEpic,
 } from '../../exchange/clearFields.epic';
 import {EmptyPool} from '../../../../error/error';
-import {getAsset} from '../../../../util/assets';
 
 describe('Clear toAsset amount field when from asset is set', () => {
     const amount = new Amount('2');
@@ -30,8 +29,6 @@ describe('Clear toAsset amount field when from asset is set', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -85,8 +82,6 @@ describe('Clear fromAsset amount field when from asset is set', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -143,8 +138,6 @@ describe('Clear fromAsset amount and toAssetAmount fields when from new buy/with
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -205,8 +198,6 @@ describe('Return empty when from new buy/with asset is set but extrinsic is not 
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -249,13 +240,10 @@ describe('Return empty when from new buy/with asset is set but extrinsic is not 
 });
 
 describe('Clear exchange rate when new buy/with asset is set or assets are swapped', () => {
-    const amount = new Amount('2');
     const triggers = [updateSelectedFromAsset(16000), updateSelectedToAsset(16001), swapAsset()];
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -304,15 +292,10 @@ describe('Clear exchange rate when new buy/with asset is set or assets are swapp
 });
 
 describe('Clear buy/with asset amounts when asset pool is empty', () => {
-    if (typeof window !== 'undefined') {
-        window.config.ASSETS = [{symbol: 'CENNZ', id: 16000}, {symbol: 'CPAY', id: 16001}, {symbol: 'PLUG', id: 16003}];
-    }
-    const triggers = [setExchangeError(new EmptyPool(getAsset(16001)))];
+    const triggers = [setExchangeError(new EmptyPool({symbol: 'CPAY', id: 16001}))];
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -333,6 +316,10 @@ describe('Clear buy/with asset amounts when asset pool is empty', () => {
                     api$,
                 } as unknown) as IEpicDependency;
 
+                const globalAssetList = new Array();
+                globalAssetList[16000] = {decimalPlaces: 4, symbol: 'CENNZ', id: 16000};
+                globalAssetList[16001] = {decimalPlaces: 4, symbol: 'CPAY', id: 16001};
+
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
                     ui: {
                         exchange: {
@@ -345,6 +332,9 @@ describe('Clear buy/with asset amounts when asset pool is empty', () => {
                                 extrinsic: SWAP_INPUT,
                             },
                         },
+                    },
+                    global: {
+                        assetInfo: globalAssetList,
                     },
                 });
 
@@ -377,8 +367,6 @@ describe('Clear tx fee when new buy/with asset is set or assets are swapped or a
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {

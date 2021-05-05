@@ -44,8 +44,8 @@ export const getInputPriceEpic = (
         switchMap(
             ([[api], store]): Observable<Action<any>> => {
                 const {fromAssetAmount, fromAsset, toAsset, toAssetAmount} = store.ui.exchange.form as ExchangeFormData;
-                const {userAssetBalance} = store.ui.exchange;
-                return api.rpc.cennzx.sellPrice(toAsset, fromAssetAmount, fromAsset).pipe(
+                const {error} = store.ui.exchange;
+                return api.rpc.cennzx.sellPrice(fromAsset, fromAssetAmount, toAsset).pipe(
                     filter((value: BN) => !toAssetAmount || !new Amount(value.toString()).eq(toAssetAmount)),
                     map((estimatedToAssetAmount: BN) => {
                         const amount = new Amount(estimatedToAssetAmount.toString(), AmountUnit.UN);
@@ -54,6 +54,13 @@ export const getInputPriceEpic = (
                     takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),
                     catchError((err: any) => {
                         if (err.message === 'Pool balance is low') {
+                            return EMPTY;
+                        }
+                        if (err.message === '2: Cannot exchange by requested amount.: ') {
+                            err.message = 'Sell price cannot be calculated, issue with the requested amount';
+                        }
+                        const ifErrorAlreadyReported = error.find(er => er.message === err.message);
+                        if (ifErrorAlreadyReported) {
                             return EMPTY;
                         }
                         return of(setExchangeError(err));
@@ -88,7 +95,8 @@ export const getOutputPriceEpic = (
         switchMap(
             ([[api], store]): Observable<Action<any>> => {
                 const {fromAssetAmount, fromAsset, toAsset, toAssetAmount} = store.ui.exchange.form as ExchangeFormData;
-                return api.rpc.cennzx.buyPrice(fromAsset, toAssetAmount, toAsset).pipe(
+                const {error} = store.ui.exchange;
+                return api.rpc.cennzx.buyPrice(toAsset, toAssetAmount, fromAsset).pipe(
                     filter((value: BN) => !fromAssetAmount || !new Amount(value.toString()).eq(fromAssetAmount)),
                     map((estimatedFromAsset: BN) => {
                         const amount = new Amount(estimatedFromAsset.toString(), AmountUnit.UN);
@@ -97,6 +105,13 @@ export const getOutputPriceEpic = (
                     takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),
                     catchError((err: any) => {
                         if (err.message === 'Pool balance is low') {
+                            return EMPTY;
+                        }
+                        if (err.message === '2: Cannot exchange for requested amount.: ') {
+                            err.message = 'Buy price cannot be calculated, issue with the requested amount';
+                        }
+                        const ifErrorAlreadyReported = error.find(er => er.message === err.message);
+                        if (ifErrorAlreadyReported) {
                             return EMPTY;
                         }
                         return of(setExchangeError(err));

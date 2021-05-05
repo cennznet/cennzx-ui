@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256px" height="256px" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 5</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="101.999998%" y2="100.999999%" id="linearGradient-1">
+            <stop stop-color="#00FFEE" offset="0%"></stop>
+            <stop stop-color="#DB03FF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-5">
+            <g id="BTC-Copy" fill="url(#linearGradient-1)">
+                <path d="M256,128 C256,198.69312 198.69312,256 128,256 C57.30688,256 0,198.69312 0,128 C0,57.30688 57.30688,0 128,0 C198.69312,0 256,57.30688 256,128" id="Fill-504"></path>
+            </g>
+            <path d="M120,89 L135.659574,89 L184,167.477855 C172.822018,167.477855 162.479592,161.559506 156.816397,151.922312 L128.170213,103.174414 L99.2446045,151.95832 C93.5401965,161.578975 83.1846892,167.477855 72,167.477855 L120,89 Z" id="Path" stroke="#FFFFFF" stroke-width="5.7" fill="#FFFFFF"></path>
+        </g>
+    </g>
+</svg>

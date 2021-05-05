@@ -1,42 +1,49 @@
+import {InjectedExtension} from '@polkadot/extension-inject/types';
 import {createAction} from 'redux-actions';
 import {BaseError} from '../../error/error';
-import {CennznetInjected, PolkadotInjectedGlobal, IAccounts} from '../../typings';
+import {IAccounts} from '../../typings';
 
 export enum ExtensionActions {
-    DETECTION_UPDATE = 'SS_EX/DETECTION_UPDATE',
-    CONNECTION_UPDATE = 'SS_EX/CONNECTION_UPDATE',
-    ACCOUNTS_UPDATE = 'SS_EX/ACCOUNTS_UPDATE',
-    DETECTION_COMPLETED = 'SS_EX/DETECTION_COMPLETED',
-    ERROR_SET = 'SS_EX/ERROR_SET',
+    DETECTION_UPDATE = 'POLKADOT_EX/DETECTION_UPDATE',
+    CONNECTION_UPDATE = 'POLKADOT_EX/CONNECTION_UPDATE',
+    ACCOUNTS_UPDATE = 'POLKADOT_EX/ACCOUNTS_UPDATE',
+    DETECTION_COMPLETED = 'POLKADOT_EX/DETECTION_COMPLETED',
+    ERROR_SET = 'POLKADOT_EX/ERROR_SET',
+    POLKADOT_EXTENSION_UPDATE = 'POLKADOT_EX/POLKADOT_EXTENSION_UPDATE',
 }
 
-export const updateSSDetected = createAction(
+export const updateExDetected = createAction(
     ExtensionActions.DETECTION_UPDATE,
-    (detected: boolean, polkadotInjected: PolkadotInjectedGlobal) => {
-        console.log('Reached inside updateSSDetected:', detected);
-        console.log('polkadotInjected:', polkadotInjected);
+    (detected: boolean, polkadotInjected: InjectedExtension) => {
         return {detected, polkadotInjected};
     }
 );
 
-export const updateSSConnected = createAction(
+export const updateExConnected = createAction(
     ExtensionActions.CONNECTION_UPDATE,
     (ssConnected: boolean) => ssConnected
 );
 
-export const updateSSDetectionCompleted = createAction(ExtensionActions.DETECTION_COMPLETED);
+export const updatePolkadotExtension = createAction(
+    ExtensionActions.POLKADOT_EXTENSION_UPDATE,
+    (polkadotExtension: InjectedExtension) => polkadotExtension
+);
 
-export const updateSSAccounts = createAction(ExtensionActions.ACCOUNTS_UPDATE, (ssAccounts: IAccounts[]) => ssAccounts);
+export const updateExDetectionCompleted = createAction(ExtensionActions.DETECTION_COMPLETED);
+
+export const updateExAccounts = createAction(ExtensionActions.ACCOUNTS_UPDATE, (exAccounts: IAccounts[]) => exAccounts);
 
 export const setExtensionError = createAction(ExtensionActions.ERROR_SET, (errorMsg: BaseError) => errorMsg);
 
-export type UpdateSSDetectedAction = ReturnType<typeof updateSSDetected>;
+export type UpdateExDetectedAction = ReturnType<typeof updateExDetected>;
 
-export type UpdateSSConnectedAction = ReturnType<typeof updateSSConnected>;
+export type UpdateExConnectedAction = ReturnType<typeof updateExConnected>;
 
-export type UpdateSSAccountAction = ReturnType<typeof updateSSAccounts>;
+export type UpdateExAccountAction = ReturnType<typeof updateExAccounts>;
 
-export type UpdateSSDetectionCompleteAction = ReturnType<typeof updateSSDetectionCompleted>;
+export type UpdatePolkadotExtensionAction = ReturnType<typeof updatePolkadotExtension>;
+
+export type UpdateExDetectionCompleteAction = ReturnType<typeof updateExDetectionCompleted>;
 
 export type SetExtensionErrorAction = ReturnType<typeof setExtensionError>;
 

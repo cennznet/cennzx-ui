@@ -18,7 +18,6 @@ import {prepareExchangeExtrinsicParamsWithBuffer, SWAP_INPUT} from '../../../../
 import {prepareTransactionFeeEpic, requestTransactionFeeEpic} from '../../exchange/transactionFee.epic';
 
 describe('Prepare transaction paramater epic working', () => {
-    const inputAmount = new Amount('2');
     const triggers = [requestTransactionFee()];
     const [fromAsset, toAsset, fromAssetAmount, toAssetAmount, buffer] = [
         16000,
@@ -30,8 +29,6 @@ describe('Prepare transaction paramater epic working', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -98,8 +95,6 @@ describe('Request transaction fee epic working', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {

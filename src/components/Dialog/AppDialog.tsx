@@ -1,57 +1,87 @@
+import {version as extVersion} from '@polkadot/extension-dapp/package-info.json';
+import {InjectedExtension, MetadataDef} from '@polkadot/extension-inject/types';
 import {Link} from '@reach/router';
 import React, {FC, useState} from 'react';
+import styled from 'styled-components';
 import Dialog, {DialogProps} from './Dialog';
 import {BlueButton} from './DialogButtons';
 
-const getDialogTitle = (detected: boolean, connected: boolean) => {
-    if (!detected) {
-        return 'Connect to Polkadot extension';
-    } else if (!connected) {
-        return 'Connect to Polkadot extension';
-    }
-};
+const Container = styled.div`
+    display: flex;
+    width: 40%;
+    justify-content: space-around;
+`;
 
-const getDialogBody = (detected: boolean, connected: boolean) => {
+const getDialogBody = (detected: boolean, connected: boolean, metadata) => {
     if (!detected) {
         return (
-            <React.Fragment>
-                `To use CENNZX you need to install and connect to the SingleSource browser extension. If you don't have
-                the extension installed you can download it `;
-                <Link to="https://bitbucket.org/centralitydev/singlesourceextension/src/develop/">here</Link>
-            </React.Fragment>
+            <div>
+                CENNZX requires the CENNZnet browser extension to manage transaction signing.
+                <br />
+            </div>
         );
     } else if (!connected) {
-        return 'To use CENNZX you need to connect to the SingleSource browser extension.';
+        // Polkadot is not allowed to access this site - show relevant message
+        return 'CENNZX is disallowed in your CENNZnet extension settings. Go to \'Manage website access\' and allow this site to continue.';
+    } else if (!metadata) {
+        // Update metadata, wait until it gets loaded
+        return 'Please wait.. getting the latest metadata file for the best experience with CENNZX & CENNZnet extension.';
     } else {
-        // 'Not detected and not  connected to extension. This should not occur';
-        return '';
+        // Update metadata
+        return 'Install the latest metadata file for the best experience with CENNZX & CENNZnet extension.';
     }
 };
 
-const getDialogFooter = setState => (
-    <>
-        <BlueButton onClick={() => setState({isOpen: false})}>Close</BlueButton>
-    </>
-);
+const getDialogFooter = (
+    setDialogOpen: Function,
+    extensionConnected: boolean,
+    polkadotExtension: InjectedExtension,
+    metadataDef
+) => {
+    return (
+        <Container>
+            {extensionConnected === false || metadataDef === undefined ? null : (
+                <BlueButton
+                    onClick={async () => {
+                        const metadata = polkadotExtension.metadata;
+                        await metadata.provide(metadataDef);
+                        localStorage.setItem(`${extVersion}-EXTENSION_META_UPDATED`, 'true');
+                        setDialogOpen(false);
+                    }}
+                >
+                    Update Metadata
+                </BlueButton>
+            )}
+            <BlueButton
+                onClick={async () => {
+                    setDialogOpen(false);
+                }}
+            >
+                Cancel
+            </BlueButton>
+        </Container>
+    );
+};
 
 // extend the props excluding handled ones and including extra ones
 export type AppDialogProps = Pick<DialogProps, Exclude<keyof DialogProps, 'title' | 'body' | 'footer' | 'isOpen'>> & {
     extensionConnected: boolean;
     extensionDetected: boolean;
+    polkadotExtension: InjectedExtension;
+    metadata: MetadataDef;
 };
 
 const AppDialog: FC<AppDialogProps> = props => {
-    const {extensionDetected, extensionConnected} = props;
-    const [state, setState] = useState({isOpen: true});
-    const isOpen = (!extensionDetected || !extensionConnected) && state.isOpen;
+    const {extensionDetected, extensionConnected, polkadotExtension, metadata} = props;
+    const [isDialogOpen, setDialogOpen] = useState(true);
 
     return (
         <Dialog
             {...props}
-            isOpen={isOpen}
-            title={getDialogTitle(extensionDetected, extensionConnected)}
-            body={getDialogBody(extensionDetected, extensionConnected)}
-            footer={getDialogFooter(setState)}
+            isOpen={isDialogOpen}
+            title={'Connect to CENNZnet extension'}
+            body={getDialogBody(extensionDetected, extensionConnected, metadata)}
+            footer={getDialogFooter(setDialogOpen, extensionConnected, polkadotExtension, metadata)}
         />
     );
 };

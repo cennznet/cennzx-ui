@@ -3,17 +3,11 @@ import BN from 'bn.js';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs';
-import {catchError, filter, map, mergeMap, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
 import {ExchangeFormData, IEpicDependency} from '../../../typings';
 import {Amount, AmountUnit} from '../../../util/Amount';
 import types from '../../actions';
-import {
-    requestExchangeRate,
-    setExchangeError,
-    SetExchangeErrorAction,
-    updateExchangeRate,
-    UpdateExchangeRateAction,
-} from '../../actions/ui/exchange.action';
+import {requestExchangeRate, setExchangeError, updateExchangeRate} from '../../actions/ui/exchange.action';
 import {AppState} from '../../reducers';
 import {ExchangeState} from '../../reducers/ui/exchange.reducer';
 
@@ -21,14 +15,18 @@ export const getExchangeRateEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
-): Observable<UpdateExchangeRateAction | SetExchangeErrorAction> =>
+): Observable<any> =>
     combineLatest([api$, action$.pipe(ofType(types.ui.Exchange.EXCHANGE_RATE_REQUEST))]).pipe(
         withLatestFrom(store$),
         switchMap(([obj, store]) => {
             const api: ApiRx = obj[0];
             const {exchangeRate} = store.ui.exchange as ExchangeState;
-            const {fromAsset, toAsset, fromAssetAmount} = store.ui.exchange.form as ExchangeFormData;
-            return api.rpc.cennzx.sellPrice(toAsset, fromAssetAmount, fromAsset).pipe(
+            const {assetInfo} = store.global;
+            const {fromAsset, toAsset} = store.ui.exchange.form as ExchangeFormData;
+            const asset = assetInfo ? assetInfo[toAsset] : undefined;
+            const toAssetDecimal = asset ? asset.decimalPlaces : 0;
+            const amount = new Amount(1, AmountUnit.DISPLAY, toAssetDecimal);
+            return api.rpc.cennzx.sellPrice(fromAsset, amount, toAsset).pipe(
                 filter(
                     (exchangeRateFromAPI: BN) =>
                         !exchangeRate || !new Amount(exchangeRateFromAPI.toString()).eq(exchangeRate)
