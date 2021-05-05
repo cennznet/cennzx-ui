@@ -3,12 +3,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 export default ({active}) => (
-    // @ts-ignore
-    <NavContent active={active}>
-        <Link style={getLinkStyle('exchange', active)} to="/exchange">
+    <NavContent>
+        <Link style={getLinkStyle('exchange', active)} to="exchange">
             Exchange
         </Link>
-        <Link style={getLinkStyle('liquidity', active)} to="/liquidity">
+        <Link style={getLinkStyle('liquidity', active)} to="liquidity">
             Liquidity
         </Link>
     </NavContent>

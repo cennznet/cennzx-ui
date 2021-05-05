@@ -3,6 +3,7 @@ import {Dispatch} from 'redux';
 import {BaseError, EmptyPool} from '../../error/error';
 import {
     removeExchangeError,
+    resetError,
     resetTrade,
     setFromAssetAmount,
     setToAssetAmount,
@@ -20,7 +21,14 @@ import {ExchangeFormData, IAccounts, IExtrinsic, IFee} from '../../typings';
 import {Amount} from '../../util/Amount';
 import {prepareExchangeExtrinsicParamsWithBuffer, SWAP_INPUT, SWAP_OUTPUT} from '../../util/extrinsicUtil';
 import {Exchange, ExchangeProps} from './exchange';
-import {getAssets, getExchangeRateMsg, getFromAssetUserBalance, getOutputReserve, getTxFeeMessage} from './selectors';
+import {
+    getAssets,
+    getExchangeRateMsg,
+    getFromAssetUserBalance,
+    getOutputReserve,
+    getToAssetUserBalance,
+    getTxFeeMessage,
+} from './selectors';
 
 const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
     let errInstance = null;
@@ -37,15 +45,17 @@ const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
 
 const mapStateToProps = (state: AppState): ExchangeProps => ({
     ...state.ui.exchange,
+    assetInfo: state.global.assetInfo,
     coreAssetId: state.global.coreAssetId,
     feeRate: state.global.feeRate,
+    assets: getAssets(state),
     fromAssetBalance: getFromAssetUserBalance(state),
+    toAssetBalance: getToAssetUserBalance(state),
     accounts: state.extension.accounts.map((account: IAccounts) => ({
-        label: `${account.name}: ${account.address}`,
+        label: `${account.name}`,
         value: account.address,
     })),
     outputReserve: getOutputReserve(state),
-    assets: getAssets(),
     exchangeRateMsg: getExchangeRateMsg(state),
     txFeeMsg: getTxFeeMessage(state),
     // isDialogOpen: state.ui.txDialog.stage ? true : false,
@@ -61,10 +71,12 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     handleBuyAssetAmountChange: (amount: Amount) => {
         dispatch(setToAssetAmount(amount));
         dispatch(updateExtrinsic(SWAP_OUTPUT));
+        dispatch(resetError());
     },
     handleWithAssetAmountChange: (amount: Amount) => {
         dispatch(setFromAssetAmount(amount));
         dispatch(updateExtrinsic(SWAP_INPUT));
+        dispatch(resetError());
     },
     handleBuyAssetIdChange: (assetId: number, {fromAsset, toAsset}: ExchangeFormData, error: BaseError[]) => {
         if (fromAsset === assetId) {

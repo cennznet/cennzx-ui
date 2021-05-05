@@ -3,17 +3,15 @@ import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';
 import {catchError, filter, map, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
-import {EmptyPool} from '../../../error/error';
 import {IEpicDependency, IUserShareInPool} from '../../../typings';
 import {Amount} from '../../../util/Amount';
-import {getAsset} from '../../../util/assets';
 import types from '../../actions';
 
 import {
     setLiquidityError,
     updatePoolBalance,
     UpdatePoolBalanceAction,
-    UpdateSelectedAddAsset1Action,
+    UpdateSelectedAsset1Action,
     updateTotalLiquidity,
     updateUserPoolShare,
 } from '../../actions/ui/liquidity.action';
@@ -26,7 +24,7 @@ export const getAssetPoolBalanceEpic = (
 ): Observable<UpdatePoolBalanceAction> =>
     combineLatest([
         api$,
-        action$.pipe(ofType<UpdateSelectedAddAsset1Action>(types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE)),
+        action$.pipe(ofType<UpdateSelectedAsset1Action>(types.ui.Liquidity.SELECTED_ASSET1_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
         switchMap(
@@ -52,7 +50,7 @@ export const getAssetPoolBalanceEpic = (
                         };
                         return of(updatePoolBalance(poolBalance));
                     }),
-                    takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),
+                    takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET))),
                     catchError((err: any) => {
                         return of(setLiquidityError(err));
                     })
@@ -68,7 +66,7 @@ export const getUserPoolShareEpic = (
 ): Observable<UpdatePoolBalanceAction> =>
     combineLatest([
         api$,
-        action$.pipe(ofType(types.ui.Liquidity.SELECTED_ADD_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)),
+        action$.pipe(ofType(types.ui.Liquidity.SELECTED_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
         switchMap(
@@ -94,7 +92,7 @@ export const getUserPoolShareEpic = (
                         };
                         return of(updateUserPoolShare(userShare));
                     }),
-                    takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),
+                    takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET))),
                     catchError((err: any) => {
                         return of(setLiquidityError(err));
                     })
@@ -111,7 +109,7 @@ export const getTotalLiquidityEpic = (
     combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.TOTAL_LIQUIDITY_REQUEST))]).pipe(
         withLatestFrom(store$),
         switchMap(([[api, action], store]) => {
-            const {totalLiquidity} = store.ui.liquidityPool;
+            const {totalLiquidity} = store.ui.liquidity;
             return api.derive.cennzx.totalLiquidity(action.payload).pipe(
                 filter((liquidity: BN) => !totalLiquidity || !liquidity.eq(totalLiquidity)),
                 map((liquidity: BN) => {

@@ -7,13 +7,14 @@ function checkToAssetAmount(props: ExchangeProps, errors: FormErrors): void {
         return;
     }
     const {
-        form: {toAssetAmount, fromAssetAmount},
+        form: {toAssetAmount, fromAssetAmount, toAsset},
+        assetInfo,
     } = props;
     if (!toAssetAmount) {
         if (fromAssetAmount) {
             mergeError(FormSection.toAssetInput, new FieldNotReady(FormSection.toAssetInput), errors);
         } else {
-            mergeError(FormSection.toAssetInput, new ToAssetAmountRequired(), errors);
+            mergeError(FormSection.toAssetInput, new ToAssetAmountRequired(assetInfo[toAsset].symbol), errors);
         }
     }
 }

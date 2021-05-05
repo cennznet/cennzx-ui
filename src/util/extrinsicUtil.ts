@@ -28,17 +28,17 @@ export function prepareExchangeExtrinsicParamsWithBuffer(
     switch (extrinsic) {
         case ADD_LIQUIDITY:
             return [
-                (params as AddLiquidityFormData).assetId,
-                (params as AddLiquidityFormData).coreAssetId,
-                (params as AddLiquidityFormData).coreAmount, // # of pool liquidity shares to mint
-                (params as AddLiquidityFormData).assetAmount, // max asset deposit
+                (params as LiquidityFormData).assetId,
+                (params as LiquidityFormData).coreAssetId,
+                (params as LiquidityFormData).coreAmount, // # of pool liquidity shares to mint
+                (params as LiquidityFormData).assetAmount, // max asset deposit
             ];
         case REMOVE_LIQUIDITY:
             return [
-                (params as RemoveLiquidityFormData).asset,
-                (params as RemoveLiquidityFormData).liquidity,
-                (params as RemoveLiquidityFormData).minAssetYield,
-                (params as RemoveLiquidityFormData).minCoreYield,
+                (params as LiquidityFormData).assetId,
+                (params as LiquidityFormData).coreAssetId,
+                (params as LiquidityFormData).coreAmount, // min core amount to withdraw
+                (params as LiquidityFormData).assetAmount, // min asset amount to withdraw
             ];
         case SWAP_OUTPUT:
             return [

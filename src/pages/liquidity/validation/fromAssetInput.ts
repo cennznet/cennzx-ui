@@ -9,31 +9,24 @@ import {existErrors, FormErrors, mergeError} from './index';
 
 function checkFromAssetAmount(props: LiquidityProps, errors: FormErrors): void {
     const {
-        form: {assetAmount, coreAmount},
+        form: {coreAssetId, coreAmount},
+        assetInfo,
     } = props;
-    if (existErrors(['PoolBalanceNotEnough', 'FromAssetNotSelected'], errors)) {
+    if (
+        existErrors(
+            ['PoolBalanceNotEnough', 'FromAssetNotSelected', 'UserBalanceNotEnough', 'UserPoolBalanceNotEnough'],
+            errors
+        )
+    ) {
         return;
     }
 
-    if (!coreAmount) {
-        if (assetAmount) {
-            mergeError(FormSection.assetAmount, new FieldNotReadyForLiquidity(FormSection.coreAmount), errors);
-        } else {
-            mergeError(FormSection.assetAmount, new FromAssetAmountRequired(), errors);
-        }
-    }
-}
-
-function checkFromAssetDropdown(props: LiquidityProps, errors: FormErrors): void {
-    const {
-        form: {coreAmount},
-    } = props;
-    if (!coreAmount) {
-        mergeError(FormSection.coreAmount, new FromAssetNotSelected(), errors);
+    if (!coreAmount && assetInfo.length) {
+        mergeError(FormSection.coreAmount, new FromAssetAmountRequired(assetInfo[coreAssetId].symbol), errors);
     }
 }
 
 /**
  * priorities: checkFromAssetDropdown > checkFromAssetAmount
  */
-export default [checkFromAssetDropdown, checkFromAssetAmount];
+export default [checkFromAssetAmount];

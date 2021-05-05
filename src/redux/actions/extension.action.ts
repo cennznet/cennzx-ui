@@ -1,7 +1,7 @@
 import {InjectedExtension} from '@polkadot/extension-inject/types';
 import {createAction} from 'redux-actions';
 import {BaseError} from '../../error/error';
-import {IAccounts, PolkadotInjectedGlobal} from '../../typings';
+import {IAccounts} from '../../typings';
 
 export enum ExtensionActions {
     DETECTION_UPDATE = 'POLKADOT_EX/DETECTION_UPDATE',
@@ -14,7 +14,7 @@ export enum ExtensionActions {
 
 export const updateExDetected = createAction(
     ExtensionActions.DETECTION_UPDATE,
-    (detected: boolean, polkadotInjected: PolkadotInjectedGlobal) => {
+    (detected: boolean, polkadotInjected: InjectedExtension) => {
         return {detected, polkadotInjected};
     }
 );

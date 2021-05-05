@@ -9,7 +9,7 @@ import {IEpicDependency} from '../../typings';
 import {setExchangeError} from '../actions/ui/exchange.action';
 import {cennznetExtensions} from '../cennznetExtensions';
 import {AppState} from '../reducers';
-import types, {updateCoreAsset, updateFeeRate, updateMetadata} from './../actions/global.action';
+import types, {updateAssetsInfo, updateCoreAsset, updateFeeRate, updateMetadata} from './../actions/global.action';
 
 export const getCoreAsset = (action$: Observable<Action<any>>, store$: Observable<AppState>, {api$}: IEpicDependency) =>
     combineLatest([api$, action$.pipe(ofType(types.INIT_APP))]).pipe(
@@ -87,4 +87,20 @@ const getExtensionMetadata = (
         })
     );
 
-export default combineEpics(getCoreAsset, getFeeRate, getExtensionMetadata);
+export const getRegisteredAssets = (
+    action$: Observable<Action<any>>,
+    store$: Observable<AppState>,
+    {api$}: IEpicDependency
+) =>
+    combineLatest([api$, action$.pipe(ofType(types.INIT_APP))]).pipe(
+        switchMap(
+            ([api]): Observable<Action<any>> => {
+                return api.rpc.genericAsset.registeredAssets().pipe(map(assets => updateAssetsInfo(assets.toJSON())));
+            }
+        ),
+        catchError((err: any) => {
+            return of(setExchangeError(err));
+        })
+    );
+
+export default combineEpics(getCoreAsset, getFeeRate, getExtensionMetadata, getRegisteredAssets);

@@ -39,8 +39,10 @@ const StyledSelect = styled(Select)<AssetDropDownStyledProps>`
 
     // remove padding from select option, this padding is added back to the container
     .react-select__option {
-        padding: 0px;
+        padding: 2px;
         background-color: white;
+        border-radius: 4px;
+        cursor: pointer;
     }
 
     .react-select__option--is-selected:hover,
@@ -85,12 +87,24 @@ const Container = styled.div`
     border-bottom: 1px solid #b5babd !important;
 `;
 
-const getLabel = ({symbol}) => (
-    <Container>
-        <Icon src={require(`./../images/${symbol.toLowerCase()}.png`)} />
-        <Text className="symbol">{symbol}</Text>
-    </Container>
-);
+const getLabel = ({symbol}) => {
+    try {
+        return (
+            <Container>
+                <Icon src={require(`./../images/${symbol.toLowerCase()}.svg`)} />
+                <Text className="symbol">{symbol}</Text>
+            </Container>
+        );
+    } catch (e) {
+        // when a new asset is added and image does not exist
+        return (
+            <Container>
+                <Icon src={require(`./../images/logoMissing.png`)} />
+                <Text className="symbol">{symbol}</Text>
+            </Container>
+        );
+    }
+};
 
 const getOptionByValue = (options: Asset[], assetId: number) =>
     options ? options.find(item => item.id === assetId) || null : null;

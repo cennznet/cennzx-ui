@@ -2,37 +2,26 @@ import React from 'react'
 
 export default {
     entry: 'index.tsx',
-    //maxThreads: 1,
-    crossOriginLoading: 'anonymous',
-    productionSourceMaps: true,
+    productionSourceMaps: false,
     getSiteData: () => ({
         title: 'Best of CENNZX'
     }),
     getRoutes: async () => {
         try {
             return [
-                // A simple route
-                {
-                    path: '/about',
-                    template: 'src/pages/about',
-                },
-
                 // A route with data
                 {
-                    path: '/exchange',
+                    path: 'exchange',
                     template: 'src/pages/exchange/index',
                 },
-
                 // A route with data and dynamically generated child routes
-
                 {
                     path: '/',
-                    //redirect: 'exchange'
                      template: 'src/pages/exchange/index',
                 },
                 {
-                    path: '/liquidity',
-                    template: 'src/pages/liquidity',
+                    path: 'liquidity',
+                    template: 'src/pages/liquidity/index',
                 },
                 //  A 404 component
                 {
@@ -53,20 +42,15 @@ export default {
                 Head,
                 Body,
                 children,
-                renderMeta
+                state
             } = this.props;
-            let config;
-            if (process.env.NODE_ENV === 'development') {
-                config = "/settings/config.js";
-            } else {
-                config = "/config/config.js";
-            }
+
             return (
                 <Html lang='en-US'>
                <Head>
                    <meta charSet='UTF-8'/>
                    <meta name='viewport' content='width=device-width, initial-scale=1'/>
-                   <script src={config}></script>
+                   <script src={"/settings/config.js"}></script>
                    <link href='https://fonts.googleapis.com/css?family=Open+Sans” rel=“stylesheet'/>
                    <link href='https://fonts.googleapis.com/css?family=Montserrat&display=swap' rel='stylesheet'/>
                    <link href='https://fonts.googleapis.com/css?family=Montserrat:700&display=swap' rel='stylesheet'/>
@@ -95,7 +79,10 @@ export default {
                 include: /node_modules/,
                 type: "javascript/auto"
             }
-        ]
+        ],
+    },
+    output: {
+        globalObject: this,
     },
     optimization: {
         runtimeChunk: 'single',
@@ -123,6 +110,7 @@ export default {
         }
     },
     devServer: {
+        https: process.env.NODE_ENV !== 'development',
         contentBase: ['.'],
     },
 }

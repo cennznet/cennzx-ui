@@ -7,7 +7,10 @@ export enum GlobalActions {
     CORE_ASSET_UPDATE = 'app/CORE_ASSET_UPDATE',
     DEFAULT_FEE_RATE_UPDATE = 'app/DEFAULT_FEE_RATE_UPDATE',
     METADATA_UPDATE = 'app//METADATA_UPDATE',
+    ASSET_INFO_UPDATE = 'app/ASSET_INFO_UPDATE',
 }
+
+export const startApp = createAction(GlobalActions.INIT_APP);
 
 export const updateAppError = createAction(GlobalActions.UNKNOWN_ERROR, (err: Error) => err);
 
@@ -17,10 +20,14 @@ export const updateFeeRate = createAction(GlobalActions.DEFAULT_FEE_RATE_UPDATE,
 
 export const updateMetadata = createAction(GlobalActions.METADATA_UPDATE, metadata => metadata);
 
+export const updateAssetsInfo = createAction(GlobalActions.ASSET_INFO_UPDATE, assetInfo => assetInfo);
+
 export type UpdateCoreAssetAction = ReturnType<typeof updateCoreAsset>;
 
 export type UpdateFeeRateAction = ReturnType<typeof updateFeeRate>;
 
 export type UpdateMetadataAction = ReturnType<typeof updateMetadata>;
+
+export type UpdateAssetsInfoAction = ReturnType<typeof updateAssetsInfo>;
 
 export default GlobalActions;

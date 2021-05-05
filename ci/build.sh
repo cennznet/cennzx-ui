@@ -23,6 +23,7 @@ docker build -t "${IMAGE_NAME}" \
        --build-arg GEMFURY_EXTERNAL_TOKEN="$GEMFURY_EXTERNAL_TOKEN" \
        --build-arg GEMFURY_TOKEN="$GEMFURY_TOKEN" \
        --build-arg VERSION="${VERSION}" \
+       --build-arg
        -f $DIR/Dockerfile .
 
 

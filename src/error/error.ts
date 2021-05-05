@@ -97,12 +97,13 @@ export class PoolBalanceNotEnough extends BaseError {
 export class UserBalanceNotEnough extends BaseError {
     name: string = 'UserBalanceNotEnough';
     asset: Asset;
-    constructor(asset: Asset, require: Amount, reserve: Amount) {
+    constructor(asset: Asset, require?: Amount) {
         super(
-            `Not enough ${asset.symbol} in wallet, require: ${require.asString(
-                5,
-                Amount.ROUND_UP
-            )}, reserve: ${reserve.asString(5)}`
+            require
+                ? `Not enough available, requires ${require.asString(asset.decimalPlaces, Amount.ROUND_UP)} ${
+                      asset.symbol
+                  }`
+                : `Not enough available`
         );
         this.asset = asset;
     }
@@ -113,18 +114,33 @@ export class UserBalanceNotEnoughForFee extends BaseError {
     feeAsset: Asset;
     constructor(feeAsset: Asset, require: Amount, reserve: Amount) {
         super(
-            // TODO : need to check with designer on the message.
-            `Not enough ${feeAsset.symbol} in wallet to pay transaction fee, requires: ${require &&
-                require.asString(5, Amount.ROUND_UP)}` /*, reserve: ${reserve.asString(5)}*/
+            `Not enough ${feeAsset.symbol} in wallet to pay transaction fee, requires additional: ${require &&
+                require.asString(feeAsset.decimalPlaces, Amount.ROUND_UP)}`
         );
         this.feeAsset = feeAsset;
     }
 }
 
+export class UserPoolBalanceNotEnough extends BaseError {
+    name: string = 'UserPoolBalanceNotEnough';
+    asset: Asset;
+    constructor(asset: Asset, require?: Amount, reserve?: Amount) {
+        super(
+            require
+                ? `Not enough ${asset.symbol} in user pool, require: ${require.asString(
+                      asset.decimalPlaces,
+                      Amount.ROUND_UP
+                  )}, available: ${reserve.asString(asset.decimalPlaces)}`
+                : `Not enough ${asset.symbol} in user pool`
+        );
+        this.asset = asset;
+    }
+}
+
 export class FromAssetAmountRequired extends BaseError {
     name: string = 'FromAssetAmountRequired';
-    constructor() {
-        super('Please enter an amount');
+    constructor(symbol: string) {
+        super(`Please enter ${symbol} amount`);
     }
 }
 
@@ -137,8 +153,8 @@ export class RecipientAddress extends BaseError {
 
 export class ToAssetAmountRequired extends BaseError {
     name: string = 'ToAssetAmountRequired';
-    constructor() {
-        super('Please enter an amount');
+    constructor(symbol: string) {
+        super(`Please enter ${symbol} amount`);
     }
 }
 
@@ -187,5 +203,12 @@ export class UnknownFormError extends BaseError {
     constructor(error: Error) {
         super(error.message);
         this.error = error;
+    }
+}
+
+export class IncorrectLiquidity extends BaseError {
+    name: string = 'IncorrectLiquidity';
+    constructor() {
+        super('Amount too small: please select a different amount');
     }
 }

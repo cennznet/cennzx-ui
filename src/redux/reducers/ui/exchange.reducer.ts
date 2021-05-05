@@ -5,7 +5,6 @@ import {ExchangeFormData, IAssetBalance, IExchangePool, IFee} from '../../../typ
 import {Amount} from '../../../util/Amount';
 import ExchangeActions, {
     RemoveExchangeErrorAction,
-    RequestAssetBalanceAction,
     ResetExchangeErrorAction,
     SetExchangeErrorAction,
     SetFromAssetAmountAction,
@@ -73,13 +72,6 @@ export default handleActions<ExchangeState, any>(
         [ExchangeActions.TO_ASSET_AMOUNT_UPDATE]: produce((draft: ExchangeState, action: UpdateToAssetAmountAction) => {
             draft.form.toAssetAmount = action.payload;
         }),
-        // [ExchangeActions.ASSET_BALANCE_REQUEST]: produce(
-        //     (draft: ExchangeState, action: RequestAssetBalanceAction) => {
-        //         const { assetId, signingAccount } = action.payload
-        //         draft.form.signingAccount = signingAccount
-        //         draft.form.signingAccount = signingAccount
-        //     }
-        // ),
         [ExchangeActions.TRANSACTION_FEE_UPDATE]: produce(
             (draft: ExchangeState, action: UpdateTransactionFeeAction) => {
                 draft.txFee = action.payload;
@@ -122,7 +114,7 @@ export default handleActions<ExchangeState, any>(
             (draft: ExchangeState, action: UpdateUserAssetBalanceAction) => {
                 const index = draft.userAssetBalance.findIndex(
                     (assetData: IAssetBalance) =>
-                        assetData.assetId === draft.form.feeAssetId && assetData.account === draft.form.signingAccount
+                        assetData.assetId === action.payload.assetId && assetData.account === action.payload.account
                 );
                 if (index === -1) {
                     draft.userAssetBalance.push(action.payload);
@@ -142,7 +134,7 @@ export default handleActions<ExchangeState, any>(
             draft.error.push(action.payload);
         }),
         [ExchangeActions.ERROR_REMOVE]: produce((draft: ExchangeState, action: RemoveExchangeErrorAction) => {
-            const newErrorList = draft.error.filter(err => err !== action.payload);
+            const newErrorList = draft.error.filter(err => err.message !== action.payload.message);
             draft.error = newErrorList;
         }),
         [ExchangeActions.ERROR_RESET]: produce((draft: ExchangeState, action: ResetExchangeErrorAction) => {

@@ -2,8 +2,6 @@ import {createSelector} from 'reselect';
 import {AppState} from '../../redux/reducers';
 import {Asset, IAssetBalance, IExchangePool, IUserShareInPool} from '../../typings';
 import {Amount} from '../../util/Amount';
-import {getAsset as getAsset_} from '../../util/assets';
-import {DECIMALS} from './liquidity';
 
 const getBuffer = (state: AppState) => state.ui.liquidity.form.buffer;
 const getAsset = (state: AppState) => state.ui.liquidity.form.assetId;
@@ -17,8 +15,23 @@ const getFeeAssetId = (state: AppState) => state.ui.liquidity.form.feeAssetId;
 const getCoreAsset = (state: AppState) => state.global.coreAssetId;
 const getUserAssetBalance = (state: AppState) => state.ui.liquidity.userAssetBalance;
 const getAllUserPoolShare = (state: AppState) => state.ui.liquidity.userPoolShare;
+const getAssetInfo = (state: AppState) => state.global.assetInfo;
 
-export const getAssets = () => (typeof window !== 'undefined' ? window.config.ASSETS : []);
+export const getAssets = createSelector(
+    [getAssetInfo],
+    assetInfo => {
+        const newAssetList = [];
+        assetInfo &&
+            assetInfo.forEach(asset => {
+                const assetObject = {
+                    symbol: asset.symbol,
+                    id: asset.id,
+                };
+                newAssetList.push(assetObject);
+            });
+        return newAssetList;
+    }
+);
 
 export const getUserPoolShare = createSelector(
     [getAsset, getAllUserPoolShare, getSigningAccount],
@@ -99,11 +112,10 @@ const getOptionByValue = (options: Asset[], valueOfSelectedItem: number) =>
     options ? options.find(item => item.id === valueOfSelectedItem) || null : null;
 
 export const getExchangeRateMsg = createSelector(
-    [getExchangeRate, getAssets, getCoreAsset, getAsset, getCoreAmount],
-    (exchangeRate, assets, coreAsset, asset, coreAmount) => {
+    [getExchangeRate, getAssets, getCoreAsset, getAsset, getCoreAmount, getAssetInfo],
+    (exchangeRate, assets, coreAsset, asset, coreAmount, assetInfo) => {
         if (!coreAmount || !exchangeRate) return;
-        let rate = +exchangeRate.asString(DECIMALS) / +coreAmount.asString();
-        rate = Math.round(rate * 10000) / 10000;
+        const rate = exchangeRate.asString(assetInfo[asset].decimalPlaces);
         return exchangeRate
             ? `Exchange rate: 1 ${getOptionByValue(assets, coreAsset).symbol} = ${rate} ${
                   getOptionByValue(assets, asset).symbol
@@ -112,32 +124,32 @@ export const getExchangeRateMsg = createSelector(
     }
 );
 export const getFee = createSelector(
-    [getTxFee, getCoreAsset, getFeeAssetId],
-    (txFee, coreAsset, feeAssetId) => {
+    [getTxFee, getCoreAsset, getFeeAssetId, getAssetInfo],
+    (txFee, coreAsset, feeAssetId, assetInfo) => {
         let fee;
-        const assetSymbol = getAsset_(feeAssetId).symbol;
+        const assetSymbol = assetInfo.length > 0 ? assetInfo[feeAssetId].symbol : 'CPAY';
         if (coreAsset && coreAsset === feeAssetId && txFee) {
-            fee = `${txFee.feeInCpay.asString(DECIMALS)} ${assetSymbol}`;
+            fee = `${txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces)} ${assetSymbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {
-            fee = `${txFee.feeInFeeAsset.asString(DECIMALS)} CPAY)`;
+            fee = `${txFee.feeInFeeAsset.asString(assetInfo[coreAsset].decimalPlaces)} ${assetSymbol})`;
         }
         return fee;
     }
 );
 
 export const getTxFeeMessage = createSelector(
-    [getTxFee, getAssets, getFeeAssetId, getCoreAsset],
-    (txFee, assets, feeAssetId, coreAsset) => {
+    [getTxFee, getAssets, getFeeAssetId, getCoreAsset, getAssetInfo],
+    (txFee, assets, feeAssetId, coreAsset, assetInfo) => {
         let fee;
         if (String(feeAssetId) === String(coreAsset) && txFee) {
             // If fee asset is CPAY use cpayFee
-            fee = txFee.feeInCpay.asString(DECIMALS, Amount.ROUND_UP);
+            fee = txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces, Amount.ROUND_UP);
             return `Transaction fee is ${fee} ${getOptionByValue(assets, feeAssetId).symbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {
-            fee = txFee.feeInFeeAsset.asString(DECIMALS, Amount.ROUND_UP);
+            fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId].decimalPlaces, Amount.ROUND_UP);
             return `Transaction fee is ${fee} ${
                 getOptionByValue(assets, feeAssetId).symbol
-            } (converted to ${txFee.feeInCpay.asString(DECIMALS, Amount.ROUND_UP)} CPAY)`;
+            } (converted to ${txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces, Amount.ROUND_UP)} CPAY)`;
         }
     }
 );

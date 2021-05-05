@@ -6,18 +6,19 @@ import {Amount} from '../../../util/Amount';
 import LiquidityActions, {
     RemoveLiquidityErrorAction,
     ResetLiquidityErrorAction,
-    SetAddAsset1AmountAction,
-    SetAddAsset2AmountAction,
+    SetAsset1AmountAction,
+    SetAsset2AmountAction,
     SetLiquidityAction,
     SetLiquidityErrorAction,
-    UpdateAddAsset1AmountAction,
-    UpdateAddAsset2AmountAction,
+    UpdateAsset1AmountAction,
+    UpdateAsset2AmountAction,
     UpdateExchangeRateAction,
     UpdateExtrinsicAction,
     UpdateFeeAssetAction,
+    UpdateLiquidityForWithdrawalAction,
     UpdatePoolBalanceAction,
     UpdateSelectedAccountAction,
-    UpdateSelectedAddAsset1Action,
+    UpdateSelectedAsset1Action,
     UpdateTotalLiquidityAction,
     UpdateTransactionBufferAction,
     UpdateTransactionFeeAction,
@@ -25,8 +26,6 @@ import LiquidityActions, {
     UpdateUserAssetBalanceAction,
     UpdateUserPoolShareAction,
 } from '../../actions/ui/liquidity.action';
-import PoolActions from '../../actions/ui/liquidityPool.action';
-import {LiquidityPoolState} from './liquidityPool.reducer';
 
 export interface LiquidityState {
     exchangeRate?: Amount;
@@ -38,6 +37,7 @@ export interface LiquidityState {
     userAssetBalance: IAssetBalance[];
     extrinsicParams?: any[];
     error: BaseError[];
+    liquidityToWithdraw?: Amount;
 }
 
 export const initialState: LiquidityState = {
@@ -54,9 +54,13 @@ export const initialState: LiquidityState = {
 
 export default handleActions<LiquidityState, any>(
     {
+        [LiquidityActions.LIQUIDITY_TO_WITHDRAW_UPDATE]: produce(
+            (draft: LiquidityState, action: UpdateLiquidityForWithdrawalAction) => {
+                draft.liquidityToWithdraw = action.payload;
+            }
+        ),
         [LiquidityActions.TOTAL_LIQUIDITY_UPDATE]: produce(
             (draft: LiquidityState, action: UpdateTotalLiquidityAction) => {
-                // console.log('total_liquidity::::::', action.payload);
                 draft.totalLiquidity = action.payload;
             }
         ),
@@ -68,9 +72,6 @@ export default handleActions<LiquidityState, any>(
                 draft.form.signingAccount = action.payload;
             }
         ),
-        [LiquidityActions.TO_ASSET_AMOUNT_SET]: produce((draft: LiquidityState, action: SetAddAsset2AmountAction) => {
-            draft.form.assetAmount = action.payload;
-        }),
         [LiquidityActions.LIQUIDITY_POOL_BALANCE_UPDATE]: produce(
             (draft: LiquidityState, action: UpdatePoolBalanceAction) => {
                 const index = draft.exchangePool.findIndex(
@@ -97,58 +98,46 @@ export default handleActions<LiquidityState, any>(
                 }
             }
         ),
-        [LiquidityActions.FROM_ASSET_AMOUNT_SET]: produce((draft: LiquidityState, action: SetAddAsset1AmountAction) => {
-            draft.form.assetAmount = action.payload;
-        }),
         [LiquidityActions.USER_ASSET_BALANCE_UPDATE]: produce(
             (draft: LiquidityState, action: UpdateUserAssetBalanceAction) => {
-                draft.userAssetBalance.push(action.payload);
-            }
-        ),
-        [LiquidityActions.USER_ADD_ASSET1_BALANCE_UPDATE]: produce(
-            (draft: LiquidityState, action: UpdateUserAssetBalanceAction) => {
-                const index = draft.userAssetBalance.findIndex((assetData: IAssetBalance) => {
-                    return assetData.assetId === draft.form.assetId && assetData.account === draft.form.signingAccount;
-                });
+                const index = draft.userAssetBalance.findIndex(
+                    (userBal: IAssetBalance) =>
+                        userBal.assetId === action.payload.assetId && userBal.account === action.payload.account
+                );
                 if (index === -1) {
                     draft.userAssetBalance.push(action.payload);
+                } else {
+                    draft.userAssetBalance[index] = action.payload;
                 }
-                draft.userAssetBalance[index] = action.payload;
             }
         ),
 
-        [LiquidityActions.SELECTED_ADD_ASSET1_UPDATE]: produce(
-            (draft: LiquidityState, action: UpdateSelectedAddAsset1Action) => {
+        [LiquidityActions.SELECTED_ASSET1_UPDATE]: produce(
+            (draft: LiquidityState, action: UpdateSelectedAsset1Action) => {
                 draft.form.assetId = action.payload;
             }
         ),
-        [LiquidityActions.ADD_ASSET1_AMOUNT_SET]: produce(
-            (draft: LiquidityState, action: UpdateAddAsset1AmountAction) => {
-                draft.form.assetAmount = action.payload;
-            }
-        ),
-        [LiquidityActions.ADD_ASSET1_AMOUNT_UPDATE]: produce(
-            (draft: LiquidityState, action: SetAddAsset1AmountAction) => {
-                draft.form.assetAmount = action.payload;
-            }
-        ),
-        [LiquidityActions.ADD_ASSET2_AMOUNT_SET]: produce(
-            (draft: LiquidityState, action: UpdateAddAsset2AmountAction) => {
-                draft.form.coreAmount = action.payload;
-            }
-        ),
-        [LiquidityActions.ADD_ASSET2_AMOUNT_UPDATE]: produce(
-            (draft: LiquidityState, action: SetAddAsset2AmountAction) => {
-                draft.form.coreAmount = action.payload;
-            }
-        ),
+        [LiquidityActions.ASSET1_AMOUNT_SET]: produce((draft: LiquidityState, action: UpdateAsset1AmountAction) => {
+            draft.form.assetAmount = action.payload;
+        }),
+        [LiquidityActions.ASSET1_AMOUNT_UPDATE]: produce((draft: LiquidityState, action: SetAsset1AmountAction) => {
+            draft.form.assetAmount = action.payload;
+        }),
+        [LiquidityActions.ASSET2_AMOUNT_SET]: produce((draft: LiquidityState, action: UpdateAsset2AmountAction) => {
+            draft.form.coreAmount = action.payload;
+        }),
+        [LiquidityActions.ASSET2_AMOUNT_UPDATE]: produce((draft: LiquidityState, action: SetAsset2AmountAction) => {
+            draft.form.coreAmount = action.payload;
+        }),
 
         [LiquidityActions.ERROR_SET]: produce((draft: LiquidityState, action: SetLiquidityErrorAction) => {
             draft.error.push(action.payload);
         }),
         [LiquidityActions.ERROR_REMOVE]: produce((draft: LiquidityState, action: RemoveLiquidityErrorAction) => {
-            const newErrorList = draft.error.filter(err => err !== action.payload);
-            draft.error = newErrorList;
+            const index = draft.error.findIndex((err: BaseError) => err.message === action.payload.message);
+            if (index > -1) {
+                draft.error.splice(index, 1);
+            }
         }),
         [LiquidityActions.ERROR_RESET]: produce((draft: LiquidityState, action: ResetLiquidityErrorAction) => {
             draft.error = [];
@@ -158,6 +147,9 @@ export default handleActions<LiquidityState, any>(
         }),
         [LiquidityActions.EXTRINSIC_UPDATE]: produce((draft: LiquidityState, action: UpdateExtrinsicAction) => {
             draft.form.extrinsic = action.payload;
+            draft.form.assetAmount = undefined;
+            draft.form.assetId = undefined;
+            draft.form.coreAmount = undefined;
         }),
         [LiquidityActions.TRANSACTION_BUFFER_UPDATE]: produce(
             (draft: LiquidityState, action: UpdateTransactionBufferAction) => {
@@ -177,6 +169,7 @@ export default handleActions<LiquidityState, any>(
         [LiquidityActions.EXCHANGE_RATE_UPDATE]: produce((draft: LiquidityState, action: UpdateExchangeRateAction) => {
             draft.exchangeRate = action.payload;
         }),
+        [LiquidityActions.LIQUIDITY_RESET]: () => initialState,
     },
     initialState
 );

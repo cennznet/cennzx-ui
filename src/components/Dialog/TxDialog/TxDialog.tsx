@@ -13,9 +13,9 @@ export type TxDialogProps = {
     success?: boolean;
     title: string;
     exchange;
-    send;
-    buffer: number;
+    buffer?: number;
     liquidity;
+    assetInfo: [];
     handleClose: () => void;
     handleExchangeSubmit: (arg0: SubmitType) => void;
     handleSendSubmit: (arg0: SubmitType) => void;
@@ -25,7 +25,6 @@ export type TxDialogProps = {
 
 export const TxDialog: FC<TxDialogProps> = ({
     signingAccount,
-    isAccountLocked,
     actualTxFee,
     feeAssetId,
     extrinsic,
@@ -41,8 +40,8 @@ export const TxDialog: FC<TxDialogProps> = ({
     events,
     fromAssetBalance,
     exchange,
-    send,
     liquidity,
+    assetInfo,
     handleClose,
     handleExchangeSubmit,
     handleSendSubmit,
@@ -60,13 +59,14 @@ export const TxDialog: FC<TxDialogProps> = ({
                     coreAssetId={coreAssetId}
                     error={error}
                     success={success}
-                    recipientAddress={title === 'send' && send.recipientAddress}
+                    recipientAddress={undefined}
                     buffer={title === 'exchange' ? exchange.buffer : liquidity.buffer}
                     estimatedTxFee={estimatedTxFee}
                     txHash={txHash}
                     feeAssetId={feeAssetId}
                     actualTxFee={actualTxFee}
                     events={events}
+                    assetInfo={assetInfo}
                 />
             }
             footer={
@@ -75,20 +75,18 @@ export const TxDialog: FC<TxDialogProps> = ({
                     error={error}
                     success={success}
                     onClose={handleClose}
-                    onSubmit={pass => {
+                    onSubmit={() => {
                         if (title === 'exchange') {
                             handleExchangeSubmit({
                                 ...exchange,
                                 extrinsic,
                                 feeInFeeAsset: estimatedTxFee.feeInFeeAsset,
-                                password: pass,
                             });
                         } else if (title === 'liquidity') {
                             handleLiquiditySubmit({
                                 ...liquidity,
                                 extrinsic,
                                 feeInFeeAsset: null,
-                                password: pass,
                             });
                         }
                     }}

@@ -12,7 +12,7 @@ const Box = styled.ul<BoxProps>`
     font-family: 'Open Sans', sans-serif;
     font-size: 14px;
     overflow-y: scroll;
-    padding: 0px;
+    margin: 0.2rem;
     text-align: ${props => (props.center.toString() === 'true' ? 'center' : 'left')};
 `;
 

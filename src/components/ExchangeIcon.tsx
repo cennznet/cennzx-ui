@@ -12,7 +12,7 @@ export interface FontAwesomeIconProps {
 }
 
 const ExchangeIcon = styled(FontAwesomeIcon)<FontAwesomeIconProps>`
-    height: 20px;
+    height: 16px;
     width: 20px;
     color: rgba(17, 48, 255, 0.3);
     font-size: 20px;
@@ -30,6 +30,7 @@ const ExchangeIcon = styled(FontAwesomeIcon)<FontAwesomeIconProps>`
 `;
 
 const Container = styled.div`
+    margin-top: 20px;
     width: 100%;
     display: flex;
     flex-direction: row;

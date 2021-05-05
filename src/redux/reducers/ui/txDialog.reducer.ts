@@ -1,4 +1,4 @@
-import {EventRecord} from '@plugnet/types';
+import {EventRecord} from '@cennznet/types';
 import produce from 'immer';
 import {handleActions} from 'redux-actions';
 import {BaseError} from '../../../error/error';
@@ -9,7 +9,8 @@ import TxDialogActions, {
     RequestSubmitLiquidity,
     RequestSubmitSend,
     RequestSubmitTransaction,
-    SetDailogErrorAction,
+    ResetErrorAction,
+    SetDialogErrorAction,
     UpdateActualFeeAction,
     UpdateStageAction,
     UpdateTxEventsAction,
@@ -72,7 +73,7 @@ export default handleActions<TxDialogState, any>(
         [TxDialogActions.TX_HASH_UPDATE]: produce((draft: TxDialogState, action: UpdateTxHashAction) => {
             draft.txHash = action.payload;
         }),
-        [TxDialogActions.ERROR_SET]: produce((draft: TxDialogState, action: SetDailogErrorAction) => {
+        [TxDialogActions.ERROR_SET]: produce((draft: TxDialogState, action: SetDialogErrorAction) => {
             draft.error = action.payload;
         }),
         [TxDialogActions.TRANSACTION_SUBMIT_REQUEST]: produce(
@@ -85,12 +86,15 @@ export default handleActions<TxDialogState, any>(
                 draft.buffer = buffer;
             }
         ),
+        [TxDialogActions.ERROR_RESET]: produce((draft: TxDialogState, action: ResetErrorAction) => {
+            draft.error = null;
+        }),
         [TxDialogActions.TRANSACTION_SUBMIT_SEND]: produce((draft: TxDialogState, action: RequestSubmitSend) => {
             const {extrinsic, signingAccount, feeAssetId, feeInFeeAsset, fromAssetBalance} = action.payload;
             draft.extrinsic = extrinsic;
             draft.signingAccount = signingAccount;
             draft.feeAssetId = feeAssetId;
-            draft.feeInFeeAsset = feeInFeeAsset;
+            draft.feeInFeeAsset = feeInFeeAsset ? feeInFeeAsset.feeInFeeAsset : null;
             draft.fromAssetBalance = fromAssetBalance;
         }),
         [TxDialogActions.TRANSACTION_SUBMIT_LIQUIDITY]: produce(
@@ -100,7 +104,7 @@ export default handleActions<TxDialogState, any>(
                 draft.signingAccount = signingAccount;
                 draft.feeAssetId = feeAssetId;
                 draft.buffer = buffer;
-                draft.feeInFeeAsset = feeInFeeAsset;
+                draft.feeInFeeAsset = feeInFeeAsset ? feeInFeeAsset.feeInFeeAsset : null;
             }
         ),
     },

@@ -26,23 +26,14 @@ export function observableEstimatedFee(
     signingAccount: string,
     feeAssetId: number,
     api: ApiRx
-): Observable<[BN, BN]> {
-    // const observableFee = api.rpc.payment.queryInfo(tx.toHex());
-    // return observableFee.pipe(
-    //     switchMap(feeAmtInCPAY => {
+): Observable<BN[]> {
     const maxPayment = '50000000000000000';
 
     return api.derive.fees.estimateFee({extrinsic: tx, userFeeAssetId: feeAssetId, maxPayment}).pipe(
         switchMap(estimatedFeeAssetAmount => {
             return of([estimatedFeeAssetAmount as BN, estimatedFeeAssetAmount as BN]);
-        }),
-        catchError((err: Error) => {
-            // tslint:disable-next-line:no-console
-            console.log('error', err);
         })
     );
-    // })
-    // );
 }
 
 export function observableActualFee(blockHash: Hash, extrinsicIndex: BN, api: ApiRx): Observable<BN> {

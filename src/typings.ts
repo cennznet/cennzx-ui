@@ -1,5 +1,6 @@
 import {ApiRx} from '@cennznet/api';
 import {Signer} from '@cennznet/api/types';
+import {InjectedWindowProvider} from '@polkadot/extension-inject/types';
 import {Observable} from 'rxjs/internal/Observable';
 import {Amount} from './util/Amount';
 
@@ -33,6 +34,7 @@ export interface IAppConfig {
 export interface Asset {
     symbol: string;
     id: number;
+    decimalPlaces?: number;
 }
 
 export interface AmountParams {
@@ -48,8 +50,8 @@ export interface IOption {
 
 declare global {
     interface Window {
+        injectedWeb3: Record<string, InjectedWindowProvider>;
         config: IAppConfig;
-        cennznetInjected: CennznetInjectedGlobal;
         __REDUX_DEVTOOLS_EXTENSION__?: any;
     }
 }
@@ -92,19 +94,6 @@ export interface IAssetBalance {
 export interface IFee {
     feeInCpay: Amount;
     feeInFeeAsset: Amount;
-}
-export interface PolkadotInjectedGlobal {
-    enable: any;
-    // [name: string]: {
-    //     version: string;
-    //     enable(): Promise<CennznetInjected>;
-    // };
-    accounts: any;
-    metadata?: {};
-    name: string;
-    provider?: any;
-    signer: {};
-    version: string;
 }
 
 export interface CennznetInjected {

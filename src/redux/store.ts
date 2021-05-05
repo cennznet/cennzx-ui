@@ -1,5 +1,4 @@
 import {ApiRx} from '@cennznet/api';
-import {web3Accounts} from '@polkadot/extension-dapp';
 import {cryptoWaitReady} from '@polkadot/util-crypto';
 import {applyMiddleware, compose, createStore} from 'redux';
 import {createEpicMiddleware} from 'redux-observable';
@@ -11,7 +10,7 @@ import {hotReloadingEpic} from './epics/hotReloadingEpic';
 import reducer, {AppState} from './reducers';
 
 cryptoWaitReady();
-const cennzNetApi = typeof window !== 'undefined' ? ApiRx.create() : EMPTY;
+const cennzNetApi = typeof window !== 'undefined' ? ApiRx.create({provider: window.config.ENDPOINT}) : EMPTY;
 
 const epicMiddleware = createEpicMiddleware<any, any, AppState, IEpicDependency>({
     dependencies: {api$: cennzNetApi},

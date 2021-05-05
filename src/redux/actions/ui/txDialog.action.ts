@@ -1,10 +1,11 @@
-import {EventRecord, Hash} from '@plugnet/types';
+import {EventRecord, Hash} from '@cennznet/types';
 import BN from 'bn.js';
 import {createAction} from 'redux-actions';
 import {BaseError} from '../../../error/error';
 import {IExtrinsic, IFee} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import {Stages} from '../../reducers/ui/txDialog.reducer';
+import ExchangeActions from './exchange.action';
 
 export enum TxDialogActions {
     DIALOG_OPEN = 'TX_DIALOG/DIALOG_OPEN',
@@ -18,19 +19,14 @@ export enum TxDialogActions {
     TRANSACTION_SUBMIT_LIQUIDITY = 'TX_DIALOG/TRANSACTION_SUBMIT_LIQUIDITY',
     TX_ACTUAL_FEE_REQUEST = 'TX_DIALOG/TX_ACTUAL_FEE_REQUEST',
     ERROR_SET = 'TX_DIALOG/ERROR_SET',
+    ERROR_RESET = 'TX_DIALOG/ERROR_RESET',
 }
 
 export interface SubmitLiquidity {
-    type: string;
     extrinsic: IExtrinsic;
     signingAccount: string;
     feeAssetId: number;
     feeInFeeAsset: IFee;
-    assetAmount: Amount;
-    assetId: number;
-    assetReserve: Amount;
-    coreAmount: Amount;
-    coreAssetId: number;
     buffer: number;
 }
 export interface OpenDialog {
@@ -84,13 +80,12 @@ export const updateActualFee = createAction(TxDialogActions.TX_ACTUAL_FEE_UPDATE
 
 export const requestSubmitTransaction = createAction(
     TxDialogActions.TRANSACTION_SUBMIT_REQUEST,
-    ({extrinsic, signingAccount, feeAssetId, feeInFeeAsset, buffer, password}) => ({
+    ({extrinsic, signingAccount, feeAssetId, feeInFeeAsset, buffer}) => ({
         extrinsic,
         signingAccount,
         feeAssetId,
         feeInFeeAsset,
         buffer,
-        password,
     })
 );
 export const requestSubmitSend = createAction(
@@ -106,7 +101,6 @@ export const requestSubmitSend = createAction(
         fromAssetAmount,
         fromAssetBalance,
         buffer,
-        password,
     }: OpenDialog) => ({
         extrinsic,
         signingAccount,
@@ -118,39 +112,20 @@ export const requestSubmitSend = createAction(
         fromAssetAmount,
         fromAssetBalance,
         buffer,
-        password,
     })
 );
 
 export const requestSubmitLiquidity = createAction(
     TxDialogActions.TRANSACTION_SUBMIT_LIQUIDITY,
-    ({
-        type,
-        extrinsic,
-        signingAccount,
-        feeAssetId,
-        feeInFeeAsset,
-        add1Asset,
-        add1Amount,
-        add2Asset,
-        add2Amount,
-        add1Reserve,
-        buffer,
-        password,
-    }: SubmitLiquidity) => ({
-        type,
-        extrinsic,
-        signingAccount,
-        feeAssetId,
-        feeInFeeAsset,
-        add1Asset,
-        add1Amount,
-        add2Asset,
-        add2Amount,
-        add1Reserve,
-        buffer,
-        password,
-    })
+    ({extrinsic, signingAccount, feeAssetId, feeInFeeAsset, buffer}: SubmitLiquidity) => {
+        return {
+            extrinsic,
+            signingAccount,
+            feeAssetId,
+            feeInFeeAsset,
+            buffer,
+        };
+    }
 );
 
 export const updateStage = createAction(TxDialogActions.STAGE_UPDATE, (stage: Stages) => stage);
@@ -166,7 +141,9 @@ export const requestActualFee = createAction(
     (feeParams: {blockHash: Hash; extrinsicIndex: BN}) => feeParams
 );
 
-export const setDailogError = createAction(TxDialogActions.ERROR_SET, (err: BaseError) => err);
+export const setDialogError = createAction(TxDialogActions.ERROR_SET, (err: BaseError) => err);
+
+export const resetDialogError = createAction(ExchangeActions.ERROR_RESET);
 
 export type OpenTxDialogAction = ReturnType<typeof openDialog>;
 
@@ -186,5 +163,8 @@ export type RequestSubmitSend = ReturnType<typeof requestSubmitSend>;
 
 export type RequestSubmitLiquidity = ReturnType<typeof requestSubmitLiquidity>;
 
-export type SetDailogErrorAction = ReturnType<typeof setDailogError>;
+export type SetDialogErrorAction = ReturnType<typeof setDialogError>;
+
+export type ResetErrorAction = ReturnType<typeof resetDialogError>;
+
 export default TxDialogActions;

@@ -1,7 +1,6 @@
 import {UserBalanceNotEnough, UserBalanceNotEnoughForFee} from '../../../error/error';
 import {IAssetBalance} from '../../../typings';
 import {Amount} from '../../../util/Amount';
-import {getAsset} from '../../../util/assets';
 import {ExchangeProps, FormSection} from '../exchange';
 import {existErrors, FormErrors, mergeError} from './index';
 
@@ -9,15 +8,12 @@ function checkUserBalance(props: ExchangeProps, errors: FormErrors): void {
     const {
         form: {fromAssetAmount, fromAsset},
         fromAssetBalance,
+        assetInfo,
     } = props;
     //skip when any error exists on fromAssetInput
     if (existErrors(() => true, errors, FormSection.fromAssetInput)) return;
     if (fromAssetAmount && fromAssetBalance && fromAssetAmount.gt(fromAssetBalance)) {
-        mergeError(
-            FormSection.fromAssetInput,
-            new UserBalanceNotEnough(getAsset(fromAsset), fromAssetAmount, fromAssetBalance),
-            errors
-        );
+        mergeError(FormSection.fromAssetInput, new UserBalanceNotEnough(assetInfo[fromAsset], fromAssetAmount), errors);
     }
 }
 
@@ -27,6 +23,7 @@ function checkUserBalanceForFee(props: ExchangeProps, errors: FormErrors): strin
         txFee,
         coreAssetId,
         userAssetBalance,
+        assetInfo,
     } = props;
     if (!fromAssetAmount || !fromAsset || !txFee) return;
     const feeAmount = coreAssetId === feeAssetId ? txFee.feeInCpay : txFee.feeInFeeAsset;
@@ -43,7 +40,7 @@ function checkUserBalanceForFee(props: ExchangeProps, errors: FormErrors): strin
         if (!balRequired || assetBalance.balance.lt(balRequired)) {
             mergeError(
                 FormSection.form,
-                new UserBalanceNotEnoughForFee(getAsset(feeAssetId), feeAmount, assetBalance.balance),
+                new UserBalanceNotEnoughForFee(assetInfo[feeAssetId], feeAmount, assetBalance.balance),
                 errors
             );
         }
