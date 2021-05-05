@@ -16,8 +16,6 @@ describe('get core asset from api epic working', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -65,8 +63,6 @@ describe('get fee rate from api epic working', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -114,8 +110,6 @@ describe('get registered assets from api epic working', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -185,8 +179,6 @@ describe('get registered assets from api epic working when api throws error', ()
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {

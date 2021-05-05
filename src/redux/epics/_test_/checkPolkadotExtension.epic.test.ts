@@ -31,8 +31,6 @@ describe.skip('trigger on init, polkadot extension detected', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual[0]).toEqual(expected[0]);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -102,8 +100,6 @@ describe('trigger on detected, extension connected and accounts update', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(async ({hot, cold, expectObservable}) => {
@@ -138,8 +134,6 @@ describe('Extension detection completed works', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {

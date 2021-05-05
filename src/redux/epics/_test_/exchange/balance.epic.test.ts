@@ -23,8 +23,6 @@ describe('Request asset balance for sell asset working', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -80,8 +78,6 @@ describe('Request asset balance for buy asset working', () => {
     triggers.forEach(action => {
         it(action.type, () => {
             const testScheduler = new TestScheduler((actual, expected) => {
-                // somehow assert the two objects are equal
-                // e.g. with chai `expect(actual).deep.equal(expected)`
                 expect(actual).toEqual(expected);
             });
             testScheduler.run(({hot, cold, expectObservable}) => {
@@ -111,7 +107,7 @@ describe('Request asset balance for buy asset working', () => {
                                 feeAssetId: 16001,
                                 fromAssetAmount: new Amount(2),
                                 toAssetAmount: new Amount(1),
-                                signingAccount: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
+                                signingAccount: newAccount,
                                 extrinsic: SWAP_INPUT,
                             },
                         },
@@ -122,7 +118,7 @@ describe('Request asset balance for buy asset working', () => {
                 expectObservable(output$).toBe(expect_, {
                     c: {
                         type: types.ui.Exchange.ASSET_BALANCE_REQUEST,
-                        payload: {assetId: 16001, signingAccount: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty'},
+                        payload: {assetId: feeAsset, signingAccount: newAccount},
                     },
                 });
             });

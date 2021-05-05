@@ -46,7 +46,7 @@ export default handleActions(
                 const id = asset[0];
                 const symbol = hexToString(asset[1].symbol);
                 const decimalPlaces = asset[1].decimalPlaces;
-                newAssetList[asset[0]] = {decimalPlaces, symbol, id};
+                newAssetList[id] = {decimalPlaces, symbol, id};
             });
             draft.assetInfo = newAssetList;
         }),

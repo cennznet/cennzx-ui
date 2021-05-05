@@ -60,7 +60,6 @@ export const TxDialog: FC<TxDialogProps> = ({
                     error={error}
                     success={success}
                     recipientAddress={undefined}
-                    // recipientAddress={title === 'send' && send.recipientAddress}
                     buffer={title === 'exchange' ? exchange.buffer : liquidity.buffer}
                     estimatedTxFee={estimatedTxFee}
                     txHash={txHash}
