@@ -35,7 +35,7 @@ export interface ExchangeState {
 }
 
 export const initialState: ExchangeState = {
-    form: {feeAssetId: 16001, buffer: typeof window !== 'undefined' ? window.config.FEE_BUFFER : 0.05},
+    form: {feeAssetId: 0, buffer: typeof window !== 'undefined' ? window.config.FEE_BUFFER : 0.05},
     exchangePool: [],
     userAssetBalance: [],
     error: [],
