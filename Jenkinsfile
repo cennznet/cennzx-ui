@@ -12,95 +12,97 @@ def helm_install(){
 
 pipeline {
     agent {
-	label 'linux-agent2'
+        label 'linux-agent2'
     }
 
     environment {
-	NAMESPACE = 'cennzx-ui'
-	BLANK_SECRET_FN = 'helm/blank-secret.json'
-	SERVICE_NAME    = 'cennzx-ui'
-	CONFIGMAP       = 'cennzx-ui-settings'
-	SECRETS_NAME    = 'cennzx-ui-secrets'
-	IMAGE_NAME="centrality/${SERVICE_NAME}:1.0.${BUILD_NUMBER}"
+        NAMESPACE = 'cennzx-ui'
+        BLANK_SECRET_FN = 'helm/blank-secret.json'
+        SERVICE_NAME    = 'cennzx-ui'
+        CONFIGMAP       = 'cennzx-ui-settings'
+        SECRETS_NAME    = 'cennzx-ui-secrets'
+        IMAGE_NAME="centrality/${SERVICE_NAME}:1.0.${BUILD_NUMBER}"
     }
 
     stages {
-	stage('Build and Publish image') {
-	    steps {
-		script{
-		    withCredentials([usernamePassword(credentialsId: 'docker-hub-account-for-cennznet', usernameVariable: 'NUSER', passwordVariable: 'NPASS')]) {
-			sh 'docker login -u ${NUSER} -p ${NPASS}'
-			def customImage = docker.build("cennznet/${SERVICE_NAME}:1.0.${env.BUILD_ID}")
+        stage('Build and Publish image') {
+            steps {
+                script{
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-account-for-cennznet', usernameVariable: 'NUSER', passwordVariable: 'NPASS')]) {
+                        sh 'docker login -u ${NUSER} -p ${NPASS}'
+                        def customImage = docker.build("cennznet/${SERVICE_NAME}:1.0.${env.BUILD_ID}")
                         customImage.push()
                         customImage.push('latest')
-		    }
+                    }
 
-		}
-	    }
-	}
-
-
-	stage('-- [DEV] -- Deploy to K8S') {
-	    environment {
-		ENV = 'dev'
-		HOSTNAME = 'service.eks.centrality.me'
-		MY_VARIABLE = 'XYZ'
-	    }
-
-	    when {
-		not {
-		    branch 'master'
-		}
-	    }
-	    agent {
-		docker {
-		    image 'maochuanli/debian-buster:latest'
-		    label 'linux'
-		}
-	    }
-	    steps{
-		helm_install()
-	    }
-	    
-	}
-
-	stage ('Confirm [PROD] Deployment') {
-	    when {
-		branch 'master'
-	    }
-	    steps {
-		timeout(unit: 'SECONDS', time: 180) {
-	            input "Confirm PROD deploy?"
-		}
-	    }
-	}
-
-	stage('-- [PROD] -- Deploy to K8S') {
-	    when {
-		branch 'master'
+                }
             }
-	    environment {
-		ENV = 'prod'
-		HOSTNAME = 'service.eks.centralityapp.com'
-	    }
+        }
 
-	    agent {
-		docker {
-		    image 'maochuanli/debian-buster:latest'
-		    label 'linux'
-		}
-	    }
-	    steps{
-		helm_install()
-	    }
-	    
-	}
+
+        stage('-- [DEV] -- Deploy to K8S') {
+            environment {
+                ENV = 'dev'
+                HOSTNAME = 'service.eks.centrality.me'
+                MY_VARIABLE = 'XYZ'
+            }
+            when {
+                not {
+                    anyOf {
+                        branch 'master';
+                        branch 'feature/fake-master-new'
+                    }
+                }
+            }
+            agent {
+                docker {
+                    image 'maochuanli/debian-buster:latest'
+                    label 'linux'
+                }
+            }
+            steps{
+                helm_install()
+            }
+            
+        }
+
+        stage ('Confirm [PROD] Deployment') {
+            when {
+                branch 'feature/fake-master-new'
+            }
+            steps {
+                timeout(unit: 'SECONDS', time: 180) {
+                    input "Confirm PROD deploy?"
+                }
+            }
+        }
+
+        stage('-- [PROD] -- Deploy to K8S') {
+            when {
+                branch 'feature/fake-master-new'
+            }
+            environment {
+                ENV = 'prod'
+                HOSTNAME = 'cennzx.io'
+            }
+
+            agent {
+                docker {
+                    image 'maochuanli/debian-buster:latest'
+                    label 'linux'
+                }
+            }
+            steps{
+                helm_install()
+            }
+            
+        }
 
     }
 
     post {
-	always {
-	    sh 'bash /mnt/jenkins/script/cleanup.sh'
-	}
+        always {
+            sh 'bash /mnt/jenkins/script/cleanup.sh'
+        }
     }
 }
