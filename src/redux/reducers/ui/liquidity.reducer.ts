@@ -43,9 +43,7 @@ export interface LiquidityState {
 
 export const initialState: LiquidityState = {
     form: {
-        feeAssetId: 0,
         buffer: typeof window !== 'undefined' ? window.config.FEE_BUFFER : 0.05,
-        coreAssetId: 0,
     },
     exchangePool: [],
     userAssetBalance: [],
