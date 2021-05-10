@@ -19,6 +19,7 @@ import LiquidityActions, {
     UpdatePoolBalanceAction,
     UpdateSelectedAccountAction,
     UpdateSelectedAsset1Action,
+    UpdateSelectedAsset2Action,
     UpdateTotalLiquidityAction,
     UpdateTransactionBufferAction,
     UpdateTransactionFeeAction,
@@ -42,9 +43,7 @@ export interface LiquidityState {
 
 export const initialState: LiquidityState = {
     form: {
-        feeAssetId: 16001,
         buffer: typeof window !== 'undefined' ? window.config.FEE_BUFFER : 0.05,
-        coreAssetId: 16001,
     },
     exchangePool: [],
     userAssetBalance: [],
@@ -170,6 +169,11 @@ export default handleActions<LiquidityState, any>(
             draft.exchangeRate = action.payload;
         }),
         [LiquidityActions.LIQUIDITY_RESET]: () => initialState,
+        [LiquidityActions.SELECTED_ASSET2_UPDATE]: produce(
+            (draft: LiquidityState, action: UpdateSelectedAsset2Action) => {
+                draft.form.coreAssetId = action.payload;
+            }
+        ),
     },
     initialState
 );

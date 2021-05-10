@@ -18,6 +18,7 @@ spec:
     spec:
       containers:
       - name: {{.Values.appName}}
+        imagePullPolicy: Always
         image: {{ .Values.image.repository }}{{ .Values.image.name }}:{{ .Values.image.tag }}
         readinessProbe:
           httpGet:
