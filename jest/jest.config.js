@@ -18,5 +18,6 @@ module.exports = {
     ],
     coverageReporters: ['json', 'html'],
     testEnvironment: './jest/env.js',
-    setupFilesAfterEnv: ['./jest/jest.setup.js']
+    setupFilesAfterEnv: ['./jest/jest.setup.js'],
+    transformIgnorePatterns: ['/node_modules/(?!@polkadot|@babel/runtime/helpers/esm/)']
 };

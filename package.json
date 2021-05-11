@@ -12,7 +12,7 @@
     "bundle": "react-static bundle",
     "export": "react-static export",
     "test:epics": "jest --config jest/jest.config.js --coverage",
-    "rm-mjs": "find . -type f | grep -e 'mjs$' | xargs rm"
+    "lint": "npx tslint -c tslint.json --project ."
   },
   "dependencies": {
     "@babel/plugin-proposal-pipeline-operator": "^7.12.1",
