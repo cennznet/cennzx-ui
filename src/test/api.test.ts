@@ -28,6 +28,10 @@ describe('e2e api create', () => {
         alice = keyring.addFromUri('//Alice');
     });
 
+    afterAll(async () => {
+        await api.disconnect();
+    });
+
     it('Testing add liquidity when trade asset amount is provided and core asset amount is calculated', async done => {
         const amount = 1000;
         const coreAmount = amount;
