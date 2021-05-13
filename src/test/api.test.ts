@@ -70,7 +70,7 @@ describe('e2e api create', () => {
     });
 
     it('Testing remove liquidity when core asset amount is provided and trade asset amount and liquidity is calculated', async done => {
-        const coreAmount = new BN(20);
+        const coreAmount = new BN(123);
         const totalLiquidity = await api.derive.cennzx.totalLiquidity(CENNZ);
         const tradeAssetReserve = await api.derive.cennzx.poolAssetBalance(CENNZ);
         const coreAssetReserve = await api.derive.cennzx.poolCoreAssetBalance(CENNZ);
@@ -78,14 +78,14 @@ describe('e2e api create', () => {
         if (tradeAssetReserve.isZero() || coreAssetReserve.isZero()) {
             done();
         }
-        if (tradeAssetReserve.toString() === coreAssetReserve.toString()) {
-            liquidityAmount = coreAmount.mul(totalLiquidity).div(coreAssetReserve);
-        } else {
-            liquidityAmount = coreAmount
-                .mul(totalLiquidity)
-                .div(coreAssetReserve)
-                .addn(1);
-        }
+        // if (tradeAssetReserve.toString() === coreAssetReserve.toString()) {
+        liquidityAmount = coreAmount.mul(totalLiquidity).div(coreAssetReserve);
+        // } else {
+        //     liquidityAmount = coreAmount
+        //         .mul(totalLiquidity)
+        //         .div(coreAssetReserve)
+        //         .addn(1);
+        // }
         const assetAmount = liquidityAmount.mul(tradeAssetReserve).div(totalLiquidity);
         const minCoreWithdraw = new Amount(coreAmount.muln(1 - 0.05));
         const minAssetWithdraw = new Amount(assetAmount.muln(1 - 0.05));
