@@ -36,7 +36,6 @@ describe('e2e api create', () => {
         const amount = 1000;
         const coreAmount = amount;
         const minLiquidity = 1;
-        // Add Liquidity for the first time in the pool.
         await api.tx.cennzx
             .addLiquidity(CENNZ, minLiquidity, amount, coreAmount)
             .signAndSend(alice, async ({events, status}) => {
@@ -82,14 +81,7 @@ describe('e2e api create', () => {
         if (tradeAssetReserve.isZero() || coreAssetReserve.isZero()) {
             done();
         }
-        // if (tradeAssetReserve.toString() === coreAssetReserve.toString()) {
         liquidityAmount = coreAmount.mul(totalLiquidity).div(coreAssetReserve);
-        // } else {
-        //     liquidityAmount = coreAmount
-        //         .mul(totalLiquidity)
-        //         .div(coreAssetReserve)
-        //         .addn(1);
-        // }
         const assetAmount = liquidityAmount.mul(tradeAssetReserve).div(totalLiquidity);
         const minCoreWithdraw = new Amount(coreAmount.muln(1 - 0.05));
         const minAssetWithdraw = new Amount(assetAmount.muln(1 - 0.05));
