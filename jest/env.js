@@ -9,7 +9,7 @@ class Environment extends NodeEnvironment {
                     ArrayBuffer: ArrayBuffer,
                     window: {
                         config: {
-                            ENDPOINT: 'wss://rimu.unfrastructure.io/public/ws'
+                            ENDPOINT: 'ws://127.0.0.1:9944/'
                         }
                     }
                 }),

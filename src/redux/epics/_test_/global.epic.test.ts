@@ -23,7 +23,7 @@ describe('get core asset from api epic working', () => {
                 // prettier-ignore
                 const getCoreAssetId   = ' -b-';
                 // prettier-ignore
-                const expect_           = '--c';
+                const expect_           = '--(cd)';
 
                 const action$ = hot(action_, {
                     a: action,
@@ -50,6 +50,10 @@ describe('get core asset from api epic working', () => {
                 expectObservable(output$).toBe(expect_, {
                     c: {
                         type: types.GlobalActions.CORE_ASSET_UPDATE,
+                        payload: 16001,
+                    },
+                    d: {
+                        type: types.ui.Liquidity.SELECTED_ASSET2_UPDATE,
                         payload: 16001,
                     },
                 });
