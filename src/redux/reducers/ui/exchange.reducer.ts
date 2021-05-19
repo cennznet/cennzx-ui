@@ -87,6 +87,7 @@ export default handleActions<ExchangeState, any>(
             draft.form.fromAsset = undefined;
             draft.form.toAsset = undefined;
             draft.form.signingAccount = undefined;
+            draft.form.buffer = typeof window !== 'undefined' ? window.config.FEE_BUFFER : 0.05;
             draft.userAssetBalance = [];
             draft.error = [];
         }),

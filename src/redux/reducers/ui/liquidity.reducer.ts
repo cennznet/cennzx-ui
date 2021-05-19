@@ -174,7 +174,7 @@ export default handleActions<LiquidityState, any>(
             draft.form.assetId = undefined;
             draft.form.coreAmount = undefined;
             draft.form.signingAccount = undefined;
-            draft.form.buffer = 0.05;
+            draft.form.buffer = typeof window !== 'undefined' ? window.config.FEE_BUFFER : 0.05;
             draft.extrinsicParams = undefined;
             draft.txFee = undefined;
             draft.error = [];
