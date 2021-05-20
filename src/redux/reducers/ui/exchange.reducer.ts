@@ -80,7 +80,17 @@ export default handleActions<ExchangeState, any>(
         [ExchangeActions.EXCHANGE_RATE_UPDATE]: produce((draft: ExchangeState, action: UpdateExchangeRateAction) => {
             draft.exchangeRate = action.payload;
         }),
-        [ExchangeActions.TRADE_RESET]: () => initialState,
+        [ExchangeActions.TRADE_RESET]: produce((draft: ExchangeState) => {
+            draft.form.fromAssetAmount = undefined;
+            draft.form.toAssetAmount = undefined;
+            draft.form.extrinsic = undefined;
+            draft.form.fromAsset = undefined;
+            draft.form.toAsset = undefined;
+            draft.form.signingAccount = undefined;
+            draft.form.buffer = typeof window !== 'undefined' ? window.config.FEE_BUFFER : 0.05;
+            draft.userAssetBalance = [];
+            draft.error = [];
+        }),
         [ExchangeActions.ASSET_SWAP]: produce((draft: ExchangeState) => {
             const draftFromAsset = draft.form.fromAsset;
             draft.form.fromAsset = draft.form.toAsset;

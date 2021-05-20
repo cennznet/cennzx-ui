@@ -168,7 +168,19 @@ export default handleActions<LiquidityState, any>(
         [LiquidityActions.EXCHANGE_RATE_UPDATE]: produce((draft: LiquidityState, action: UpdateExchangeRateAction) => {
             draft.exchangeRate = action.payload;
         }),
-        [LiquidityActions.LIQUIDITY_RESET]: () => initialState,
+        [LiquidityActions.LIQUIDITY_RESET]: produce((draft: LiquidityState) => {
+            draft.form.extrinsic = undefined;
+            draft.form.assetAmount = undefined;
+            draft.form.assetId = undefined;
+            draft.form.coreAmount = undefined;
+            draft.form.signingAccount = undefined;
+            draft.form.buffer = typeof window !== 'undefined' ? window.config.FEE_BUFFER : 0.05;
+            draft.extrinsicParams = undefined;
+            draft.txFee = undefined;
+            draft.error = [];
+            draft.userAssetBalance = [];
+            draft.userPoolShare = [];
+        }),
         [LiquidityActions.SELECTED_ASSET2_UPDATE]: produce(
             (draft: LiquidityState, action: UpdateSelectedAsset2Action) => {
                 draft.form.coreAssetId = action.payload;

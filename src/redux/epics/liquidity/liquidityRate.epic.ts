@@ -107,8 +107,8 @@ export const getAssetLiquidityPriceEpic = (
                 return of(updateAsset1Amount(new Amount(assetAmount)));
             } else if (liquidityAction === REMOVE_LIQUIDITY) {
                 let liquidityAmount;
-                if (tradeAssetReserve.toString() === coreAssetReserve.toString()) {
-                    liquidityAmount = coreAmount.mul(totalLiquidity).div(coreAssetReserve);
+                if (totalLiquidity.toString() === coreAssetReserve.toString()) {
+                    liquidityAmount = coreAmount;
                 } else {
                     liquidityAmount = coreAmount
                         .mul(totalLiquidity)

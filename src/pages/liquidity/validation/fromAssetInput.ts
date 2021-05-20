@@ -21,7 +21,7 @@ function checkFromAssetAmount(props: LiquidityProps, errors: FormErrors): void {
         return;
     }
 
-    if (!coreAmount && assetInfo.length) {
+    if (!coreAmount && coreAssetId && assetInfo.length) {
         mergeError(FormSection.coreAmount, new FromAssetAmountRequired(assetInfo[coreAssetId].symbol), errors);
     }
 }

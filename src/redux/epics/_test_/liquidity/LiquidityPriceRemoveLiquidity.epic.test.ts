@@ -302,8 +302,8 @@ describe('Get asset amount when core amount is provided and pools are equal ~ Re
                 });
 
                 let liquidityAmount;
-                if (tradeAssetReserve.toString() === coreAssetReserve.toString()) {
-                    liquidityAmount = coreAmount.mul(totalLiquidity).div(coreAssetReserve);
+                if (totalLiquidity.toString() === coreAssetReserve.toString()) {
+                    liquidityAmount = coreAmount;
                 } else {
                     liquidityAmount = coreAmount
                         .mul(totalLiquidity)
