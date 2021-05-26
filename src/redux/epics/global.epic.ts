@@ -83,6 +83,8 @@ const getExtensionMetadata = (
                         if (specTypes.ExtrinsicPayloadV4) {
                             delete specTypes.ExtrinsicPayloadV4;
                         }
+                        delete specTypes.EnhancedTokenId;
+
                         const DEFAULT_SS58 = api.registry.createType('u32', addressDefaults.prefix);
                         const DEFAULT_DECIMALS = api.registry.createType('u32', 4);
                         const metadata = {
