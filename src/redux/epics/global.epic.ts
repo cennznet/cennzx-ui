@@ -73,7 +73,14 @@ const getExtensionMetadata = (
                         // remove all the classes from the spectypes
                         // the metadata that gets updated on the cennznet extension requires types of type (Record<string, string|object>)
                         const filteredSpecTypes = Object.keys(specTypes)
-                            .filter(key => typeof specTypes[key] !== 'function')
+                            .filter(key => {
+                                if (typeof specTypes[key] === 'function') {
+                                    // tslint:disable-next-line:no-console
+                                    console.log('extension meta update - Filtered from spec types:', specTypes[key]);
+                                    return false;
+                                }
+                                return true;
+                            })
                             .reduce((obj, key) => {
                                 obj[key] = specTypes[key];
                                 return obj;
