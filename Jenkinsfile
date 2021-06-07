@@ -49,8 +49,7 @@ pipeline {
             when {
                 not {
                     anyOf {
-                        branch 'master';
-                        branch 'feature/fake-master-new'
+                        branch 'main';
                     }
                 }
             }
@@ -68,7 +67,7 @@ pipeline {
 
         stage ('Confirm [PROD] Deployment') {
             when {
-                branch 'feature/fake-master-new'
+                branch 'main'
             }
             steps {
                 timeout(unit: 'SECONDS', time: 180) {
@@ -79,7 +78,7 @@ pipeline {
 
         stage('-- [PROD] -- Deploy to K8S') {
             when {
-                branch 'feature/fake-master-new'
+                branch 'main'
             }
             environment {
                 ENV = 'prod'
