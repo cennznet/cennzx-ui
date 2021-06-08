@@ -68,7 +68,7 @@ const Icon = styled.img`
     margin-top: auto;
     margin-bottom: auto;
     max-height: 32px;
-    max-width: 32px;
+    max-width: 42px;
 `;
 
 const Text = styled.span`
