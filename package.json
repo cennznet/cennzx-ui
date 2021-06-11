@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-pipeline-operator": "^7.12.1",
-    "@cennznet/api": "1.4.0",
-    "@cennznet/types": "1.4.0",
+    "@cennznet/api": "1.4.1",
+    "@cennznet/types": "1.4.1",
     "@fortawesome/free-solid-svg-icons": "^5.9.0",
     "@polkadot/extension-dapp": "^0.36.1",
     "@polkadot/keyring": "4.2.1",

@@ -1,4 +1,3 @@
-import {ApiRx} from '@cennznet/api';
 import BN from 'bn.js';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
@@ -9,7 +8,6 @@ import {IEpicDependency, LiquidityFormData} from '../../../typings';
 import {Amount, AmountUnit} from '../../../util/Amount';
 import {ADD_LIQUIDITY, REMOVE_LIQUIDITY} from '../../../util/extrinsicUtil';
 import types from '../../actions';
-import {updateExConnected} from '../../actions/extension.action';
 import {
     removeLiquidityError,
     requestAssetLiquidityPrice,

@@ -57,7 +57,7 @@ class AmountBox extends React.Component<AmountBoxProps, AmountBoxState> {
 
         // set the display value as soon as this component is built
         this.state = {
-            displayValue: props.value ? props.value.asString() : '',
+            displayValue: props.value ? props.value.asString(this.props.decimalPlaces) : '',
         };
     }
 
@@ -87,7 +87,7 @@ class AmountBox extends React.Component<AmountBoxProps, AmountBoxState> {
         } else if (
             !new Amount(this.removeTrailingZero(this.state.displayValue, true), AmountUnit.DISPLAY).eq(nextProps.value)
         ) {
-            this.setState({displayValue: nextProps.value.asString()});
+            this.setState({displayValue: nextProps.value.asString(this.props.decimalPlaces)});
         }
     };
 
@@ -105,7 +105,9 @@ class AmountBox extends React.Component<AmountBoxProps, AmountBoxState> {
     );
 
     updateAmount = (value: string): Amount => {
-        return this.props.onChange(value !== '' ? new Amount(value.toString(), AmountUnit.DISPLAY) : null);
+        return this.props.onChange(
+            value !== '' ? new Amount(value.toString(), AmountUnit.DISPLAY, this.props.decimalPlaces) : null
+        );
     };
 
     // wherever return is below it means , totally ignore the change, as in those situations the character is invalid
@@ -153,7 +155,7 @@ class AmountBox extends React.Component<AmountBoxProps, AmountBoxState> {
 
         // if the code gets here it means the value is valid
         const newAmount = this.removeTrailingZero(value, true);
-        if (oldAmount && oldAmount.eq(new Amount(newAmount, AmountUnit.DISPLAY))) {
+        if (oldAmount && oldAmount.eq(new Amount(newAmount, AmountUnit.DISPLAY, this.props.decimalPlaces))) {
             this.setState({displayValue: value}); // no change only uopdate display value ( don't inform parent)
         } else {
             /*

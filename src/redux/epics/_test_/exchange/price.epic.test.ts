@@ -46,12 +46,16 @@ describe('trigger on check input price epic works', () => {
                     a: action,
                 });
 
+                const inputPrice = {
+                    price: new BN('2200000'),
+                };
+
                 const api$ = of({
                     rpc: {
                         cennzx: {
                             sellPrice: () =>
                                 cold(getInputPrice, {
-                                    b: new BN('2200000'),
+                                    b: inputPrice,
                                 }),
                         },
                     },
@@ -109,12 +113,16 @@ describe('Update the input price to a different value', () => {
                     a: action,
                 });
 
+                const inputPrice = {
+                    price: new BN('2200000'),
+                };
+
                 const api$ = of({
                     rpc: {
                         cennzx: {
                             sellPrice: () =>
                                 cold(getInputPrice, {
-                                    b: new BN('2200000'),
+                                    b: inputPrice,
                                 }),
                         },
                     },
@@ -457,12 +465,16 @@ describe('Update the output price to a different value', () => {
                     a: action,
                 });
 
+                const outPrice = {
+                    price: new BN('43200'),
+                };
+
                 const api$ = of({
                     rpc: {
                         cennzx: {
                             buyPrice: () =>
                                 cold(getOutputPrice, {
-                                    b: new BN('43200'),
+                                    b: outPrice,
                                 }),
                         },
                     },
@@ -520,12 +532,16 @@ describe('trigger on check output price epic works', () => {
                     a: action,
                 });
 
+                const outPrice = {
+                    price: new BN('43200'),
+                };
+
                 const api$ = of({
                     rpc: {
                         cennzx: {
                             buyPrice: () =>
                                 cold(getOutputPrice, {
-                                    b: new BN('43200'),
+                                    b: outPrice,
                                 }),
                         },
                     },
