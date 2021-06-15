@@ -10,7 +10,13 @@ import {setExchangeError, updateFeeAsset} from '../actions/ui/exchange.action';
 import {updateFeeAsset as updateLiquidityFeeAsset, updateSelectedAsset2} from '../actions/ui/liquidity.action';
 import {cennznetExtensions} from '../cennznetExtensions';
 import {AppState} from '../reducers';
-import types, {updateAssetsInfo, updateCoreAsset, updateFeeRate, updateMetadata} from './../actions/global.action';
+import types, {
+    updateAssetsInfo,
+    updateCoreAsset,
+    updateFeeRate,
+    updateMetadata,
+    updateStakingAsset,
+} from './../actions/global.action';
 
 export const getCoreAsset = (action$: Observable<Action<any>>, store$: Observable<AppState>, {api$}: IEpicDependency) =>
     combineLatest([api$, action$.pipe(ofType(types.INIT_APP))]).pipe(
@@ -34,6 +40,18 @@ export const getFeeRate = (action$: Observable<Action<any>>, store$: Observable<
         switchMap(
             ([api]): Observable<Action<any>> => {
                 return api.query.cennzx.defaultFeeRate().pipe(map(feeRate => updateFeeRate(feeRate)));
+            }
+        )
+    );
+export const getStakingAsset = (
+    action$: Observable<Action<any>>,
+    store$: Observable<AppState>,
+    {api$}: IEpicDependency
+) =>
+    combineLatest([api$, action$.pipe(ofType(types.INIT_APP))]).pipe(
+        switchMap(
+            ([api]): Observable<Action<any>> => {
+                return api.query.genericAsset.stakingAssetId().pipe(map(assetId => updateStakingAsset(assetId)));
             }
         )
     );
@@ -127,4 +145,11 @@ export const getRegisteredAssets = (
         })
     );
 
-export default combineEpics(getCoreAsset, getFeeRate, getFeeAsset, getExtensionMetadata, getRegisteredAssets);
+export default combineEpics(
+    getCoreAsset,
+    getStakingAsset,
+    getFeeRate,
+    getFeeAsset,
+    getExtensionMetadata,
+    getRegisteredAssets
+);

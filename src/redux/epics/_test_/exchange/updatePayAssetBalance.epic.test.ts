@@ -75,10 +75,6 @@ describe('trigger on request asset balance epic works', () => {
                                 cold(locks_, {
                                     d: BalanceLock,
                                 }),
-                            stakingAssetId: () =>
-                                cold(stakingAsset_, {
-                                    e: StakingAsset,
-                                }),
                         },
                     },
                 });
@@ -93,6 +89,9 @@ describe('trigger on request asset balance epic works', () => {
                             form: {signingAccount: newAccount, feeAssetId: 16000},
                             userAssetBalance: [],
                         },
+                    },
+                    global: {
+                        stakingAssetId: StakingAsset,
                     },
                 });
 

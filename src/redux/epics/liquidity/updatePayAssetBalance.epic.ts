@@ -43,6 +43,7 @@ export const updateUserAssetBalanceEpic = (
 ): Observable<UpdateUserAssetBalanceAction> =>
     combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.USER_ASSET_BALANCE_REQUEST))]).pipe(
         withLatestFrom(store$),
+        filter(([, store]) => !!store.global.stakingAssetId),
         // MergeMap to merge request for fee asset's balance and with asset's balance
         mergeMap(
             ([
@@ -54,12 +55,10 @@ export const updateUserAssetBalanceEpic = (
                 ],
                 store,
             ]): Observable<Action<any>> => {
-                return combineLatest([
-                    api.query.genericAsset.freeBalance(assetId, signingAccount),
-                    api.query.genericAsset.stakingAssetId(),
-                ]).pipe(
-                    switchMap(([balance, stakingId]: [Balance, AssetId]) => {
-                        if (assetId === stakingId.toNumber()) {
+                const {stakingAssetId} = store.global;
+                return api.query.genericAsset.freeBalance(assetId, signingAccount).pipe(
+                    switchMap((balance: Balance) => {
+                        if (assetId === stakingAssetId.toNumber()) {
                             return fetchBalanceExcludeLock(api, signingAccount, balance, assetId).pipe(
                                 switchMap((newAssetBalance: IAssetBalance) => {
                                     return of(updateUserAssetBalance(newAssetBalance));

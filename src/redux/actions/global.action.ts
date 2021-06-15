@@ -8,6 +8,7 @@ export enum GlobalActions {
     DEFAULT_FEE_RATE_UPDATE = 'app/DEFAULT_FEE_RATE_UPDATE',
     METADATA_UPDATE = 'app//METADATA_UPDATE',
     ASSET_INFO_UPDATE = 'app/ASSET_INFO_UPDATE',
+    STAKING_ASSET = 'app/STAKING_ASSET',
 }
 
 export const startApp = createAction(GlobalActions.INIT_APP);
@@ -18,6 +19,8 @@ export const updateCoreAsset = createAction(GlobalActions.CORE_ASSET_UPDATE, cor
 
 export const updateFeeRate = createAction(GlobalActions.DEFAULT_FEE_RATE_UPDATE, feeRate => feeRate);
 
+export const updateStakingAsset = createAction(GlobalActions.STAKING_ASSET, assetId => assetId);
+
 export const updateMetadata = createAction(GlobalActions.METADATA_UPDATE, metadata => metadata);
 
 export const updateAssetsInfo = createAction(GlobalActions.ASSET_INFO_UPDATE, assetInfo => assetInfo);
@@ -25,6 +28,8 @@ export const updateAssetsInfo = createAction(GlobalActions.ASSET_INFO_UPDATE, as
 export type UpdateCoreAssetAction = ReturnType<typeof updateCoreAsset>;
 
 export type UpdateFeeRateAction = ReturnType<typeof updateFeeRate>;
+
+export type UpdateStakingAssetAction = ReturnType<typeof updateStakingAsset>;
 
 export type UpdateMetadataAction = ReturnType<typeof updateMetadata>;
 
