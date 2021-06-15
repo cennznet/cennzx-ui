@@ -45,7 +45,7 @@ const getDialogFooter = (
                     onClick={async () => {
                         const metadata = polkadotExtension.metadata;
                         await metadata.provide(metadataDef);
-                        const chain = metadataDef.chain;
+                        const chain = typeof window !== 'undefined' ? window.config.CHAIN : 'Development';
                         localStorage.setItem(`${extVersion}-${chain}-EXTENSION_META_UPDATED`, 'true');
                         setDialogOpen(false);
                     }}
