@@ -76,7 +76,7 @@ const getExtensionMetadata = (
                             .filter(key => {
                                 if (typeof specTypes[key] === 'function') {
                                     // tslint:disable-next-line:no-console
-                                    console.log('extension meta update - Filtered from spec types:', specTypes[key]);
+                                    // console.log('extension meta update - Filtered from spec types:', specTypes[key]);
                                     return false;
                                 }
                                 return true;

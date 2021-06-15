@@ -34,7 +34,8 @@ interface LayoutProps {
 const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, polkadotExtension, metadata}) => {
     let metaUpdated = null;
     if (typeof localStorage !== 'undefined') {
-        metaUpdated = localStorage.getItem(`${extVersion}-EXTENSION_META_UPDATED`);
+        const chain = metadata ? metadata.chain : '';
+        metaUpdated = localStorage.getItem(`${extVersion}-${chain}-EXTENSION_META_UPDATED`);
     }
     // tslint:disable-next-line:no-console
     return (
