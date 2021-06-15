@@ -1,4 +1,4 @@
-import {Balance} from '@cennznet/types';
+import {AssetId, Balance} from '@cennznet/types';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';
@@ -12,6 +12,7 @@ import {
     UpdateUserAssetBalanceAction,
 } from '../../actions/ui/exchange.action';
 import {AppState} from '../../reducers';
+import {fetchBalanceExcludeLock} from '../liquidity/updatePayAssetBalance.epic';
 
 export const updateAssetsBalanceEpic = (
     action$: Observable<Action<any>>,
@@ -31,10 +32,23 @@ export const updateAssetsBalanceEpic = (
                 ],
                 store,
             ]): Observable<Action<any>> => {
-                return api.query.genericAsset.freeBalance(assetId, signingAccount).pipe(
-                    switchMap((balance: Balance) => {
-                        const userBal = new Amount(balance);
-                        const newAssetBalance = {assetId: assetId, account: signingAccount, balance: userBal};
+                return combineLatest([
+                    api.query.genericAsset.freeBalance(assetId, signingAccount),
+                    api.query.genericAsset.stakingAssetId(),
+                ]).pipe(
+                    switchMap(([balance, stakingId]: [Balance, AssetId]) => {
+                        if (assetId === stakingId.toNumber()) {
+                            return fetchBalanceExcludeLock(api, signingAccount, balance, assetId).pipe(
+                                switchMap((newAssetBalance: IAssetBalance) => {
+                                    return of(updateUserAssetBalance(newAssetBalance));
+                                })
+                            );
+                        }
+                        const newAssetBalance = {
+                            assetId,
+                            account: signingAccount,
+                            balance: new Amount(balance.toString()),
+                        };
                         return of(updateUserAssetBalance(newAssetBalance));
                     }),
                     takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET)))

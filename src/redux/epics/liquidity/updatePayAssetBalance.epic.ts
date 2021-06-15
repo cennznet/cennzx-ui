@@ -1,9 +1,10 @@
-import {Balance} from '@cennznet/types';
+import {AssetId, Balance, BalanceLock, Vec} from '@cennznet/types';
+import {stringToHex} from '@polkadot/util';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {from} from 'rxjs';
-import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';
-import {filter, map, mergeMap, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
+import {combineLatest, Observable, of} from 'rxjs/index';
+import {filter, mergeMap, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
 import {IAssetBalance, IEpicDependency} from '../../../typings';
 import {Amount} from '../../../util/Amount';
 import types from '../../actions';
@@ -14,6 +15,26 @@ import {
     UpdateUserAssetBalanceAction,
 } from '../../actions/ui/liquidity.action';
 import {AppState} from '../../reducers';
+
+export function fetchBalanceExcludeLock<T>(api, signingAccount, balance: T, assetId): Observable<IAssetBalance> {
+    return api.query.genericAsset.locks(signingAccount).pipe(
+        switchMap(
+            (lockBalance: Vec<BalanceLock>): Observable<IAssetBalance> => {
+                const lockBal = lockBalance.toArray();
+                let userBal;
+                if (lockBal.length > 0) {
+                    const stakeBal = lockBal.find(lock => lock.id.toString() === stringToHex('staking '));
+                    const freeBalance = stakeBal ? balance.sub(stakeBal.amount) : new Amount(0);
+                    userBal = new Amount(freeBalance.toString());
+                } else {
+                    userBal = new Amount(balance.toString());
+                }
+                const newAssetBalance = {assetId, account: signingAccount, balance: userBal};
+                return of(newAssetBalance);
+            }
+        )
+    );
+}
 
 export const updateUserAssetBalanceEpic = (
     action$: Observable<Action<any>>,
@@ -33,10 +54,23 @@ export const updateUserAssetBalanceEpic = (
                 ],
                 store,
             ]): Observable<Action<any>> => {
-                return api.query.genericAsset.freeBalance(assetId, signingAccount).pipe(
-                    switchMap((balance: Balance) => {
-                        const userBal = new Amount(balance);
-                        const newAssetBalance = {assetId, account: signingAccount, balance: userBal};
+                return combineLatest([
+                    api.query.genericAsset.freeBalance(assetId, signingAccount),
+                    api.query.genericAsset.stakingAssetId(),
+                ]).pipe(
+                    switchMap(([balance, stakingId]: [Balance, AssetId]) => {
+                        if (assetId === stakingId.toNumber()) {
+                            return fetchBalanceExcludeLock(api, signingAccount, balance, assetId).pipe(
+                                switchMap((newAssetBalance: IAssetBalance) => {
+                                    return of(updateUserAssetBalance(newAssetBalance));
+                                })
+                            );
+                        }
+                        const newAssetBalance = {
+                            assetId,
+                            account: signingAccount,
+                            balance: new Amount(balance.toString()),
+                        };
                         return of(updateUserAssetBalance(newAssetBalance));
                     }),
                     takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET)))
