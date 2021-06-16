@@ -8,7 +8,7 @@ import {IEpicDependency} from '../../../typings';
 import types from '../../actions';
 import {startApp} from '../../actions/global.action';
 import {AppState} from '../../reducers';
-import {getCoreAsset, getFeeRate, getRegisteredAssets} from '../global.epic';
+import {getCoreAsset, getFeeRate, getRegisteredAssets, getStakingAsset} from '../global.epic';
 import {AssetId} from '@cennznet/types';
 
 describe('get core asset from api epic working', () => {
@@ -216,6 +216,56 @@ describe('get registered assets from api epic working when api throws error', ()
                         error: true,
                         type: types.ui.Exchange.ERROR_SET,
                         payload: err,
+                    },
+                });
+            });
+        });
+    });
+});
+
+describe('get staking asset from api epic working', () => {
+    const triggers = [startApp()];
+    triggers.forEach(action => {
+        it(action.type, () => {
+            const testScheduler = new TestScheduler((actual, expected) => {
+                expect(actual).toEqual(expected);
+            });
+            testScheduler.run(({hot, cold, expectObservable}) => {
+                // prettier-ignore
+                const action_           = '-a-';
+                // prettier-ignore
+                const stakingAsset_     = ' -b-';
+                // prettier-ignore
+                const expect_           = '--c';
+
+                const action$ = hot(action_, {
+                    a: action,
+                });
+
+                const StakingAsset = 16000;
+
+                const api$ = of({
+                    query: {
+                        genericAsset: {
+                            stakingAssetId: () =>
+                                cold(stakingAsset_, {
+                                    b: StakingAsset,
+                                }),
+                        },
+                    },
+                });
+
+                const dependencies = ({
+                    api$,
+                } as unknown) as IEpicDependency;
+
+                const state$: Observable<AppState> = new StateObservable(new Subject(), {});
+
+                const output$ = getStakingAsset(action$, state$, dependencies);
+                expectObservable(output$).toBe(expect_, {
+                    c: {
+                        type: types.GlobalActions.STAKING_ASSET,
+                        payload: StakingAsset,
                     },
                 });
             });
