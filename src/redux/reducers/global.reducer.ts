@@ -1,4 +1,4 @@
-import {AssetInfo} from '@cennznet/types';
+import {AssetId} from '@cennznet/types';
 import {FeeRate} from '@cennznet/types/interfaces/cennzx';
 import {MetadataDef} from '@polkadot/extension-inject/types';
 import {hexToString} from '@polkadot/util';
@@ -10,6 +10,7 @@ import GlobalActions, {
     UpdateCoreAssetAction,
     UpdateFeeRateAction,
     UpdateMetadataAction,
+    UpdateStakingAssetAction,
 } from '../actions/global.action';
 
 export interface AssetDetails {
@@ -22,6 +23,7 @@ export interface GlobalState {
     feeRate?: FeeRate;
     metadata?: MetadataDef;
     assetInfo: AssetDetails[];
+    stakingAssetId?: AssetId;
 }
 
 export const initialState: GlobalState = {
@@ -35,6 +37,9 @@ export default handleActions(
         }),
         [GlobalActions.DEFAULT_FEE_RATE_UPDATE]: produce((draft: GlobalState, action: UpdateFeeRateAction) => {
             draft.feeRate = action.payload;
+        }),
+        [GlobalActions.STAKING_ASSET]: produce((draft: GlobalState, action: UpdateStakingAssetAction) => {
+            draft.stakingAssetId = action.payload;
         }),
         [GlobalActions.METADATA_UPDATE]: produce((draft: GlobalState, action: UpdateMetadataAction) => {
             draft.metadata = action.payload;
