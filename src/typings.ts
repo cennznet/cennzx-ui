@@ -23,7 +23,6 @@ export interface IAssetSwap {
 }
 
 export interface IAppConfig {
-    CHAIN: string;
     ENDPOINT: string;
     ENV: string;
     ASSETS: Asset[];
