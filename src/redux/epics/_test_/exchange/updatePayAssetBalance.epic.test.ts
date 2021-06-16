@@ -44,11 +44,25 @@ describe('trigger on request asset balance epic works', () => {
                 // prettier-ignore
                 const getFreeBalance_   = ' -b-';
                 // prettier-ignore
-                const expect_           = '--c';
+                const locks_            = ' -d-';
+                // prettier-ignore
+                const stakingAsset_     = ' -e-';
+                // prettier-ignore
+                const expect_           = '---c';
 
                 const action$ = hot(action_, {
                     a: action,
                 });
+                const StakingAsset = {
+                    toNumber: function() {
+                        return 16000;
+                    },
+                };
+                const BalanceLock = {
+                    toArray: function() {
+                        return [];
+                    },
+                };
 
                 const api$ = of({
                     query: {
@@ -56,6 +70,10 @@ describe('trigger on request asset balance epic works', () => {
                             freeBalance: () =>
                                 cold(getFreeBalance_, {
                                     b: new Amount(22),
+                                }),
+                            locks: () =>
+                                cold(locks_, {
+                                    d: BalanceLock,
                                 }),
                         },
                     },
@@ -72,6 +90,9 @@ describe('trigger on request asset balance epic works', () => {
                             userAssetBalance: [],
                         },
                     },
+                    global: {
+                        stakingAssetId: StakingAsset,
+                    },
                 });
 
                 const output$ = updateAssetsBalanceEpic(action$, state$, dependencies);
@@ -81,7 +102,7 @@ describe('trigger on request asset balance epic works', () => {
                         payload: {
                             assetId: 16000,
                             account: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-                            balance: new Amount(22),
+                            balance: new Amount(22), // User's staked balance is empty so everything in free balance can be used
                         },
                     },
                 });
