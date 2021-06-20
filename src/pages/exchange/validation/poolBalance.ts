@@ -22,40 +22,40 @@ function checkPoolBalance(props: ExchangeProps, errors: FormErrors): void {
 function checkPoolBalanceWhenAssetToAsset(props: ExchangeProps, errors: FormErrors): void {
     const {
         form: {toAssetAmount, toAsset, fromAsset, extrinsic},
-        coreAsset,
+        coreAssetId,
         feeRate,
         exchangePool,
     } = props;
     // skip when it's not asset to asset trade
-    if (coreAsset && fromAsset && toAsset && (coreAsset.eqn(fromAsset) || coreAsset.eqn(toAsset))) return;
+    if (coreAssetId && fromAsset && toAsset && (coreAssetId === fromAsset || coreAssetId === toAsset)) return;
     // skip when toAsset's pool has `PoolBalanceNotEnough`
     if (existErrors('PoolBalanceNotEnough', errors, FormSection.toAssetInput)) return;
 
-    const assetToReserve = exchangePool.find(poolData => poolData.assetId === toAsset);
-    const assetFromReserve = exchangePool.find(poolData => poolData.assetId === fromAsset);
-    if (extrinsic === SWAP_OUTPUT && assetFromReserve && assetToReserve) {
-        // try {
-        //     const coreForB = getOutputPrice(
-        //         toAssetAmount,
-        //         assetFromReserve.coreAssetBalance,
-        //         assetFromReserve.assetBalance,
-        //         feeRate
-        //     );
-        //     if (coreForB.gt(assetToReserve.coreAssetBalance)) {
-        //         mergeError(
-        //             FormSection.form,
-        //             new PoolBalanceNotEnough(
-        //                 getAsset(fromAsset),
-        //                 new Amount(coreForB),
-        //                 assetToReserve.coreAssetBalance
-        //             ),
-        //             errors
-        //         );
-        //     }
-        // } catch (e) {
-        mergeError(FormSection.form, new UnknownFormError(e), errors);
-        // }
-    }
+    // const assetToReserve = exchangePool.find(poolData => poolData.assetId === toAsset);
+    // const assetFromReserve = exchangePool.find(poolData => poolData.assetId === fromAsset);
+    // if (extrinsic === SWAP_OUTPUT && assetFromReserve && assetToReserve) {
+    //     try {
+    //         const coreForB = getOutputPrice(
+    //             toAssetAmount,
+    //             assetFromReserve.coreAssetBalance,
+    //             assetFromReserve.assetBalance,
+    //             feeRate
+    //         );
+    //         if (coreForB.gt(assetToReserve.coreAssetBalance)) {
+    //             mergeError(
+    //                 FormSection.form,
+    //                 new PoolBalanceNotEnough(
+    //                     getAsset(fromAsset),
+    //                     new Amount(coreForB),
+    //                     assetToReserve.coreAssetBalance
+    //                 ),
+    //                 errors
+    //             );
+    //         }
+    //     } catch (e) {
+    //         mergeError(FormSection.form, new UnknownFormError(e), errors);
+    //     }
+    // }
 }
 
 /**
