@@ -1,3 +1,4 @@
+import {PriceResponse} from '@cennznet/types';
 import BN from 'bn.js';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
@@ -46,9 +47,12 @@ export const getInputPriceEpic = (
                 const {fromAssetAmount, fromAsset, toAsset, toAssetAmount} = store.ui.exchange.form as ExchangeFormData;
                 const {error} = store.ui.exchange;
                 return api.rpc.cennzx.sellPrice(fromAsset, fromAssetAmount, toAsset).pipe(
-                    filter((value: BN) => !toAssetAmount || !new Amount(value.toString()).eq(toAssetAmount)),
-                    map((estimatedToAssetAmount: BN) => {
-                        const amount = new Amount(estimatedToAssetAmount.toString(), AmountUnit.UN);
+                    filter(
+                        (priceRes: PriceResponse) =>
+                            !toAssetAmount || !new Amount(priceRes.price.toString()).eq(toAssetAmount)
+                    ),
+                    map((priceRes: PriceResponse) => {
+                        const amount = new Amount(priceRes.price.toString(), AmountUnit.UN);
                         return updateToAssetAmount(amount);
                     }),
                     takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),
@@ -97,9 +101,12 @@ export const getOutputPriceEpic = (
                 const {fromAssetAmount, fromAsset, toAsset, toAssetAmount} = store.ui.exchange.form as ExchangeFormData;
                 const {error} = store.ui.exchange;
                 return api.rpc.cennzx.buyPrice(toAsset, toAssetAmount, fromAsset).pipe(
-                    filter((value: BN) => !fromAssetAmount || !new Amount(value.toString()).eq(fromAssetAmount)),
-                    map((estimatedFromAsset: BN) => {
-                        const amount = new Amount(estimatedFromAsset.toString(), AmountUnit.UN);
+                    filter(
+                        (priceRes: PriceResponse) =>
+                            !fromAssetAmount || !new Amount(priceRes.price.toString()).eq(fromAssetAmount)
+                    ),
+                    map((priceRes: PriceResponse) => {
+                        const amount = new Amount(priceRes.price.toString(), AmountUnit.UN);
                         return updateFromAssetAmount(amount);
                     }),
                     takeUntil(action$.pipe(ofType(types.ui.Exchange.TRADE_RESET))),

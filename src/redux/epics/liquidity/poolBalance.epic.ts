@@ -1,3 +1,4 @@
+import {LiquidityValueResponse} from '@cennznet/types';
 import BN from 'bn.js';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
@@ -79,10 +80,10 @@ export const getUserPoolShareEpic = (
                 }
 
                 return api.rpc.cennzx.liquidityValue(signingAccount, poolAsset).pipe(
-                    switchMap(([liquidityVolume, coreValue, assetValue]) => {
-                        const liquidity: Amount = new Amount(liquidityVolume);
-                        const userAssetShare: Amount = new Amount(assetValue);
-                        const userCoreShare: Amount = new Amount(coreValue);
+                    switchMap((liquidityValue: LiquidityValueResponse) => {
+                        const liquidity: Amount = new Amount(liquidityValue.liquidity);
+                        const userAssetShare: Amount = new Amount(liquidityValue.asset);
+                        const userCoreShare: Amount = new Amount(liquidityValue.core);
                         const userShare: IUserShareInPool = {
                             coreAssetBalance: userCoreShare,
                             assetBalance: userAssetShare,
