@@ -393,7 +393,9 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             secondaryTitle={null}
                             message={
                                 state.liquidityAction === LiquidityAction.REMOVE
-                                    ? `Withdrawable: ${userAssetShareInPool.asString()}`
+                                    ? `Withdrawable: ${userAssetShareInPool.asString(
+                                          getDecimalPlaces(assetId, assetInfo)
+                                      )}`
                                     : `Balance: ${assetBalance || 0}`
                             }
                             errorBox={<ErrorMessage errors={formErrors} field={FormSection.assetAmount} />}
@@ -423,7 +425,9 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             secondaryTitle={null}
                             message={
                                 state.liquidityAction === LiquidityAction.REMOVE
-                                    ? `Withdrawable: ${userCoreShareInPool.asString()}`
+                                    ? `Withdrawable: ${userCoreShareInPool.asString(
+                                          getDecimalPlaces(coreAssetId, assetInfo)
+                                      )}`
                                     : `Balance: ${coreBalance || 0}`
                             }
                             errorBox={<ErrorMessage errors={formErrors} field={FormSection.coreAmount} />}
@@ -432,9 +436,9 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     {poolSummary(
                         assetPool,
                         corePool,
-                        userAssetShareInPool.asString(),
+                        userAssetShareInPool.asString(getDecimalPlaces(assetId, assetInfo)),
                         assetName,
-                        userCoreShareInPool.asString(),
+                        userCoreShareInPool.asString(getDecimalPlaces(coreAssetId, assetInfo)),
                         coreName,
                         exchangeRateMsg,
                         fee
@@ -464,10 +468,11 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                         feeAssetId: coreAssetId,
                         coreAssetId,
                         txFee,
+                        // Need to use it in this order to get the correct order show up on slippage advance setting
                         toAssetAmount: assetAmount,
-                        toAsset: assetId,
+                        toAsset: coreAssetId,
                         fromAssetAmount: coreAmount,
-                        fromAsset: coreAssetId,
+                        fromAsset: assetId,
                         buffer,
                     }}
                     title={'Advanced settings'}

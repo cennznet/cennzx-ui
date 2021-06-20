@@ -1579,12 +1579,12 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cennznet/api@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@cennznet/api/-/api-1.4.0.tgz#7daeff531b2829a2d353bc401641353327932e02"
-  integrity sha512-CydSYdQpmsOaRFFsvqHdLnoXS6NcTd1f1y8oqsPf4ZsmdMUBkpPDlt3cKMTVFJEbUu5hF2XiyhWY5xG0TmUGeg==
+"@cennznet/api@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@cennznet/api/-/api-1.4.1.tgz#af416cfbd2fbf9bf0e3a236f191d997d983fae3c"
+  integrity sha512-UJP6Q8p0GVSpDg+H7BATaezFsOlDn1PFpEN31+qUj5w1oCVvtO3sxs39sjweTcFq0MMtNYn2mm3JLNyIbhSf1w==
   dependencies:
-    "@cennznet/types" "^1.4.0"
+    "@cennznet/types" "^1.4.1"
     "@polkadot/api" "2.7.1"
     "@polkadot/metadata" "2.7.1"
     "@polkadot/rpc-core" "2.7.1"
@@ -1592,10 +1592,10 @@
     "@polkadot/types" "2.7.1"
     eventemitter3 "^4.0.0"
 
-"@cennznet/types@1.4.0", "@cennznet/types@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@cennznet/types/-/types-1.4.0.tgz#66fd5539d1ca1dd058960a3180d04fd27891c427"
-  integrity sha512-q49F21/e82eu1cBZtO56d7oNvCTQGoQWH4946/gYwM7q9DthvvBx01hsO8ld9P0Q0i4IYoPaOciL+gSxGqTGNg==
+"@cennznet/types@1.4.1", "@cennznet/types@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@cennznet/types/-/types-1.4.1.tgz#fbbd24f088489b4203fade05f2e4356b6f815130"
+  integrity sha512-WKfAj5guvMgvLcU7zkleFURRdjs8J3YLtKpq50GT9u0hvn+SyS1m9Y58355F01BFV6U/80UmGDBfep46ypvlCw==
   dependencies:
     "@polkadot/keyring" "^4.2.1"
     "@polkadot/types" "2.7.1"

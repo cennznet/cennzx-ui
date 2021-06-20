@@ -67,24 +67,28 @@ const StyledSelect = styled(Select)<AssetDropDownStyledProps>`
 const Icon = styled.img`
     margin-top: auto;
     margin-bottom: auto;
+    min-height: 32px;
+    min-width: 32px;
     max-height: 32px;
-    max-width: 42px;
+    max-width: 32px;
 `;
 
 const Text = styled.span`
-    margin-left: 0.5rem;
+    margin-left: 0.4rem;
 `;
 
 const Container = styled.div`
     color: #4e5458;
+    padding: 4px 0px 4px 3px;
     align-items: center;
-    padding: 4px;
+    min-width: 6rem;
+    margin-left: auto;
+    margin-right: auto;
     display: flex;
     :hover {
         color: #1130ff;
     }
     border: none !important;
-    border-bottom: 1px solid #b5babd !important;
 `;
 
 const getLabel = ({symbol}) => {

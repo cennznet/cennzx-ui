@@ -46,7 +46,7 @@ describe('Get exchange rate working', () => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const sellPrice                 = ' -b-';
+                const sellPrice_                = ' -b-';
                 // prettier-ignore
                 const expect_                   = '--c';
 
@@ -54,12 +54,16 @@ describe('Get exchange rate working', () => {
                     a: action,
                 });
 
+                const sellPrice = {
+                    price: new BN('22'),
+                };
+
                 const api$ = of({
                     rpc: {
                         cennzx: {
                             sellPrice: () =>
-                                cold(sellPrice, {
-                                    b: new BN('22'),
+                                cold(sellPrice_, {
+                                    b: sellPrice,
                                 }),
                         },
                     },
@@ -111,7 +115,7 @@ describe('Update the exchange rate to a different value', () => {
                 // prettier-ignore
                 const action_                   = '-a-';
                 // prettier-ignore
-                const sellPrice                 = ' -b-';
+                const sellPrice_                = ' -b-';
                 // prettier-ignore
                 const expect_                   = '--c';
 
@@ -119,12 +123,16 @@ describe('Update the exchange rate to a different value', () => {
                     a: action,
                 });
 
+                const sellPrice = {
+                    price: new BN('2'),
+                };
+
                 const api$ = of({
                     rpc: {
                         cennzx: {
                             sellPrice: () =>
-                                cold(sellPrice, {
-                                    b: new BN('2'),
+                                cold(sellPrice_, {
+                                    b: sellPrice,
                                 }),
                         },
                     },

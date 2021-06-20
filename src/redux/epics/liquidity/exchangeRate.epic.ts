@@ -1,4 +1,5 @@
 import {ApiRx} from '@cennznet/api';
+import {PriceResponse} from '@cennznet/types';
 import BN from 'bn.js';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
@@ -26,16 +27,16 @@ export const getExchangeRateEpic = (
                 return EMPTY;
             }
             const {assetId, coreAssetId} = store.ui.liquidity.form;
-            const asset = assetInfo ? assetInfo[assetId] : undefined;
+            const asset = assetInfo ? assetInfo[coreAssetId] : undefined;
             const assetDecimal = asset ? asset.decimalPlaces : 0;
             const amount = new Amount(1, AmountUnit.DISPLAY, assetDecimal);
             return api.rpc.cennzx.sellPrice(coreAssetId, amount, assetId).pipe(
                 filter(
-                    (exchangeRateFromAPI: BN) =>
-                        !exchangeRate || !new Amount(exchangeRateFromAPI.toString()).eq(exchangeRate)
+                    (exchangeRateFromAPI: PriceResponse) =>
+                        !exchangeRate || !new Amount(exchangeRateFromAPI.price.toString()).eq(exchangeRate)
                 ),
-                map((exchangeRateFromAPI: BN) => {
-                    const exRate = new Amount(exchangeRateFromAPI.toString(), AmountUnit.UN);
+                map((exchangeRateFromAPI: PriceResponse) => {
+                    const exRate = new Amount(exchangeRateFromAPI.price.toString(), AmountUnit.UN);
                     return updateExchangeRate(exRate);
                 }),
                 takeUntil(action$.pipe(ofType(types.ui.Liquidity.LIQUIDITY_RESET))),

@@ -316,12 +316,18 @@ describe('get user pool share epic works', () => {
                 const liquidityVolume = new BN('34220');
                 const coreValue = new BN('14220');
                 const assetValue = new BN('12830');
+
+                const liquidityValue = {
+                    liquidity: liquidityVolume,
+                    asset: assetValue,
+                    core: coreValue,
+                };
                 const api$ = of({
                     rpc: {
                         cennzx: {
                             liquidityValue: () =>
                                 cold(getLiquidityValue, {
-                                    b: [liquidityVolume, coreValue, assetValue],
+                                    b: liquidityValue,
                                 }),
                         },
                     },
