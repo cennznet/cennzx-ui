@@ -151,12 +151,15 @@ async function getBalanceDiff(accountId: any, failedBlock: any, okBlockHash: any
     const cPAYBalanceAfter = await api.query.genericAsset.freeBalance.at(failedBlock, CPAY, accountId);
     const cennzBalanceBefore = await api.query.genericAsset.freeBalance.at(okBlockHash, CENNZ, accountId);
     const cPAYBalanceBefore = await api.query.genericAsset.freeBalance.at(okBlockHash, CPAY, accountId);
-    return {
-        CENNZ_diff: cennzBalanceBefore.sub(cennzBalanceAfter).toString(),
-        CPAY_diff: cPAYBalanceBefore.sub(cPAYBalanceAfter).toString(),
-        account: accountId,
-        blockNumber,
-    };
+    if (cPAYBalanceBefore.sub(cPAYBalanceAfter).gtn(11987)) {
+        return {
+            CENNZ_diff: cennzBalanceBefore.sub(cennzBalanceAfter).toString(),
+            CPAY_diff: cPAYBalanceBefore.sub(cPAYBalanceAfter).toString(),
+            account: accountId,
+            blockNumber,
+        };
+    }
+    return null;
 }
 
 describe('Test failed tx', () => {
@@ -192,7 +195,9 @@ describe('Test failed tx', () => {
                 const failedBlockHash = await api.rpc.chain.getBlockHash(failedBlock);
                 const okBlockHash = await api.rpc.chain.getBlockHash(blockBeforeFailed);
                 const balanceData = await getBalanceDiff(accountId, failedBlockHash, okBlockHash, api, blockNum);
-                fileData.push(balanceData);
+                if (balanceData) {
+                    fileData.push(balanceData);
+                }
             })
         );
         const obj = Object.assign({}, fileData);
