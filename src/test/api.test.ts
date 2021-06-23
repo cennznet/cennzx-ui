@@ -15,6 +15,8 @@
 import {Api} from '@cennznet/api';
 import Keyring from '@polkadot/keyring';
 import BN from 'bn.js';
+import parse from 'csv-parse';
+import * as fs from 'fs';
 import {Amount} from '../util/Amount';
 
 describe('e2e api create', () => {
@@ -139,5 +141,62 @@ describe('e2e api create', () => {
                     }
                 }
             });
+    });
+});
+
+async function getBalanceDiff(accountId: any, failedBlock: any, okBlockHash: any, api, blockNumber) {
+    const CENNZ = 1;
+    const CPAY = 2;
+    const cennzBalanceAfter = await api.query.genericAsset.freeBalance.at(failedBlock, CENNZ, accountId);
+    const cPAYBalanceAfter = await api.query.genericAsset.freeBalance.at(failedBlock, CPAY, accountId);
+    const cennzBalanceBefore = await api.query.genericAsset.freeBalance.at(okBlockHash, CENNZ, accountId);
+    const cPAYBalanceBefore = await api.query.genericAsset.freeBalance.at(okBlockHash, CPAY, accountId);
+    return {
+        CENNZ_diff: cennzBalanceBefore.sub(cennzBalanceAfter).toString(),
+        CPAY_diff: cPAYBalanceBefore.sub(cPAYBalanceAfter).toString(),
+        account: accountId,
+        blockNumber,
+    };
+}
+
+describe('Test failed tx', () => {
+    let api;
+    const csvData = [];
+
+    beforeAll(async done => {
+        jest.setTimeout(80000);
+        api = await Api.create({provider: 'wss://cennznet.unfrastructure.io/public/uncover?apikey=dev-debug-key'});
+        fs.createReadStream('settings/failed_rows.csv')
+            .pipe(parse({delimiter: ','}))
+            .on('data', function(csvrow) {
+                csvData.push(csvrow);
+            })
+            .on('end', async function() {
+                done();
+            });
+    });
+
+    afterAll(async => {
+        api.disconnect();
+    });
+
+    it('Testing failed cennzx extrinsic for azalea', async done => {
+        const fileData = [];
+
+        await Promise.all(
+            csvData.map(async (data, idx) => {
+                //created_at,updated_at,id,extrinsic_index,block_num,block_timestamp,extrinsic_length,version_info,call_code,call_module,call_module_function,params,account_length,account_id,account_index,signature,nonce,era,extrinsic_hash,is_signed,success,fee,finalized,tip
+                const [, , , , blockNum, , , , , , , , , accountId] = data;
+                const failedBlock = blockNum;
+                const blockBeforeFailed = blockNum - 1;
+                const failedBlockHash = await api.rpc.chain.getBlockHash(failedBlock);
+                const okBlockHash = await api.rpc.chain.getBlockHash(blockBeforeFailed);
+                const balanceData = await getBalanceDiff(accountId, failedBlockHash, okBlockHash, api, blockNum);
+                fileData.push(balanceData);
+            })
+        );
+        const obj = Object.assign({}, fileData);
+        fs.writeFileSync('balanceDiff.json', JSON.stringify(obj), 'utf-8');
+        done();
     });
 });
