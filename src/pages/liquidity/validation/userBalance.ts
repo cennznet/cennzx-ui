@@ -81,7 +81,7 @@ function checkUserBalanceForFee(props: LiquidityProps, errors: FormErrors): stri
     let balRequired = feeAmount;
 
     // Add core amount to the fee only for add liquidity operation
-    if (extrinsic === ADD_LIQUIDITY && coreAmount && balRequired) {
+    if (extrinsic && extrinsic === ADD_LIQUIDITY && coreAmount && balRequired) {
         balRequired = new Amount(balRequired.add(coreAmount));
     }
     const assetBalance = userAssetBalance.find(
