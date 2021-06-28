@@ -1,4 +1,5 @@
 import React, {FC} from 'react';
+import styled from 'styled-components';
 
 interface ExternalLinkProps {
     url: string;
@@ -6,9 +7,19 @@ interface ExternalLinkProps {
 }
 
 const ExternalLink: FC<ExternalLinkProps> = ({url, text}) => (
-    <a href={url} target="_new">
+    <TruncateLink href={url} target="_new">
         {text}
-    </a>
+    </TruncateLink>
 );
 
 export default ExternalLink;
+
+const TruncateLink = styled.a`
+     {
+        display: inline-block;
+        width: 43rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+`;

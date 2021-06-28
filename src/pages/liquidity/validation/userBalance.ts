@@ -70,7 +70,7 @@ function checkUserBalance(props: LiquidityProps, errors: FormErrors): void {
 
 function checkUserBalanceForFee(props: LiquidityProps, errors: FormErrors): string {
     const {
-        form: {assetAmount, assetId, feeAssetId, coreAmount, signingAccount},
+        form: {assetAmount, assetId, feeAssetId, coreAmount, signingAccount, extrinsic},
         txFee,
         coreAssetId,
         userAssetBalance,
@@ -80,7 +80,8 @@ function checkUserBalanceForFee(props: LiquidityProps, errors: FormErrors): stri
     const feeAmount = coreAssetId === feeAssetId ? txFee.feeInCpay : txFee.feeInFeeAsset;
     let balRequired = feeAmount;
 
-    if (coreAmount && balRequired) {
+    // Add core amount to the fee only for add liquidity operation
+    if (extrinsic && extrinsic === ADD_LIQUIDITY && coreAmount && balRequired) {
         balRequired = new Amount(balRequired.add(coreAmount));
     }
     const assetBalance = userAssetBalance.find(
