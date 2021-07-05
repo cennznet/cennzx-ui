@@ -86,10 +86,7 @@ export const submitTransactionEpic = (
                             return tx.signAndSend(signingAccount, {signer}).pipe(
                                 switchMap(({events, status}: SubmittableResult) => {
                                     if (status.isInBlock) {
-                                        return of(
-                                            updateTxHash(status.asInBlock.toString()),
-                                            updateStage(Stages.InBlock)
-                                        );
+                                        return of(updateTxHash(tx.hash.toString()), updateStage(Stages.InBlock));
                                     } else if (status.isFinalized && events) {
                                         return of(updateTxEvents(events), updateStage(Stages.Finalised));
                                     } else {
@@ -161,7 +158,7 @@ export const submitLiquidityEpic = (
                                 switchMap(({events, status}) => {
                                     if (status.isInBlock) {
                                         return of(
-                                            updateTxHash(status.asInBlock.toString()),
+                                            updateTxHash(tx.hash.toString()),
                                             updateStage(Stages.InBlock),
                                             resetLiquidity(),
                                             updateExtrinsic(extrinsic.method)
