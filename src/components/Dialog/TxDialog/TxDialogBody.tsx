@@ -12,7 +12,7 @@ import SummaryFee from '../../AdvancedSetting/SummaryFee';
 
 type AssetSwapParams = [number, number, Amount, Amount];
 
-const getCennzScanURL = txHash => `https://www.uncoverexplorer.com/block/${txHash}`;
+const getCennzScanURL = txHash => `https://www.uncoverexplorer.com/extrinsic/${txHash}`;
 
 const BodyForBroadcasted: FC<{txHash: string}> = ({txHash}) => (
     <div>
@@ -95,7 +95,7 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
                           Amount.ROUND_UP
                       )}  ${assetInfo[feeExchangeResult.assetId].symbol}`
                     : ''}
-                <br /> Block hash:
+                <br /> Transaction hash:
                 <ExternalLink url={getCennzScanURL(txHash)} text={txHash} />
             </div>
         );
