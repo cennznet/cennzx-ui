@@ -18,6 +18,13 @@ const getDialogBody = (detected: boolean, connected: boolean, metadata) => {
             <div>
                 CENNZX requires the CENNZnet browser extension to manage transaction signing.
                 <br />
+                Please{' '}
+                <a
+                    href="https://chrome.google.com/webstore/detail/cennznet-extension/feckpephlmdcjnpoclagmaogngeffafk/related?hl=en"
+                    target="_blank"
+                >
+                    install
+                </a>
             </div>
         );
     } else if (!connected) {
@@ -35,7 +42,7 @@ const getDialogBody = (detected: boolean, connected: boolean, metadata) => {
 const getDialogFooter = (
     setDialogOpen: Function,
     extensionConnected: boolean,
-    polkadotExtension: InjectedExtension,
+    cennznetExtension: InjectedExtension,
     metadataDef
 ) => {
     return (
@@ -43,7 +50,7 @@ const getDialogFooter = (
             {extensionConnected === false || metadataDef === undefined ? null : (
                 <BlueButton
                     onClick={async () => {
-                        const metadata = polkadotExtension.metadata;
+                        const metadata = cennznetExtension.metadata;
                         await metadata.provide(metadataDef);
                         const {chain, specVersion} = metadataDef;
                         localStorage.setItem(`${extVersion}-${chain}${specVersion}-EXTENSION_META_UPDATED`, 'true');
@@ -68,12 +75,12 @@ const getDialogFooter = (
 export type AppDialogProps = Pick<DialogProps, Exclude<keyof DialogProps, 'title' | 'body' | 'footer' | 'isOpen'>> & {
     extensionConnected: boolean;
     extensionDetected: boolean;
-    polkadotExtension: InjectedExtension;
+    cennznetExtension: InjectedExtension;
     metadata: MetadataDef;
 };
 
 const AppDialog: FC<AppDialogProps> = props => {
-    const {extensionDetected, extensionConnected, polkadotExtension, metadata} = props;
+    const {extensionDetected, extensionConnected, cennznetExtension, metadata} = props;
     const [isDialogOpen, setDialogOpen] = useState(true);
 
     return (
@@ -82,7 +89,7 @@ const AppDialog: FC<AppDialogProps> = props => {
             isOpen={isDialogOpen}
             title={'Connect to CENNZnet extension'}
             body={getDialogBody(extensionDetected, extensionConnected, metadata)}
-            footer={getDialogFooter(setDialogOpen, extensionConnected, polkadotExtension, metadata)}
+            footer={getDialogFooter(setDialogOpen, extensionConnected, cennznetExtension, metadata)}
         />
     );
 };

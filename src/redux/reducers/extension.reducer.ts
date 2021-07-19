@@ -6,17 +6,17 @@ import {IAccounts} from '../../typings';
 import {
     ExtensionActions,
     SetExtensionErrorAction,
+    UpdateCENNZnetExtensionAction,
     UpdateExAccountAction,
     UpdateExConnectedAction,
     UpdateExDetectedAction,
-    UpdatePolkadotExtensionAction,
 } from '../actions/extension.action';
 
 export interface ExtensionState {
     extensionDetected: boolean;
     extensionConnected: boolean;
     extensionDetectionComplete: boolean;
-    polkadotExtension: InjectedExtension;
+    cennznetExtension: InjectedExtension;
     accounts: IAccounts[];
     error: BaseError;
 }
@@ -27,14 +27,14 @@ export const initialState: ExtensionState = {
     extensionDetectionComplete: false,
     accounts: [],
     error: null,
-    polkadotExtension: undefined,
+    cennznetExtension: undefined,
 };
 
 export default handleActions<ExtensionState, any>(
     {
         [ExtensionActions.DETECTION_UPDATE]: produce((draft: ExtensionState, action: UpdateExDetectedAction) => {
             draft.extensionDetected = action.payload.detected;
-            draft.polkadotExtension = action.payload.polkadotInjected;
+            draft.cennznetExtension = action.payload.cennznetExtensionInjected;
         }),
         [ExtensionActions.CONNECTION_UPDATE]: produce((draft: ExtensionState, action: UpdateExConnectedAction) => {
             draft.extensionConnected = action.payload;
@@ -45,9 +45,9 @@ export default handleActions<ExtensionState, any>(
         [ExtensionActions.ERROR_SET]: produce((draft: ExtensionState, action: SetExtensionErrorAction) => {
             draft.error = action.payload;
         }),
-        [ExtensionActions.POLKADOT_EXTENSION_UPDATE]: produce(
-            (draft: ExtensionState, action: UpdatePolkadotExtensionAction) => {
-                draft.polkadotExtension = action.payload;
+        [ExtensionActions.CENNZNET_EXTENSION_UPDATE]: produce(
+            (draft: ExtensionState, action: UpdateCENNZnetExtensionAction) => {
+                draft.cennznetExtension = action.payload;
             }
         ),
     },

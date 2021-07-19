@@ -79,7 +79,9 @@ export const submitTransactionEpic = (
                     tx = api.tx.cennzx.buyAsset(recipient, fromAsset, toAsset, buyAmount, maxSale);
                 }
 
-                return from(web3FromSource('polkadot-js')).pipe(
+                const extension = store.extension.cennznetExtension;
+                const source = extension ? extension.name : undefined;
+                return from(web3FromSource(source)).pipe(
                     switchMap(
                         (injector: InjectedExtension): Observable<Action<any>> => {
                             const signer = injector.signer;
@@ -150,7 +152,9 @@ export const submitLiquidityEpic = (
                     tx = api.tx.cennzx.removeLiquidity(assetId, liquidityToWithdraw, minAssetWithdraw, minCoreWithdraw);
                 }
 
-                return from(web3FromSource('polkadot-js')).pipe(
+                const extension = store.extension.cennznetExtension;
+                const source = extension ? extension.name : undefined;
+                return from(web3FromSource(source)).pipe(
                     switchMap(
                         (injector: InjectedExtension): Observable<Action<any>> => {
                             const signer = injector.signer;

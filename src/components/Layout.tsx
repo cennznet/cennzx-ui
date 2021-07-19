@@ -27,11 +27,11 @@ const Content = styled.div`
 interface LayoutProps {
     extensionDetected: boolean;
     extensionConnected: boolean;
-    polkadotExtension: InjectedExtension;
+    cennznetExtension: InjectedExtension;
     metadata: MetadataDef;
 }
 
-const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, polkadotExtension, metadata}) => {
+const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, cennznetExtension, metadata}) => {
     let metaUpdated = null;
     if (typeof localStorage !== 'undefined') {
         const chain = metadata ? metadata.chain : '';
@@ -49,7 +49,7 @@ const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, polkado
                     <AppDialog
                         extensionConnected={extensionConnected}
                         extensionDetected={extensionDetected}
-                        polkadotExtension={polkadotExtension}
+                        cennznetExtension={cennznetExtension}
                         metadata={metadata}
                     />
                 ) : null}
@@ -64,6 +64,6 @@ const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, polkado
 export default connect((state: any) => ({
     extensionConnected: state.extension.extensionConnected,
     extensionDetected: state.extension.extensionDetected,
-    polkadotExtension: state.extension.polkadotExtension,
+    cennznetExtension: state.extension.cennznetExtension,
     metadata: state.global.metadata,
 }))(Layout);

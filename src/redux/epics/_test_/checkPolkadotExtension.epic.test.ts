@@ -1,18 +1,20 @@
-import {cennzx} from '@cennznet/types/interfaces/definitions';
 import {StateObservable} from 'redux-observable';
 import {Observable, ReplaySubject, Subject, of, EMPTY} from 'rxjs';
 import {take} from 'rxjs/operators';
-import {Amount} from '../../../util/Amount';
 import types from '../../actions';
 import {updateExAccounts, updateExDetected} from '../../actions/extension.action';
 import {AppState} from '../../reducers';
 import {Injected, InjectedAccounts} from '@polkadot/extension-inject/types';
 import {Signer as InjectedSigner} from '@polkadot/api/types';
-
+import {web3Enable} from '@polkadot/extension-dapp';
 import {extensionDetectedEpic, observableAccountsEpic, updateSelectedAccountEpic} from '../checkPolkadotExtension.epic';
 import {createAction} from 'redux-actions';
 import {TestScheduler} from 'rxjs/testing';
-import {IEpicDependency, SingleSourceInjected} from '../../../typings';
+import {IEpicDependency} from '../../../typings';
+
+jest.mock('@polkadot/extension-dapp', () => ({
+    web3Enable: jest.fn(),
+}));
 
 const accounts$ = new ReplaySubject<any>(1);
 const account = [
@@ -24,8 +26,43 @@ const account = [
 ];
 accounts$.next(account);
 
-// FIXME
-describe.skip('trigger on init, polkadot extension detected', () => {
+describe('trigger on init, cennznet and polkadot extension detected - use cennznet extension', () => {
+    const web3EnableMocked = web3Enable as any;
+    const fakeJsInjectedExtension = [
+        {
+            name: 'cennznet-extension',
+            version: '1.1.1',
+            accounts: (accounts$ as unknown) as InjectedAccounts,
+            signer: ({
+                sign: async (t, n, e) => {
+                    return 1;
+                },
+            } as unknown) as InjectedSigner,
+        },
+        {
+            name: 'polkadot-js',
+            version: '1.1.0',
+            accounts: (accounts$ as unknown) as InjectedAccounts,
+            signer: ({
+                sign: async (t, n, e) => {
+                    return 1;
+                },
+            } as unknown) as InjectedSigner,
+        },
+    ];
+
+    web3EnableMocked.mockImplementation(() => [fakeJsInjectedExtension]);
+    if (typeof window !== 'undefined') {
+        window.injectedWeb3 = {
+            ['cennznet-extension']: {
+                version: '1.1.1',
+                enable: async (): Promise<Injected> => {
+                    return fakeJsInjectedExtension[0];
+                },
+            },
+        };
+    }
+
     const initAction = createAction(types.GlobalActions.INIT_APP);
     const triggers = [initAction()];
     triggers.forEach(action => {
@@ -37,30 +74,11 @@ describe.skip('trigger on init, polkadot extension detected', () => {
                 // prettier-ignore
                 const action_ = '-a-';
                 // prettier-ignore
-                const expect_ = '-c';
+                const expect_ = '501ms c|';
 
                 const action$ = hot(action_, {
                     a: action,
                 });
-
-                let PolkadotInjected: Injected = {
-                    accounts: (accounts$ as unknown) as InjectedAccounts,
-                    signer: ({
-                        sign: async (t, n, e) => {
-                            return 1;
-                        },
-                    } as unknown) as InjectedSigner,
-                };
-                if (typeof window !== 'undefined') {
-                    window.injectedWeb3 = {
-                        ['polkadot-js']: {
-                            version: 'A',
-                            enable: async (): Promise<Injected> => {
-                                return PolkadotInjected;
-                            },
-                        },
-                    };
-                }
 
                 const state$: Observable<AppState> = new StateObservable(new Subject(), {
                     extension: {
@@ -76,7 +94,7 @@ describe.skip('trigger on init, polkadot extension detected', () => {
                         type: types.ExtensionActions.DETECTION_UPDATE,
                         payload: {
                             detected: true,
-                            polkadotInjected: typeof window !== 'undefined' ? window.injectedWeb3['polkadot-js'] : null,
+                            cennznetExtensionInjected: fakeJsInjectedExtension[0],
                         },
                     },
                 });
