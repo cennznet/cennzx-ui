@@ -1,4 +1,4 @@
-import {InjectedAccountWithMeta} from '@polkadot/extension-inject/types';
+import {InjectedAccountWithMeta, InjectedExtension} from '@polkadot/extension-inject/types';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, from, Observable, of, timer} from 'rxjs';
@@ -28,14 +28,20 @@ export const extensionDetectedEpic = (action$: Observable<Action<any>>, store$: 
             return stream$.pipe(
                 switchMap(() => {
                     return from(web3Enable('cennzx')).pipe(
-                        switchMap(polkadotInjectedGlobal => {
-                            const polkadotExtensionFetched = polkadotInjectedGlobal.find(
-                                ext => ext.name === 'polkadot-js'
+                        switchMap((polkadotInjectedGlobal: InjectedExtension[]) => {
+                            const cennznetExtensionFetched = polkadotInjectedGlobal.find(
+                                ext => ext.name === 'cennznet-extension' || ext.name === 'polkadot-js'
                             );
-                            const polkadotExtensionDetected =
-                                typeof window !== 'undefined' ? (window as any).injectedWeb3['polkadot-js'] : false;
-                            if (polkadotExtensionFetched) {
-                                return of(updateExDetected(polkadotExtensionDetected, polkadotExtensionFetched));
+                            let cennznetExtensionDetected = false;
+                            if (typeof window !== 'undefined') {
+                                let injected = (window as any).injectedWeb3['cennznet-extension'];
+                                if (!injected) {
+                                    injected = (window as any).injectedWeb3['polkadot-js'];
+                                }
+                                cennznetExtensionDetected = injected ? true : false;
+                            }
+                            if (cennznetExtensionFetched) {
+                                return of(updateExDetected(cennznetExtensionDetected, cennznetExtensionFetched));
                             }
                             return EMPTY;
                         }),

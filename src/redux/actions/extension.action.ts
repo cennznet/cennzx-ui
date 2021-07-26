@@ -4,18 +4,18 @@ import {BaseError} from '../../error/error';
 import {IAccounts} from '../../typings';
 
 export enum ExtensionActions {
-    DETECTION_UPDATE = 'POLKADOT_EX/DETECTION_UPDATE',
-    CONNECTION_UPDATE = 'POLKADOT_EX/CONNECTION_UPDATE',
-    ACCOUNTS_UPDATE = 'POLKADOT_EX/ACCOUNTS_UPDATE',
-    DETECTION_COMPLETED = 'POLKADOT_EX/DETECTION_COMPLETED',
-    ERROR_SET = 'POLKADOT_EX/ERROR_SET',
-    POLKADOT_EXTENSION_UPDATE = 'POLKADOT_EX/POLKADOT_EXTENSION_UPDATE',
+    DETECTION_UPDATE = 'CENNZNET_EX/DETECTION_UPDATE',
+    CONNECTION_UPDATE = 'CENNZNET_EX/CONNECTION_UPDATE',
+    ACCOUNTS_UPDATE = 'CENNZNET_EX/ACCOUNTS_UPDATE',
+    DETECTION_COMPLETED = 'CENNZNET_EX/DETECTION_COMPLETED',
+    ERROR_SET = 'CENNZNET_EX/ERROR_SET',
+    CENNZNET_EXTENSION_UPDATE = 'CENNZNET_EX/CENNZNET_EXTENSION_UPDATE',
 }
 
 export const updateExDetected = createAction(
     ExtensionActions.DETECTION_UPDATE,
-    (detected: boolean, polkadotInjected: InjectedExtension) => {
-        return {detected, polkadotInjected};
+    (detected: boolean, cennznetExtensionInjected: InjectedExtension) => {
+        return {detected, cennznetExtensionInjected};
     }
 );
 
@@ -24,9 +24,9 @@ export const updateExConnected = createAction(
     (ssConnected: boolean) => ssConnected
 );
 
-export const updatePolkadotExtension = createAction(
-    ExtensionActions.POLKADOT_EXTENSION_UPDATE,
-    (polkadotExtension: InjectedExtension) => polkadotExtension
+export const updateCENNZnetExtension = createAction(
+    ExtensionActions.CENNZNET_EXTENSION_UPDATE,
+    (cennznetExtension: InjectedExtension) => cennznetExtension
 );
 
 export const updateExDetectionCompleted = createAction(ExtensionActions.DETECTION_COMPLETED);
@@ -41,7 +41,7 @@ export type UpdateExConnectedAction = ReturnType<typeof updateExConnected>;
 
 export type UpdateExAccountAction = ReturnType<typeof updateExAccounts>;
 
-export type UpdatePolkadotExtensionAction = ReturnType<typeof updatePolkadotExtension>;
+export type UpdateCENNZnetExtensionAction = ReturnType<typeof updateCENNZnetExtension>;
 
 export type UpdateExDetectionCompleteAction = ReturnType<typeof updateExDetectionCompleted>;
 
