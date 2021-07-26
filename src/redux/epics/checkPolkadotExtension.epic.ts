@@ -40,7 +40,6 @@ export const extensionDetectedEpic = (action$: Observable<Action<any>>, store$: 
                                 }
                                 cennznetExtensionDetected = injected ? true : false;
                             }
-                            // typeof window !== 'undefined' ? (window as any).injectedWeb3['polkadot-js'] : false;
                             if (cennznetExtensionFetched) {
                                 return of(updateExDetected(cennznetExtensionDetected, cennznetExtensionFetched));
                             }
