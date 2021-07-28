@@ -48,7 +48,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: production-files
+          name: build-files
           path: ./dist
 
       - name: Deploy to IPFS
