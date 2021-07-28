@@ -41,7 +41,7 @@ jobs:
 
   deploy:
     name: Deploy Staging
-    needs: build
+    needs: build_code
     runs-on: macos-latest
 
     steps:
