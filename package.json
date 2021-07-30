@@ -33,6 +33,7 @@
     "centrality-react-core": "^0.3.3",
     "connected-react-router": "^6.4.0",
     "core-js": "3",
+    "dotenv": "^10.0.0",
     "file-loader": "^6.2.0",
     "file-saver": "^2.0.0",
     "immer": "^8.0.1",
@@ -65,8 +66,8 @@
     "@polkadot/dev": "0.40.19"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-numeric-separator": "^7.10.4",
     "@babel/helper-define-map": "^7.13.12",
+    "@babel/plugin-proposal-numeric-separator": "^7.10.4",
     "@polkadot/dev": "0.40.19",
     "@types/bignumber.js": "^5.0.0",
     "@types/jest": "^23.3.10",

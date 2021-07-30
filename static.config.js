@@ -1,4 +1,5 @@
 import React from 'react'
+require('dotenv').config()
 
 export default {
     entry: 'index.tsx',
@@ -50,7 +51,6 @@ export default {
                <Head>
                    <meta charSet='UTF-8'/>
                    <meta name='viewport' content='width=device-width, initial-scale=1'/>
-                   <script src={"/settings/config.js"}></script>
                    <link href='https://fonts.googleapis.com/css?family=Open+Sans” rel=“stylesheet'/>
                    <link href='https://fonts.googleapis.com/css?family=Montserrat&display=swap' rel='stylesheet'/>
                    <link href='https://fonts.googleapis.com/css?family=Montserrat:700&display=swap' rel='stylesheet'/>
@@ -66,6 +66,7 @@ export default {
         ['react-static-plugin-typescript', { typeCheck: false }],
         'react-static-plugin-styled-components',
         'react-static-plugin-reach-router',
+
     ],
     resolve: {
         alias: {

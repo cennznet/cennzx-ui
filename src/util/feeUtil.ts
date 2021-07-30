@@ -58,6 +58,6 @@ export function observableActualFee(blockHash: Hash, extrinsicIndex: BN, api: Ap
 
 export function addBufer(assetAmount: BN) {
     if (typeof window !== 'undefined') {
-        return assetAmount.muln(1 + window.config.FEE_BUFFER);
+        return assetAmount.muln(1 + process.env.FEE_BUFFER);
     }
 }

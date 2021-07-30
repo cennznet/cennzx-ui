@@ -10,7 +10,7 @@ import {hotReloadingEpic} from './epics/hotReloadingEpic';
 import reducer, {AppState} from './reducers';
 
 cryptoWaitReady();
-const cennzNetApi = typeof window !== 'undefined' ? ApiRx.create({provider: window.config.ENDPOINT}) : EMPTY;
+const cennzNetApi = typeof window !== 'undefined' ? ApiRx.create({provider: process.env.ENDPOINT}) : EMPTY;
 
 const epicMiddleware = createEpicMiddleware<any, any, AppState, IEpicDependency>({
     dependencies: {api$: cennzNetApi},
