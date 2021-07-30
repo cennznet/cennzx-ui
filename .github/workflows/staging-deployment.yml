@@ -53,11 +53,22 @@ jobs:
 
       - name: Deploy to IPFS
         uses: aquiladev/ipfs-action@v0.1.5
-        id: ipfs
         with:
           path: ./dist
-          host: ipfs.komputing.org
-          port: 443
-          protocol: https
-          timeout: 180000
-          verbose: true
+          service: pinata
+          pinataKey: ${{ secrets.PINATA_KEY }}
+          pinataSecret: ${{ secrets.PINATA_SECRET }}
+          pinataPinName: CENNZX
+        id: IPFS_CID
+
+      - name: Echo IPFS URL
+        run: |
+          echo $IPFS_CID
+
+#      # This branch updates a dnslink for a domain if the current branch should be deployed to prod.
+#      # see https://github.com/ipfs-shipyard/js-dnslink-dnsimple
+#      - run: npx dnslink-dnsimple --domain https://cennzx.centrality.me/> --link /ipfs/${{ steps.ipfs.outputs.cid }}
+#        env:
+#          DNSIMPLE_TOKEN: ${{ secrets.DNSIMPLE_TOKEN }}
+#        # TODO: change to master once merged.
+#        if: github.ref == 'refs/heads/beta'
