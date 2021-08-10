@@ -41,7 +41,7 @@ jobs:
         name: build-files
         path: ./dist
     - name: Get dist IPFS CID HASH
-      uses: ipfs add --only-hash -r ./dist
+      run: ipfs add --only-hash -r ./dist
 
   deploy:
     name: Deploy Staging
