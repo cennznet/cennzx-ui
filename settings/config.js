@@ -4,7 +4,7 @@ if (typeof window !== 'undefined') {
     if (hostname.endsWith('centrality.me')) {
         ENDPOINT = 'wss://nikau.centrality.me/public/ws';
         ENV = 'DEV';
-    } else if (hostname.endsWith('cennzx.io')) {
+    } else if (hostname.endsWith('cennznet.js.org')) {
         ENDPOINT = 'wss://cennznet.unfrastructure.io/public/ws';
         ENV = 'PROD';
     } else {
