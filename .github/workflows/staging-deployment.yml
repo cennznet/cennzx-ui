@@ -28,21 +28,27 @@ jobs:
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
-    - name: build
+    - name: Run Build to extract IPFS CID
       run: |
         yarn install --frozen-lockfile
         yarn build:staging
-    - name: Install IPFS
+
+    - name: Install IPFS and get
       uses: ibnesayeed/setup-ipfs@master
+
+    - name: Get dist IPFS CID HASH
+      run: BUNDLE_CID=$(ipfs add --only-hash -r ./dist | tail -1 | cut -d ' ' -f 2)
+
+    - name: Rebuild with CID
+      run: |
+        echo BUNDLE_CID=$BUNDLE_CID >> .env.staging
+        yarn build:staging
 
     - name: Upload build files
       uses: actions/upload-artifact@v2
       with:
         name: build-files
         path: ./dist
-    - name: Get dist IPFS CID HASH
-      run: ipfs add --only-hash -r ./dist
-
   deploy:
     name: Deploy Staging
     needs: build_code

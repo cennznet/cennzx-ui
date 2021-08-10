@@ -3,6 +3,8 @@ require('dotenv').config()
 
 export default {
     entry: 'index.tsx',
+    siteRoot: process.env.SITE_ROOT,
+    basePath: process.env.BASE_PATH + process.env.BUNDLE_CID + process.env.END_PATH,
     productionSourceMaps: false,
     getSiteData: () => ({
         title: 'Best of CENNZX'
