@@ -7,10 +7,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "stage": "react-static build --staging",
-    "build": "react-static build",
-    "build:staging": "env-cmd -f .env.staging react-static build",
-    "build:prod": "env-cmd -f .env.prod react-static build",
+    "build": "react-scripts build",
+    "build:staging": "env-cmd -f .env.staging react-scripts build",
+    "build:prod": "env-cmd -f .env.prod react-scripts build",
     "bundle": "react-static bundle",
     "export": "react-static export",
     "test:epics": "jest --config jest/jest.config.js --coverage",

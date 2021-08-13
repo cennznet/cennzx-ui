@@ -28,26 +28,18 @@ jobs:
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
-    - name: Run Build to extract IPFS CID
+
+    - name: Run Build
       run: |
         yarn install --frozen-lockfile
-        yarn build:staging
-
-    - name: Install IPFS and get
-      uses: ibnesayeed/setup-ipfs@master
-
-    - name: Get dist IPFS CID and Rebuild
-      run: |
-        BUNDLE_CID=$(ipfs add --only-hash -r ./dist | tail -1 | cut -d ' ' -f 2)
-        echo $BUNDLE_CID
-        echo BUNDLE_CID=$BUNDLE_CID >> .env.staging
         yarn build:staging
 
     - name: Upload build files
       uses: actions/upload-artifact@v2
       with:
         name: build-files
-        path: ./dist
+        path: ./build
+
   deploy:
     name: Deploy Staging
     needs: build_code
@@ -58,12 +50,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: build-files
-          path: ./dist
+          path: ./build
 
       - name: Deploy to IPFS
         uses: aquiladev/ipfs-action@v0.1.5
         with:
-          path: ./dist
+          path: ./build
           service: pinata
           pinataKey: ${{ secrets.PINATA_KEY }}
           pinataSecret: ${{ secrets.PINATA_SECRET }}
