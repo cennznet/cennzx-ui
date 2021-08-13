@@ -36,6 +36,7 @@ export const getAssetPoolBalanceEpic = (
                 const poolAsset = action.payload;
                 const assetInfo = store.global.assetInfo;
                 const coreAssetId = store.global.coreAssetId;
+                //@ts-ignore
                 if (poolAsset.toString() === coreAssetId.toString()) {
                     return EMPTY;
                 }
