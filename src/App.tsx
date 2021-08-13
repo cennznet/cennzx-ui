@@ -1,7 +1,6 @@
 import React, {FC} from 'react';
 import {LocalizeProvider} from 'react-localize-redux';
 import {Provider} from 'react-redux';
-import {Root} from 'react-static';
 import {ThemeProvider} from 'styled-components';
 import './app.css';
 import Layout from './components/Layout';

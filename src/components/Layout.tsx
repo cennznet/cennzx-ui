@@ -2,9 +2,11 @@ import {packageInfo} from '@polkadot/extension-dapp/packageInfo';
 import {InjectedExtension, MetadataDef} from '@polkadot/extension-inject/types';
 import React, {FC} from 'react';
 import {connect} from 'react-redux';
+import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import {Routes} from 'react-static';
 import styled from 'styled-components';
 import Exchange from '../pages/exchange';
+import Liquidity from '../pages/liquidity';
 import AppDialog from './Dialog/AppDialog';
 import TxDialog from './Dialog/TxDialog';
 import Header from './Header';
@@ -56,7 +58,19 @@ const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, cennzne
                 ) : null}
                 <React.Suspense fallback={<em>Loading...</em>}>
                     {/*<Routes path="*" />*/}
-                    <Exchange />
+                    <Router>
+                        <Switch>
+                            <Route exact path="/">
+                                <Exchange />
+                            </Route>
+                            <Route path="/exchange">
+                                <Exchange />
+                            </Route>
+                            <Route path="/liquidity">
+                                <Liquidity />
+                            </Route>
+                        </Switch>
+                    </Router>
                 </React.Suspense>
             </Content>
         </React.Fragment>
