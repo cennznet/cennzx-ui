@@ -43,6 +43,7 @@ export interface LiquidityState {
 
 export const initialState: LiquidityState = {
     form: {
+        //@ts-ignore
         buffer: typeof window !== 'undefined' ? process.env.FEE_BUFFER : 0.05,
     },
     exchangePool: [],
@@ -86,13 +87,16 @@ export default handleActions<LiquidityState, any>(
         [LiquidityActions.USER_POOL_SHARE_UPDATE]: produce(
             (draft: LiquidityState, action: UpdateUserPoolShareAction) => {
                 const index = draft.exchangePool.findIndex(
+                    //@ts-ignore
                     (poolShareData: IUserShareInPool) =>
                         poolShareData.assetId === action.payload.assetId &&
                         poolShareData.address === action.payload.address
                 );
                 if (index === -1) {
+                    //@ts-ignore
                     draft.userPoolShare.push(action.payload);
                 } else {
+                    //@ts-ignore
                     draft.userPoolShare[index] = action.payload;
                 }
             }
@@ -174,6 +178,7 @@ export default handleActions<LiquidityState, any>(
             draft.form.assetId = undefined;
             draft.form.coreAmount = undefined;
             draft.form.signingAccount = undefined;
+            //@ts-ignore
             draft.form.buffer = typeof window !== 'undefined' ? process.env.FEE_BUFFER : 0.05;
             draft.extrinsicParams = undefined;
             draft.txFee = undefined;

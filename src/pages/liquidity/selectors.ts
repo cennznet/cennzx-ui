@@ -20,7 +20,7 @@ const getAssetInfo = (state: AppState) => state.global.assetInfo;
 export const getAssets = createSelector(
     [getAssetInfo],
     assetInfo => {
-        const newAssetList = [];
+        const newAssetList: any = [];
         assetInfo &&
             assetInfo.forEach(asset => {
                 const assetObject = {
@@ -37,7 +37,9 @@ export const getUserPoolShare = createSelector(
     [getAsset, getAllUserPoolShare, getSigningAccount],
     (assetId, poolShare, signingAccount) => {
         if (!assetId) return null;
+        //@ts-ignore
         if (!poolShare.length) return null;
+        //@ts-ignore
         const accountAssetBalance = poolShare.find(
             (share: IUserShareInPool) => share.assetId === assetId && share.address === signingAccount
         );
@@ -90,6 +92,7 @@ export const getAssetReserve = createSelector(
         const poolBalanceForBuyAsset = exchangePool.find((poolData: IExchangePool) => poolData.assetId === asset);
         if (poolBalanceForBuyAsset) {
             return poolBalanceForBuyAsset.assetBalance;
+            //@ts-ignore
         } else if (asset.toString() === coreAsset.toString()) {
             return exchangePool[0].coreAssetBalance;
         }
@@ -115,9 +118,11 @@ export const getExchangeRateMsg = createSelector(
     [getExchangeRate, getAssets, getCoreAsset, getAsset, getCoreAmount, getAssetInfo],
     (exchangeRate, assets, coreAsset, asset, coreAmount, assetInfo) => {
         if (!coreAmount || !exchangeRate) return;
-        const rate = exchangeRate.asString(assetInfo[asset].decimalPlaces);
+        const rate = exchangeRate.asString(assetInfo[asset as number].decimalPlaces);
         return exchangeRate
-            ? `Exchange rate: 1 ${getOptionByValue(assets, coreAsset).symbol} = ${rate} ${
+            ? //@ts-ignore
+              `Exchange rate: 1 ${getOptionByValue(assets, coreAsset).symbol} = ${rate} ${
+                  //@ts-ignore
                   getOptionByValue(assets, asset).symbol
               }.`
             : '';
@@ -127,11 +132,12 @@ export const getFee = createSelector(
     [getTxFee, getCoreAsset, getFeeAssetId, getAssetInfo],
     (txFee, coreAsset, feeAssetId, assetInfo) => {
         let fee;
-        const assetSymbol = assetInfo.length > 0 && assetInfo[feeAssetId] ? assetInfo[feeAssetId].symbol : 'CPAY';
+        const assetSymbol =
+            assetInfo.length > 0 && assetInfo[feeAssetId as number] ? assetInfo[feeAssetId as number].symbol : 'CPAY';
         if (coreAsset && coreAsset === feeAssetId && txFee) {
             fee = `${txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces)} ${assetSymbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {
-            fee = `${txFee.feeInFeeAsset.asString(assetInfo[coreAsset].decimalPlaces)} ${assetSymbol})`;
+            fee = `${txFee.feeInFeeAsset.asString(assetInfo[coreAsset as number].decimalPlaces)} ${assetSymbol})`;
         }
         return fee;
     }
@@ -143,13 +149,18 @@ export const getTxFeeMessage = createSelector(
         let fee;
         if (String(feeAssetId) === String(coreAsset) && txFee) {
             // If fee asset is CPAY use cpayFee
-            fee = txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces, Amount.ROUND_UP);
+            fee = txFee.feeInCpay.asString(assetInfo[coreAsset as number].decimalPlaces, Amount.ROUND_UP);
+            //@ts-ignore
             return `Transaction fee is ${fee} ${getOptionByValue(assets, feeAssetId).symbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {
-            fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId].decimalPlaces, Amount.ROUND_UP);
+            fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId as number].decimalPlaces, Amount.ROUND_UP);
             return `Transaction fee is ${fee} ${
+                //@ts-ignore
                 getOptionByValue(assets, feeAssetId).symbol
-            } (converted to ${txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces, Amount.ROUND_UP)} CPAY)`;
+            } (converted to ${txFee.feeInCpay.asString(
+                assetInfo[coreAsset as number].decimalPlaces,
+                Amount.ROUND_UP
+            )} CPAY)`;
         }
     }
 );

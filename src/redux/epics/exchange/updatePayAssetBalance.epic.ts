@@ -35,7 +35,9 @@ export const updateAssetsBalanceEpic = (
             ]): Observable<Action<any>> => {
                 const {stakingAssetId} = store.global;
                 return api.query.genericAsset.freeBalance(assetId, signingAccount).pipe(
+                    //@ts-ignore
                     switchMap((balance: Balance) => {
+                        //@ts-ignore
                         if (assetId === stakingAssetId.toNumber()) {
                             return fetchBalanceExcludeLock(api, signingAccount, balance, assetId).pipe(
                                 switchMap((newAssetBalance: IAssetBalance) => {
@@ -68,6 +70,7 @@ export const prepareBalanceParamsForFeeAssetEpic = (
         withLatestFrom(store$),
         filter(
             ([, store]) =>
+                //@ts-ignore
                 store.ui.exchange.form.feeAssetId &&
                 !!store.ui.exchange.form.signingAccount &&
                 store.ui.exchange.form.feeAssetId !== store.ui.exchange.form.fromAsset

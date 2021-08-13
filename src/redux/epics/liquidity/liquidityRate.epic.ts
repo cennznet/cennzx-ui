@@ -26,6 +26,7 @@ export const getCoreLiquidityPriceEpic = (
 ) =>
     combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.CORE_LIQUIDITY_PRICE_REQUEST))]).pipe(
         withLatestFrom(store$),
+        //@ts-ignore
         switchMap(([[api], store]) => {
             const {assetId, assetAmount} = store.ui.liquidity.form as LiquidityFormData;
             const exchangeReserve = store.ui.liquidity.exchangePool.find(exPool => exPool.assetId === assetId);
@@ -51,6 +52,7 @@ export const getCoreLiquidityPriceEpic = (
                     }
                 }
                 if (coreAmount.ltn(0)) {
+                    //@ts-ignore
                     return from([setLiquidityError(new IncorrectLiquidity()), updateAsset2Amount(undefined)]);
                 }
                 return from([
@@ -83,6 +85,7 @@ export const getAssetLiquidityPriceEpic = (
 ) =>
     combineLatest([api$, action$.pipe(ofType(types.ui.Liquidity.ASSET_LIQUIDITY_PRICE_REQUEST))]).pipe(
         withLatestFrom(store$),
+        //@ts-ignore
         switchMap(([[api], store]) => {
             const {assetId, coreAmount} = store.ui.liquidity.form as LiquidityFormData;
             const exchangeReserve = store.ui.liquidity.exchangePool.find(exPool => exPool.assetId === assetId);
@@ -131,6 +134,7 @@ export const requestAssetLiquidityPriceEpic = (
         withLatestFrom(store$),
         filter(
             ([, store]) =>
+                //@ts-ignore
                 store.ui.liquidity.form.assetId &&
                 store.ui.liquidity.form.coreAssetId &&
                 !!store.ui.liquidity.form.coreAmount
@@ -154,6 +158,7 @@ export const requestCoreLiquidityPriceEpic = (
         withLatestFrom(store$),
         filter(
             ([, store]) =>
+                //@ts-ignore
                 store.ui.liquidity.form.assetId &&
                 store.ui.liquidity.form.coreAssetId &&
                 !!store.ui.liquidity.form.assetAmount

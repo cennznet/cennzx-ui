@@ -35,13 +35,16 @@ export const clearEstimatedAmountEpic = (
             switchMap(([action, store]) => {
                 const {extrinsic} = store.ui.exchange.form as ExchangeFormData;
                 if (action.type === types.ui.Exchange.TO_ASSET_AMOUNT_SET) {
+                    //@ts-ignore
                     return of(updateFromAssetAmount(undefined));
                 } else if (action.type === types.ui.Exchange.FROM_ASSET_AMOUNT_SET) {
+                    //@ts-ignore
                     return of(updateToAssetAmount(undefined));
                 } else if (
                     (extrinsic === SWAP_INPUT && action.type === types.ui.Exchange.SELECTED_FROM_ASSET_UPDATE) ||
                     (extrinsic === SWAP_OUTPUT && action.type === types.ui.Exchange.SELECTED_TO_ASSET_UPDATE)
                 ) {
+                    //@ts-ignore
                     return from([updateFromAssetAmount(undefined), updateToAssetAmount(undefined)]);
                 }
                 return EMPTY;
@@ -63,6 +66,7 @@ export const clearExchangeRateAmountEpic = (
         )
         .pipe(
             switchMap(() => {
+                //@ts-ignore
                 return of(updateExchangeRate(undefined));
             })
         );
@@ -76,6 +80,7 @@ export const clearAmountEpic = (
         ofType<SetExchangeErrorAction>(types.ui.Exchange.ERROR_SET),
         filter(action => action.payload instanceof EmptyPool),
         switchMap(() => {
+            //@ts-ignore
             return from([updateToAssetAmount(undefined), updateFromAssetAmount(undefined)]);
         })
     );
@@ -95,6 +100,7 @@ export const clearTxFeeEpic = (
             types.ui.Exchange.SELECTED_ACCOUNT_UPDATE
         ),
         switchMap(() => {
+            //@ts-ignore
             return of(updateTransactionFee(undefined));
         })
     );

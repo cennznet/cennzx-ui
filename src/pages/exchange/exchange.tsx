@@ -1,16 +1,16 @@
 import {FeeRate} from '@cennznet/types';
 import BN from 'bn.js';
 import {Button} from 'centrality-react-core';
-import AccountPicker from 'components/AccountPicker';
-import AdvancedSetting from 'components/AdvancedSetting';
-import AssetInputForAdd from 'components/AssetInputForAdd';
-import ErrorMessage from 'components/Error/ErrorMessage';
-import ExchangeIcon from 'components/ExchangeIcon';
-import Nav from 'components/Nav';
-import Page from 'components/Page';
-import PageInside from 'components/PageInside';
 import React, {FC, useEffect, useState} from 'react';
 import styled from 'styled-components';
+import AccountPicker from '../../components/AccountPicker';
+import AdvancedSetting from '../../components/AdvancedSetting';
+import AssetInputForAdd from '../../components/AssetInputForAdd';
+import ErrorMessage from '../../components/Error/ErrorMessage';
+import ExchangeIcon from '../../components/ExchangeIcon';
+import Nav from '../../components/Nav';
+import Page from '../../components/Page';
+import PageInside from '../../components/PageInside';
 import {BaseError, EmptyPool, FormErrorTypes} from '../../error/error';
 import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {ExchangeState} from '../../redux/reducers/ui/exchange.reducer';
@@ -177,7 +177,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     <Nav active="exchange" />
                     <AccountPicker
                         title="Choose account"
-                        selected={signingAccount}
+                        selected={signingAccount as string}
                         options={accounts}
                         onChange={(picked: {label: string; value: string}) => {
                             props.handleSelectedAccountChange(picked.value);
@@ -192,8 +192,8 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     <AssetInputForAdd
                         disableAmount={!!assetForEmptyPool}
                         max={maxBuy}
-                        value={{amount: toAssetAmount, assetId: toAsset}}
-                        decimalPlaces={getDecimalPlaces(toAsset, assetInfo)}
+                        value={{amount: toAssetAmount as Amount, assetId: toAsset as number}}
+                        decimalPlaces={getDecimalPlaces(toAsset as number, assetInfo)}
                         options={assets}
                         onChange={(amountParams: AmountParams) => {
                             if (amountParams.amountChange) {
@@ -224,8 +224,8 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     <AssetInputForAdd
                         disableAmount={!!assetForEmptyPool}
                         max={fromAssetBalance}
-                        value={{amount: fromAssetAmount, assetId: fromAsset}}
-                        decimalPlaces={getDecimalPlaces(fromAsset, assetInfo)}
+                        value={{amount: fromAssetAmount as Amount, assetId: fromAsset as number}}
+                        decimalPlaces={getDecimalPlaces(fromAsset as number, assetInfo)}
                         options={assets}
                         onChange={amountParams => {
                             if (amountParams.amountChange) {
@@ -243,7 +243,7 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                         secondaryTitle={extrinsic === SWAP_OUTPUT ? ESTIMATED_LABEL : null}
                         message={
                             fromAssetBalance
-                                ? `Balance: ${fromAssetBalance.asString(assetInfo[fromAsset].decimalPlaces)}`
+                                ? `Balance: ${fromAssetBalance.asString(assetInfo[fromAsset as number].decimalPlaces)}`
                                 : ''
                         }
                         errorBox={<ErrorMessage errors={formErrors} field={FormSection.fromAssetInput} />}
@@ -258,7 +258,9 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                                         flat
                                         primary
                                         disabled={formErrors.size > 0 || !txFee}
-                                        onClick={() => props.openTxDialog(props.form as ExchangeFormData, props.txFee)}
+                                        onClick={() =>
+                                            props.openTxDialog(props.form as ExchangeFormData, props.txFee as IFee)
+                                        }
                                     >
                                         Exchange
                                     </Button>
@@ -291,9 +293,9 @@ export const Exchange: FC<ExchangeProps & ExchangeDispatchProps> = props => {
                     title={'Advanced settings'}
                     selectTitle={'Pay transaction fee with'}
                     spinner={false}
-                    buffer={buffer}
+                    buffer={buffer as number}
                     selectOptions={assets}
-                    selectValue={feeAssetId}
+                    selectValue={feeAssetId as number}
                     assetInfo={assetInfo}
                 />
             </form>

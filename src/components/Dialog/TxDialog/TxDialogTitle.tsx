@@ -1,3 +1,4 @@
+import {bool} from '@cennznet/types';
 import React, {FC} from 'react';
 import {Stages} from '../../../redux/reducers/ui/txDialog.reducer';
 
@@ -24,7 +25,7 @@ export const TxDialogTitle: FC<TxDialogTitleProps> = ({error, stage, success, me
         case Stages.InBlock:
             return <TitleForBroadcasted />;
         case Stages.Finalised:
-            return <TitleForFinalised success={success} />;
+            return <TitleForFinalised success={success as boolean} />;
         default:
             return <></>;
     }

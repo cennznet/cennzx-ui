@@ -1,10 +1,8 @@
 import {ApiRx, SubmittableResult} from '@cennznet/api';
 import {SubmittableExtrinsic} from '@cennznet/api/types';
-import {Hash} from '@plugnet/types/interfaces';
 import BN from 'bn.js';
 import {async, Observable, of} from 'rxjs';
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators';
-import {Amount, AmountUnit} from './Amount';
 
 /**
  *
@@ -36,7 +34,7 @@ export function observableEstimatedFee(
     );
 }
 
-export function observableActualFee(blockHash: Hash, extrinsicIndex: BN, api: ApiRx): Observable<BN> {
+export function observableActualFee(blockHash: any, extrinsicIndex: BN, api: ApiRx): Observable<BN> {
     return api.query.system.events.at(blockHash).pipe(
         map((events: any) => {
             //event.event.data = [0 - extrinsic index and 1 - fee amount] for fee charged event
@@ -58,6 +56,6 @@ export function observableActualFee(blockHash: Hash, extrinsicIndex: BN, api: Ap
 
 export function addBufer(assetAmount: BN) {
     if (typeof window !== 'undefined') {
-        return assetAmount.muln(1 + process.env.FEE_BUFFER);
+        return assetAmount.muln(1 + parseFloat(process.env.FEE_BUFFER as string));
     }
 }

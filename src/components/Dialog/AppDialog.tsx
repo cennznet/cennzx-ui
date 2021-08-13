@@ -1,4 +1,4 @@
-import {version as extVersion} from '@polkadot/extension-dapp/package-info.json';
+import {packageInfo} from '@polkadot/extension-dapp/packageInfo';
 import {InjectedExtension, MetadataDef} from '@polkadot/extension-inject/types';
 import {Link} from '@reach/router';
 import React, {FC, useState} from 'react';
@@ -43,7 +43,7 @@ const getDialogFooter = (
     setDialogOpen: Function,
     extensionConnected: boolean,
     cennznetExtension: InjectedExtension,
-    metadataDef
+    metadataDef: MetadataDef
 ) => {
     return (
         <Container>
@@ -51,9 +51,13 @@ const getDialogFooter = (
                 <BlueButton
                     onClick={async () => {
                         const metadata = cennznetExtension.metadata;
-                        await metadata.provide(metadataDef);
+                        //@ts-ignore
+                        const data = await metadata.provide(metadataDef as MetadataDef);
                         const {chain, specVersion} = metadataDef;
-                        localStorage.setItem(`${extVersion}-${chain}${specVersion}-EXTENSION_META_UPDATED`, 'true');
+                        localStorage.setItem(
+                            `${packageInfo.version}-${chain}${specVersion}-EXTENSION_META_UPDATED`,
+                            'true'
+                        );
                         setDialogOpen(false);
                     }}
                 >

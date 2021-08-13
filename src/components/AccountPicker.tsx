@@ -1,10 +1,10 @@
 import Identicon from '@polkadot/react-identicon';
-import DropDown from 'components/DropDown';
 import React, {FC} from 'react';
 import styled from 'styled-components';
 import {IOption} from '../typings';
 import {getOptionByValue} from '../util/component';
 import MessageBox from './../components/MessageBox';
+import DropDown from './DropDown';
 
 interface AccountPickerProps {
     title: string;

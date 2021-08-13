@@ -5,8 +5,8 @@ import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {IFee} from '../../typings';
 
 export interface SummaryFeeProps {
-    txFee: IFee;
-    feeAssetId: number;
+    txFee: IFee | undefined;
+    feeAssetId: number | undefined;
     coreAssetId: number;
     assetInfo: AssetDetails[];
 }
@@ -18,7 +18,7 @@ const Em = styled.span`
 
 const getFeeMsg = ({txFee, feeAssetId, coreAssetId, assetInfo}: SummaryFeeProps) => {
     let fee;
-    const assetSymbol = assetInfo[feeAssetId].symbol;
+    const assetSymbol = assetInfo[feeAssetId as number].symbol;
 
     if (coreAssetId && coreAssetId === feeAssetId && txFee) {
         // If fee asset is CPAY use cpayFee
@@ -32,7 +32,7 @@ const getFeeMsg = ({txFee, feeAssetId, coreAssetId, assetInfo}: SummaryFeeProps)
             </>
         );
     } else if (txFee && txFee.feeInFeeAsset) {
-        fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId].decimalPlaces);
+        fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId as number].decimalPlaces);
         return (
             <>
                 Transaction fee (estimated):{' '}

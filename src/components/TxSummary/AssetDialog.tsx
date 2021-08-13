@@ -1,8 +1,8 @@
-import AssetDropDown from 'components/AssetDropDown';
-import TransparentButton from 'components/TransparentButton';
 import React, {FC} from 'react';
 import styled from 'styled-components';
 import {Asset} from '../../typings';
+import AssetDropDown from '../AssetDropDown';
+import TransparentButton from '../TransparentButton';
 import Dialog, {DialogProps} from './../../components/Dialog/Dialog';
 import {BlueButton} from './../../components/Dialog/DialogButtons';
 

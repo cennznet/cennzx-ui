@@ -20,6 +20,7 @@ export const clearExchangeRateAmountEpic = (
 ) =>
     action$.pipe(ofType(types.ui.Liquidity.SELECTED_ASSET1_UPDATE)).pipe(
         switchMap(() => {
+            //@ts-ignore
             return of(updateExchangeRate(undefined));
         })
     );
@@ -32,8 +33,11 @@ export const clearAmountEpic = (
     action$.pipe(ofType(types.ui.Liquidity.SELECTED_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)).pipe(
         switchMap(() => {
             return from([
+                //@ts-ignore
                 updateAsset1Amount(undefined),
+                //@ts-ignore
                 updateAsset2Amount(undefined),
+                //@ts-ignore
                 updateTotalLiquidity(undefined),
             ]);
         })
@@ -52,6 +56,7 @@ export const clearTxFeeEpic = (
             types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE
         ),
         switchMap(() => {
+            //@ts-ignore
             return of(updateTransactionFee(undefined));
         })
     );

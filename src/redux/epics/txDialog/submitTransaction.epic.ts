@@ -1,5 +1,6 @@
 import {SubmittableResult} from '@cennznet/api';
 import {InjectedExtension} from '@polkadot/extension-inject/types';
+import BN from 'bn.js';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, from, Observable, of} from 'rxjs';
@@ -22,7 +23,7 @@ import {
 import {AppState} from '../../reducers';
 import {Stages} from '../../reducers/ui/txDialog.reducer';
 
-let web3FromSource = null;
+let web3FromSource: any = null;
 
 if (typeof window !== 'undefined') {
     web3FromSource = require('@polkadot/extension-dapp').web3FromSource;
@@ -82,6 +83,7 @@ export const submitTransactionEpic = (
                 const extension = store.extension.cennznetExtension;
                 const source = extension ? extension.name : undefined;
                 return from(web3FromSource(source)).pipe(
+                    //@ts-ignore
                     switchMap(
                         (injector: InjectedExtension): Observable<Action<any>> => {
                             const signer = injector.signer;
@@ -137,10 +139,12 @@ export const submitLiquidityEpic = (
                 const totalLiquidity = store.ui.liquidity.totalLiquidity;
                 let tx;
                 if (extrinsic.method === 'addLiquidity') {
+                    //@ts-ignore
                     const minLiquidity = totalLiquidity.isZero()
                         ? new Amount(coreAmount)
-                        : new Amount(coreAmount).mul(totalLiquidity.div(coreAssetReserve));
-
+                        : //@ts-ignore
+                          new Amount(coreAmount).mul(totalLiquidity.div(coreAssetReserve) as BN);
+                    //@ts-ignore
                     const maxAssetAmount = totalLiquidity.isZero()
                         ? new Amount(assetAmount)
                         : new Amount(assetAmount.muln(1 + buffer));
@@ -155,6 +159,7 @@ export const submitLiquidityEpic = (
                 const extension = store.extension.cennznetExtension;
                 const source = extension ? extension.name : undefined;
                 return from(web3FromSource(source)).pipe(
+                    //@ts-ignore
                     switchMap(
                         (injector: InjectedExtension): Observable<Action<any>> => {
                             const signer = injector.signer;

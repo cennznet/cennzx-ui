@@ -24,6 +24,7 @@ export const prepareBalanceParamsForSellAssetEpic = (
         ),
     ]).pipe(
         withLatestFrom(store$),
+        //@ts-ignore
         filter(([, store]) => store.ui.exchange.form.fromAsset && !!store.ui.exchange.form.signingAccount),
         switchMap(
             ([[api], store]): Observable<Action<any>> => {
@@ -49,6 +50,7 @@ export const prepareBalanceParamsForBuyAssetEpic = (
         ),
     ]).pipe(
         withLatestFrom(store$),
+        //@ts-ignore
         filter(([, store]) => store.ui.exchange.form.toAsset && !!store.ui.exchange.form.signingAccount),
         switchMap(
             ([[api], store]): Observable<Action<any>> => {

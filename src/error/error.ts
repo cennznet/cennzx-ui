@@ -10,7 +10,7 @@ export abstract class BaseError extends Error {
 
     protected constructor(msg: string, throwable?: Error) {
         super(msg);
-        this.origin = throwable;
+        this.origin = throwable as Error;
 
         const actualProto = new.target.prototype;
 
@@ -130,6 +130,7 @@ export class UserPoolBalanceNotEnough extends BaseError {
                 ? `Not enough ${asset.symbol} in user pool, require: ${require.asString(
                       asset.decimalPlaces,
                       Amount.ROUND_UP
+                      //@ts-ignore
                   )}, available: ${reserve.asString(asset.decimalPlaces)}`
                 : `Not enough ${asset.symbol} in user pool`
         );

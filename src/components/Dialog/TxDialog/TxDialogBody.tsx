@@ -1,6 +1,5 @@
 import {EventRecord} from '@cennznet/types';
 import BN from 'bn.js';
-import ExternalLink from 'components/ExternalLink';
 import React, {FC, useState} from 'react';
 import {AssetDetails} from '../../../redux/reducers/global.reducer';
 import {Stages} from '../../../redux/reducers/ui/txDialog.reducer';
@@ -9,6 +8,7 @@ import {Amount} from '../../../util/Amount';
 import {ADD_LIQUIDITY, REMOVE_LIQUIDITY, SWAP_INPUT, SWAP_OUTPUT} from '../../../util/extrinsicUtil';
 import {SummaryBuy} from '../../AdvancedSetting/SummaryBuy';
 import SummaryFee from '../../AdvancedSetting/SummaryFee';
+import ExternalLink from '../../ExternalLink';
 
 type AssetSwapParams = [number, number, Amount, Amount];
 
@@ -96,7 +96,7 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
                       )}  ${assetInfo[feeExchangeResult.assetId].symbol}`
                     : ''}
                 <br /> Transaction hash:
-                <ExternalLink url={getCennzScanURL(txHash)} text={txHash} />
+                <ExternalLink url={getCennzScanURL(txHash)} text={txHash as string} />
             </div>
         );
     } else {
@@ -105,7 +105,7 @@ const BodyForFinalised: FC<BodyForFinalisedProps> = ({
                 {message}.
                 <br />
                 Check transaction hash for more details:
-                <ExternalLink url={getCennzScanURL(txHash)} text={txHash} />
+                <ExternalLink url={getCennzScanURL(txHash)} text={txHash as string} />
             </div>
         );
     }
@@ -176,11 +176,11 @@ export const TxDialogBody: FC<TxDialogBodyProps> = ({
                 </>
             );
         case Stages.InBlock:
-            return <BodyForBroadcasted txHash={txHash} />;
+            return <BodyForBroadcasted txHash={txHash as string} />;
         case Stages.Finalised:
             return (
                 <BodyForFinalised
-                    success={success}
+                    success={success as boolean}
                     events={events}
                     actualTxFee={actualTxFee}
                     txHash={txHash}

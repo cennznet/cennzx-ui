@@ -20,7 +20,7 @@ export class Storage<StorageProps> {
     }
 
     setItem(key, value) {
-        this.store ? this.store.setItem(this.getPrefixedKey(key), value) : null;
+        return this.store ? this.store.setItem(this.getPrefixedKey(key), value) : null;
     }
 
     removeItem(key) {
@@ -28,7 +28,7 @@ export class Storage<StorageProps> {
     }
 
     prefixedKeys() {
-        const keys = [];
+        const keys: any = [];
         for (let i = 0, len = this.store.length; i < len; i += 1) {
             const key = this.store.key(i);
             if (key.startsWith(this.prefix)) {
@@ -50,8 +50,8 @@ export class Storage<StorageProps> {
 }
 
 // allow rereact static to prebuild
-let localStorageX = null;
-let sessionStorageX = null;
+let localStorageX: null | Storage<any> = null;
+let sessionStorageX: null | Storage<any> = null;
 
 try {
     const prefix = 'EV';

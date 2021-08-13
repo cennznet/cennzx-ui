@@ -1,5 +1,5 @@
-import {connectRouter} from 'connected-react-router';
-import {combineReducers} from 'redux';
+import {connectRouter, LocationChangeAction, RouterState} from 'connected-react-router';
+import {combineReducers, Reducer} from 'redux';
 import history from '../history';
 import extension, {ExtensionState} from './extension.reducer';
 import global, {GlobalState} from './global.reducer';
@@ -9,7 +9,7 @@ import ui from './ui/index';
 import {LiquidityState} from './ui/liquidity.reducer';
 import {TxDialogState} from './ui/txDialog.reducer';
 
-let router = null;
+let router: null | any = null;
 if (typeof document !== 'undefined') {
     router = connectRouter(history);
 }

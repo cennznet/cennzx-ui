@@ -24,10 +24,10 @@ export function fetchBalanceExcludeLock<T>(api, signingAccount, balance: T, asse
                 let userBal;
                 if (lockBal.length > 0) {
                     const stakeBal = lockBal.find(lock => lock.id.toString() === stringToHex('staking '));
-                    const freeBalance = stakeBal ? balance.sub(stakeBal.amount) : new Amount(0);
+                    const freeBalance = stakeBal ? (balance as any).sub(stakeBal.amount) : new Amount(0);
                     userBal = new Amount(freeBalance.toString());
                 } else {
-                    userBal = new Amount(balance.toString());
+                    userBal = new Amount((balance as any).toString());
                 }
                 const newAssetBalance = {assetId, account: signingAccount, balance: userBal};
                 return of(newAssetBalance);
@@ -57,7 +57,9 @@ export const updateUserAssetBalanceEpic = (
             ]): Observable<Action<any>> => {
                 const {stakingAssetId} = store.global;
                 return api.query.genericAsset.freeBalance(assetId, signingAccount).pipe(
+                    //@ts-ignore
                     switchMap((balance: Balance) => {
+                        //@ts-ignore
                         if (assetId === stakingAssetId.toNumber()) {
                             return fetchBalanceExcludeLock(api, signingAccount, balance, assetId).pipe(
                                 switchMap((newAssetBalance: IAssetBalance) => {
@@ -88,6 +90,7 @@ export const prepareRequestUserFeeAssetsBalanceEpic = (
         action$.pipe(ofType(types.ui.Liquidity.FEE_ASSET_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
+        //@ts-ignore
         filter(([, store]) => store.ui.liquidity.form.feeAssetId && !!store.ui.liquidity.form.signingAccount),
         switchMap(
             ([, store]): Observable<Action<any>> => {
@@ -107,12 +110,13 @@ export const prepareRequestTotalLiquidityEpic = (
         action$.pipe(ofType(types.ui.Liquidity.SELECTED_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)),
     ]).pipe(
         withLatestFrom(store$),
+        //@ts-ignore
         filter(([, store]) => store.ui.liquidity.form.assetId && !!store.ui.liquidity.form.signingAccount),
         switchMap(
             ([, store]): Observable<Action<any>> => {
                 const {assetId} = store.ui.liquidity.form;
                 const retObservable: Action<any>[] = [];
-                retObservable.push(requestTotalLiquidity(assetId));
+                retObservable.push(requestTotalLiquidity(assetId as number));
                 return from(retObservable);
             }
         )

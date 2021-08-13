@@ -15,7 +15,11 @@ function checkFromAssetAmount(props: ExchangeProps, errors: FormErrors): void {
         if (toAssetAmount && toAssetAmount.gtn(0)) {
             mergeError(FormSection.fromAssetInput, new FieldNotReady(FormSection.fromAssetInput), errors);
         } else {
-            mergeError(FormSection.fromAssetInput, new FromAssetAmountRequired(assetInfo[fromAsset].symbol), errors);
+            mergeError(
+                FormSection.fromAssetInput,
+                new FromAssetAmountRequired(assetInfo[fromAsset as number].symbol),
+                errors
+            );
         }
     }
 }

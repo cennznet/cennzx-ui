@@ -8,7 +8,7 @@ const Header = styled.h1`
     margin-top: 0px;
 `;
 
-const ModalStyled = styled(Modal)`
+const ModalStyled = styled(Modal as any)`
     border-radius: 3px;
     color: black;
 `;

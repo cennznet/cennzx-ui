@@ -11,8 +11,8 @@ import {updateSelectedAccount as updateSelectedLiquidityAccount} from '../action
 import {AppState} from '../reducers';
 import action from './../actions';
 import {setExtensionError, updateExAccounts, updateExConnected, updateExDetected} from './../actions/extension.action';
-let web3AccountsSubscribe = null;
-let web3Enable = null;
+let web3AccountsSubscribe: null | any = null;
+let web3Enable: null | any = null;
 
 if (typeof window !== 'undefined') {
     web3Enable = require('@polkadot/extension-dapp').web3Enable;
@@ -28,6 +28,7 @@ export const extensionDetectedEpic = (action$: Observable<Action<any>>, store$: 
             return stream$.pipe(
                 switchMap(() => {
                     return from(web3Enable('cennzx')).pipe(
+                        //@ts-ignore
                         switchMap((polkadotInjectedGlobal: InjectedExtension[]) => {
                             const cennznetExtensionFetched = polkadotInjectedGlobal.find(
                                 ext => ext.name === 'cennznet-extension' || ext.name === 'polkadot-js'
@@ -105,6 +106,7 @@ export const updateSelectedAccountEpic = (
                         updateSelectedExchangeAccount(accounts[0].address),
                     ]);
                 } else {
+                    //@ts-ignore
                     return from([updateSelectedLiquidityAccount(undefined), updateSelectedExchangeAccount(undefined)]);
                 }
             }

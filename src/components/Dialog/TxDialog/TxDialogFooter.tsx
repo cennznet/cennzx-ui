@@ -1,16 +1,16 @@
-import {BlueButton, RedButton} from 'components/Dialog/DialogButtons';
-import TransparentButton from 'components/TransparentButton';
 import React, {FC, useState} from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import styled from 'styled-components';
 import {Stages} from '../../../redux/reducers/ui/txDialog.reducer';
+import TransparentButton from '../../TransparentButton';
+import {BlueButton, RedButton} from '../DialogButtons';
 
 const Loading = styled(ClipLoader)`
     border-color: white !important;
     min-width: 10rem !important;
 `;
 
-const CancelButton = styled(TransparentButton)`
+const CancelButton = styled(TransparentButton as any)`
     margin-bottom: 0.2rem;
 `;
 
@@ -78,7 +78,7 @@ export const TxDialogFooter: FC<TxDialogFooterProps> = ({error, stage, success, 
         case Stages.Finalised:
             return (
                 <FootBox>
-                    <FooterForFinalised onClick={closeAndComplete} success={success} />
+                    <FooterForFinalised onClick={closeAndComplete} success={success as boolean} />
                 </FootBox>
             );
         default:

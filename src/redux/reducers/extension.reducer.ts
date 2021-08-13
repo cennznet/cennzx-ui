@@ -26,7 +26,9 @@ export const initialState: ExtensionState = {
     extensionConnected: false,
     extensionDetectionComplete: false,
     accounts: [],
+    //@ts-ignore
     error: null,
+    //@ts-ignore
     cennznetExtension: undefined,
 };
 

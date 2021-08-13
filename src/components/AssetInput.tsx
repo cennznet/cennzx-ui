@@ -1,4 +1,3 @@
-import TransparentButton from 'components/TransparentButton';
 import React, {FC} from 'react';
 import styled from 'styled-components';
 import {AmountParams, Asset} from '../typings';
@@ -7,6 +6,7 @@ import AmountBox from './AmountBox';
 import AssetDropDown from './AssetDropDown';
 import FlexDiv from './FlexDiv';
 import MessageBox from './MessageBox';
+import TransparentButton from './TransparentButton';
 
 const Trade = styled.div`
     margin-top: 20px;
@@ -19,7 +19,7 @@ const Trade = styled.div`
     }
 `;
 
-const InputAndSelect = styled(FlexDiv)`
+const InputAndSelect = styled(FlexDiv as any)`
     height: 48px;
     background-color: transparent;
     border: 1px solid #b5babd;
@@ -83,7 +83,7 @@ const AssetInput: FC<AssetInputProps> = ({
             </Top>
             <InputAndSelect id="trade">
                 <AmountBox
-                    readOnly={disableAmount}
+                    readOnly={disableAmount as boolean}
                     value={amount}
                     onChange={value => {
                         onChange(getAmountParams(value, assetId, true));

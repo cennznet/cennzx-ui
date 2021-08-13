@@ -38,6 +38,7 @@ export const getInputPriceEpic = (
         withLatestFrom(store$),
         filter(
             ([, store]) =>
+                //@ts-ignore
                 store.ui.exchange.form.fromAsset &&
                 store.ui.exchange.form.toAsset &&
                 !!store.ui.exchange.form.fromAssetAmount
@@ -46,7 +47,7 @@ export const getInputPriceEpic = (
             ([[api], store]): Observable<Action<any>> => {
                 const {fromAssetAmount, fromAsset, toAsset, toAssetAmount} = store.ui.exchange.form as ExchangeFormData;
                 const {error} = store.ui.exchange;
-                return api.rpc.cennzx.sellPrice(fromAsset, fromAssetAmount, toAsset).pipe(
+                return (api.rpc as any).cennzx.sellPrice(fromAsset, fromAssetAmount, toAsset).pipe(
                     filter(
                         (priceRes: PriceResponse) =>
                             !toAssetAmount || !new Amount(priceRes.price.toString()).eq(toAssetAmount)
@@ -92,6 +93,7 @@ export const getOutputPriceEpic = (
         withLatestFrom(store$),
         filter(
             ([, store]) =>
+                //@ts-ignore
                 store.ui.exchange.form.fromAsset &&
                 store.ui.exchange.form.toAsset &&
                 !!store.ui.exchange.form.toAssetAmount
@@ -100,7 +102,7 @@ export const getOutputPriceEpic = (
             ([[api], store]): Observable<Action<any>> => {
                 const {fromAssetAmount, fromAsset, toAsset, toAssetAmount} = store.ui.exchange.form as ExchangeFormData;
                 const {error} = store.ui.exchange;
-                return api.rpc.cennzx.buyPrice(toAsset, toAssetAmount, fromAsset).pipe(
+                return (api.rpc as any).cennzx.buyPrice(toAsset, toAssetAmount, fromAsset).pipe(
                     filter(
                         (priceRes: PriceResponse) =>
                             !fromAssetAmount || !new Amount(priceRes.price.toString()).eq(fromAssetAmount)

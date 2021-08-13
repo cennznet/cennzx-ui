@@ -1,7 +1,7 @@
 import {Button} from 'centrality-react-core';
 import styled from 'styled-components';
 
-export const YellowButton = styled(Button)`
+export const YellowButton = styled(Button as any)`
     font-size: 14px;
     border: 2px solid transparent;
     background-color: #ffd133;
@@ -15,7 +15,7 @@ export const YellowButton = styled(Button)`
     }
 `;
 
-export const BlueButton = styled(Button)`
+export const BlueButton = styled(Button as any)`
     font-size: 14px;
     border: 2px solid #1130ff;
     background-color: #1130ff;
@@ -30,7 +30,7 @@ export const BlueButton = styled(Button)`
     }
 `;
 
-export const RedButton = styled(Button)`
+export const RedButton = styled(Button as any)`
     font-size: 14px;
     border: 2px solid #ef454b;
     background-color: #ef454b;
@@ -45,7 +45,7 @@ export const RedButton = styled(Button)`
     }
 `;
 
-export const DisabledButton = styled(Button)`
+export const DisabledButton = styled(Button as any)`
     font-size: 14px;
     background-color: #ebeced;
     border-radius: 3px;

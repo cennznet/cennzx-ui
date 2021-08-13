@@ -27,7 +27,7 @@ const getAmountParams = (amount: Amount, assetId: number, amountChange: boolean)
     amountChange,
 });
 
-const updateAmount = (value: string): Amount => {
+const updateAmount = (value: string): Amount | null => {
     return value !== '' ? new Amount(value.toString(), AmountUnit.DISPLAY) : null;
 };
 
@@ -69,6 +69,6 @@ export const setNewAmount = (valueIn: any, oldAmount: Amount, assetId: number) =
     }
     const newAmount = removeTrailingZero(value, true);
     if (!oldAmount || !oldAmount.eq(new Amount(newAmount, AmountUnit.DISPLAY))) {
-        return getAmountParams(updateAmount(newAmount), assetId, true);
+        return getAmountParams(updateAmount(newAmount) as Amount, assetId, true);
     }
 };

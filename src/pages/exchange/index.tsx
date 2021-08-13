@@ -1,3 +1,4 @@
+import {FeeRate} from '@cennznet/types/interfaces/cennzx';
 import {connect} from 'react-redux';
 import {Dispatch} from 'redux';
 import {BaseError, EmptyPool} from '../../error/error';
@@ -31,7 +32,7 @@ import {
 } from './selectors';
 
 const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
-    let errInstance = null;
+    let errInstance: null | EmptyPool = null;
     error.forEach(function(err) {
         if (err instanceof EmptyPool) {
             const emptyPoolForAsset = (err as EmptyPool).asset.id;
@@ -46,18 +47,18 @@ const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
 const mapStateToProps = (state: AppState): ExchangeProps => ({
     ...state.ui.exchange,
     assetInfo: state.global.assetInfo,
-    coreAssetId: state.global.coreAssetId,
-    feeRate: state.global.feeRate,
+    coreAssetId: state.global.coreAssetId as number,
+    feeRate: state.global.feeRate as FeeRate,
     assets: getAssets(state),
-    fromAssetBalance: getFromAssetUserBalance(state),
-    toAssetBalance: getToAssetUserBalance(state),
+    fromAssetBalance: getFromAssetUserBalance(state) as Amount,
+    toAssetBalance: getToAssetUserBalance(state) as Amount,
     accounts: state.extension.accounts.map((account: IAccounts) => ({
         label: `${account.name}`,
         value: account.address,
     })),
-    outputReserve: getOutputReserve(state),
-    exchangeRateMsg: getExchangeRateMsg(state),
-    txFeeMsg: getTxFeeMessage(state),
+    outputReserve: getOutputReserve(state) as Amount,
+    exchangeRateMsg: getExchangeRateMsg(state) as string,
+    txFeeMsg: getTxFeeMessage(state) as string,
     // isDialogOpen: state.ui.txDialog.stage ? true : false,
 });
 

@@ -101,4 +101,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(TxDialog);
+)(TxDialog as any);

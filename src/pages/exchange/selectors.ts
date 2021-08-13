@@ -21,7 +21,7 @@ const getAssetInfo = (state: AppState) => state.global.assetInfo;
 export const getAssets = createSelector(
     [getAssetInfo],
     assetInfo => {
-        const newAssetList = [];
+        const newAssetList: any = [];
         assetInfo &&
             assetInfo.forEach(asset => {
                 const assetObject = {
@@ -96,19 +96,21 @@ export const getExchangeRateMsg = createSelector(
     (exchangeRate, assets, fromAsset, toAsset, txFee, coreAsset, feeAssetId, fromeAmount, assetInfo) => {
         if (!fromeAmount || !exchangeRate) return;
         let fee;
-        const assetSymbol = assetInfo[feeAssetId].symbol;
+        const assetSymbol = assetInfo[feeAssetId as number].symbol;
         if (coreAsset && coreAsset === feeAssetId && txFee) {
             fee = `${txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces)} ${assetSymbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {
             fee = `${txFee.feeInFeeAsset.asString(
-                assetInfo[feeAssetId].decimalPlaces
-            )} (converted to ${txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces)} CPAY)`;
+                assetInfo[feeAssetId as number].decimalPlaces
+            )} (converted to ${txFee.feeInCpay.asString(assetInfo[coreAsset as number].decimalPlaces)} CPAY)`;
         }
         const feeString = fee ? `Transaction fee (estimated) : ${fee}` : '';
 
-        const rate = exchangeRate.asString(assetInfo[toAsset].decimalPlaces);
+        const rate = exchangeRate.asString(assetInfo[toAsset as number].decimalPlaces);
         return exchangeRate
-            ? `Exchange rate: 1 ${getOptionByValue(assets, fromAsset).symbol} = ${rate} ${
+            ? //@ts-ignore
+              `Exchange rate: 1 ${getOptionByValue(assets, fromAsset).symbol} = ${rate} ${
+                  //@ts-ignore
                   getOptionByValue(assets, toAsset).symbol
               }. ${feeString}`
             : '';
@@ -121,13 +123,18 @@ export const getTxFeeMessage = createSelector(
         let fee;
         if (String(feeAssetId) === String(coreAsset) && txFee) {
             // If fee asset is CPAY use cpayFee
-            fee = txFee.feeInCpay.asString(assetInfo[feeAssetId].decimalPlaces, Amount.ROUND_UP);
+            fee = txFee.feeInCpay.asString(assetInfo[feeAssetId as number].decimalPlaces, Amount.ROUND_UP);
+            //@ts-ignore
             return `Transaction fee is ${fee} ${getOptionByValue(assets, feeAssetId).symbol}`;
         } else if (txFee && txFee.feeInFeeAsset) {
-            fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId].decimalPlaces, Amount.ROUND_UP);
+            fee = txFee.feeInFeeAsset.asString(assetInfo[feeAssetId as number].decimalPlaces, Amount.ROUND_UP);
             return `Transaction fee is ${fee} ${
+                //@ts-ignore
                 getOptionByValue(assets, feeAssetId).symbol
-            } (converted to ${txFee.feeInCpay.asString(assetInfo[coreAsset].decimalPlaces, Amount.ROUND_UP)} CPAY)`;
+            } (converted to ${txFee.feeInCpay.asString(
+                assetInfo[coreAsset as number].decimalPlaces,
+                Amount.ROUND_UP
+            )} CPAY)`;
         }
     }
 );

@@ -1,4 +1,3 @@
-import TransparentButton from 'components/TransparentButton';
 import React, {FC} from 'react';
 import styled from 'styled-components';
 import {AmountParams, Asset} from '../typings';
@@ -7,6 +6,7 @@ import AmountBox from './AmountBox';
 import AssetDropDown from './AssetDropDown';
 import FlexDiv from './FlexDiv';
 import MessageBox from './MessageBox';
+import TransparentButton from './TransparentButton';
 
 const Trade = styled.div`
     display: flex;
@@ -21,7 +21,7 @@ const Trade = styled.div`
     }
 `;
 
-const MaxButton = styled(TransparentButton)`
+const MaxButton = styled(TransparentButton as any)`
     margin-top: auto;
     margin-bottom: auto;
     border: 1px solid white;
@@ -36,7 +36,7 @@ const MaxButton = styled(TransparentButton)`
     }
 `;
 
-const InputAndSelect = styled(FlexDiv)`
+const InputAndSelect = styled(FlexDiv as any)`
     height: 48px;
     background-color: transparent;
     border: 1px solid #b5babd;
@@ -56,7 +56,7 @@ interface AssetInputProps {
     message: string;
     errorBox?: JSX.Element;
     max?: Amount;
-    secondaryTitle?: string;
+    secondaryTitle?: string | null;
     disableAmount?: boolean;
     decimalPlaces?: number;
 }
@@ -96,7 +96,7 @@ const AssetInputForAdd: FC<AssetInputProps> = ({
             </Top>
             <InputAndSelect id="trade">
                 <AmountBox
-                    readOnly={disableAmount}
+                    readOnly={disableAmount as boolean}
                     value={amount}
                     decimalPlaces={decimalPlaces}
                     onChange={value => onChange(getAmountParams(value, assetId, true))}

@@ -1,15 +1,14 @@
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import AssetDropDown from 'components/AssetDropDown';
-import ErrorBox from 'components/Error/ErrorBox';
-import InputBox from 'components/InputBox';
-import PageInside from 'components/PageInside';
 import React, {FC, useState} from 'react';
 import styled from 'styled-components';
 import {FormSection} from '../../pages/exchange/exchange';
 import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {Asset, IFee} from '../../typings';
 import {Amount} from '../../util/Amount';
+import ErrorBox from '../Error/ErrorBox';
+import InputBox from '../InputBox';
+import PageInside from '../PageInside';
 import {FormErrors as ExchangeFormErrors} from './../../pages/exchange/validation';
 import {FormErrors as LiquidityFormErrors} from './../../pages/liquidity/validation';
 import {SummaryBuy} from './SummaryBuy';
@@ -75,20 +74,20 @@ const P = styled.p`
 `;
 
 export interface TxSummaryProps {
-    toAssetAmount: Amount;
-    fromAssetAmount: Amount;
-    toAsset: number;
-    fromAsset: number;
-    buffer: number;
-    txFee: IFee;
-    feeAssetId: number;
+    toAssetAmount: Amount | undefined;
+    fromAssetAmount: Amount | undefined;
+    toAsset: number | undefined;
+    fromAsset: number | undefined;
+    buffer: number | undefined;
+    txFee: IFee | undefined;
+    feeAssetId: number | undefined;
     coreAssetId: number;
-    extrinsic: string;
+    extrinsic: string | undefined;
 }
 
 type SummaryOrErrorProps = {
     formErrors: LiquidityFormErrors | ExchangeFormErrors;
-    summaryProps?: TxSummaryProps;
+    summaryProps: TxSummaryProps;
     onAssetChange?: (assetId: number) => void;
     onBufferChange: (buffer: number) => void;
     assets: Asset[];
@@ -149,7 +148,7 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                     type={'number'}
                                     title={'Slippage'}
                                     placeholder={'Maximum slippage percent'}
-                                    value={buffer * 100}
+                                    value={(buffer as number) * 100}
                                     onChange={e => {
                                         onBufferChange(Number(e.target.value / 100));
                                     }}
@@ -167,20 +166,6 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                                         assetInfo={assetInfo}
                                     />
                                 </P>
-                                {/* <Top>
-                                    <span>
-                                        <h2>{selectTitle}</h2>
-                                    </span>
-                                </Top>
-                                <AssetDropDown
-                                    isSearchable={false}
-                                    value={selectValue}
-                                    options={selectOptions}
-                                    onChange={(asset: Asset) => {
-                                        onAssetChange(asset.id);
-                                    }}
-                                    showBorder={true}
-                                /> */}
                                 <SummaryBody>
                                     <SummaryFee
                                         txFee={txFee}
@@ -194,9 +179,9 @@ const AdvancedSetting: FC<SummaryOrErrorProps> = ({
                     </Inside>
                 )}
             </PageInside>
-            {formErrors.has(FormSection.form) && (
+            {formErrors.has(FormSection.form as never) && (
                 <>
-                    <ErrorBox center={true} errors={formErrors.get(FormSection.form)} />
+                    <ErrorBox center={true} errors={formErrors.get(FormSection.form as never)} />
                 </>
             )}
             {formErrors.size > 0 && <ErrorBox center={true}></ErrorBox>}

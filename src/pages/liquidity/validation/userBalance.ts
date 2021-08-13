@@ -15,7 +15,7 @@ function getErrorForUserBalance(
     if (assetAmount && accountAssetBalance && assetAmount.gt(accountAssetBalance)) {
         return new UserBalanceNotEnough(assetInfo[assetId], assetAmount);
     } else if (accountAssetBalance && accountAssetBalance.isZero()) {
-        return new UserBalanceNotEnough(assetInfo[assetId], null);
+        return new UserBalanceNotEnough(assetInfo[assetId]);
     }
     return null;
 }
@@ -45,30 +45,50 @@ function checkUserBalance(props: LiquidityProps, errors: FormErrors): void {
     // skip when any error exists on assetInput
     if (existErrors(() => true, errors, FormSection.assetInput)) return;
     if (extrinsic === ADD_LIQUIDITY) {
-        const assetBalanceError = getErrorForUserBalance(assetAmount, accountAssetBalance, assetInfo, assetId);
+        const assetBalanceError = getErrorForUserBalance(
+            assetAmount as Amount,
+            accountAssetBalance,
+            assetInfo,
+            assetId as number
+        );
         if (assetBalanceError) {
             mergeError(FormSection.assetAmount, assetBalanceError, errors);
         }
-        const coreBalanceError = getErrorForUserBalance(coreAmount, accountCoreBalance, assetInfo, coreAssetId);
+        const coreBalanceError = getErrorForUserBalance(
+            coreAmount as Amount,
+            accountCoreBalance,
+            assetInfo,
+            coreAssetId as number
+        );
         if (coreBalanceError) {
             mergeError(FormSection.coreAmount, coreBalanceError, errors);
         }
     }
     if (extrinsic === REMOVE_LIQUIDITY) {
         const assetBalanceInPool = userShareInPool ? userShareInPool.assetBalance : undefined;
-        const poolBalanceErrorForAsset = getErrorForPoolBalance(assetAmount, assetBalanceInPool, assetInfo, assetId);
+        const poolBalanceErrorForAsset = getErrorForPoolBalance(
+            assetAmount as Amount,
+            assetBalanceInPool as Amount,
+            assetInfo,
+            assetId as number
+        );
         if (poolBalanceErrorForAsset) {
             mergeError(FormSection.assetAmount, poolBalanceErrorForAsset, errors);
         }
         const coreBalanceInPool = userShareInPool ? userShareInPool.coreAssetBalance : undefined;
-        const poolBalanceErrorForCore = getErrorForPoolBalance(coreAmount, coreBalanceInPool, assetInfo, coreAssetId);
+        const poolBalanceErrorForCore = getErrorForPoolBalance(
+            coreAmount as Amount,
+            coreBalanceInPool as Amount,
+            assetInfo,
+            coreAssetId as number
+        );
         if (poolBalanceErrorForCore) {
             mergeError(FormSection.coreAmount, poolBalanceErrorForCore, errors);
         }
     }
 }
 
-function checkUserBalanceForFee(props: LiquidityProps, errors: FormErrors): string {
+function checkUserBalanceForFee(props: LiquidityProps, errors: FormErrors): string | undefined {
     const {
         form: {assetAmount, assetId, feeAssetId, coreAmount, signingAccount, extrinsic},
         txFee,
@@ -92,7 +112,7 @@ function checkUserBalanceForFee(props: LiquidityProps, errors: FormErrors): stri
         if (!balRequired || assetBalance.balance.lt(balRequired)) {
             mergeError(
                 FormSection.form,
-                new UserBalanceNotEnoughForFee(assetInfo[feeAssetId], feeAmount, assetBalance.balance),
+                new UserBalanceNotEnoughForFee(assetInfo[feeAssetId as number], feeAmount, assetBalance.balance),
                 errors
             );
         }

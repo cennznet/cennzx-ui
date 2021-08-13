@@ -9,6 +9,7 @@ export function mergeError(field: FormSection, error: FormErrorTypes, errors: Fo
     if (!errors.has(field)) {
         errors.set(field, []);
     }
+    //@ts-ignore
     errors.get(field).push(error);
 }
 

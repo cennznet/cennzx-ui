@@ -2,15 +2,15 @@ import {FeeRate} from '@cennznet/types/interfaces/cennzx';
 import {faExchangeAlt} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Button} from 'centrality-react-core';
-import AccountPicker from 'components/AccountPicker';
-import AdvancedSetting from 'components/AdvancedSetting';
-import AssetInputForAdd from 'components/AssetInputForAdd';
-import ErrorMessage from 'components/Error/ErrorMessageForLiquidity';
-import Nav from 'components/Nav';
-import Page from 'components/Page';
-import PageInside from 'components/PageInside';
 import React, {FC, useEffect, useState} from 'react';
 import styled from 'styled-components';
+import AccountPicker from '../../components/AccountPicker';
+import AdvancedSetting from '../../components/AdvancedSetting';
+import AssetInputForAdd from '../../components/AssetInputForAdd';
+import ErrorMessage from '../../components/Error/ErrorMessageForLiquidity';
+import Nav from '../../components/Nav';
+import Page from '../../components/Page';
+import PageInside from '../../components/PageInside';
 import {BaseError, FormErrorTypes} from '../../error/error';
 import {AssetDetails} from '../../redux/reducers/global.reducer';
 import {LiquidityState} from '../../redux/reducers/ui/liquidity.reducer';
@@ -71,7 +71,7 @@ const Buttons = styled.div`
     }
 `;
 
-const SwapButton = styled(Button)`
+const SwapButton = styled(Button as any)`
     background-color: white;
     color: #f7941d;
     border: 1px solid #f7941d;
@@ -273,9 +273,9 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
         }
     }, [assets]);
 
-    const assetBalance = getBalance(accountAssetBalance, assetInfo, assetId);
+    const assetBalance = getBalance(accountAssetBalance, assetInfo, assetId as number);
     const assetName = getAssetName(assets, assetId);
-    const assetPool = getFormattedPoolBalance(assetReserve, assetInfo, assetId);
+    const assetPool = getFormattedPoolBalance(assetReserve, assetInfo, assetId as number);
 
     const coreBalance = getBalance(accountCoreBalance, assetInfo, coreAssetId);
 
@@ -294,13 +294,13 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
     const disabledAssetTextBox = isAssetBoxDisabled(
         state.liquidityAction,
         userAssetShareInPool,
-        assetId,
+        assetId as number,
         accountAssetBalance
     );
     const disabledCoreTextBox = isAssetBoxDisabled(
         state.liquidityAction,
         userCoreShareInPool,
-        assetId,
+        assetId as number,
         accountCoreBalance
     );
 
@@ -311,7 +311,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     <Nav active="liquidity" />
                     <AccountPicker
                         title="Choose account"
-                        selected={signingAccount}
+                        selected={signingAccount as string}
                         options={accounts}
                         onChange={(picked: {label: string; value: string}) => {
                             props.handleSelectedAccountChange(picked.value);
@@ -369,8 +369,8 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                                     : accountAssetBalance
                             }
                             disableAmount={disabledAssetTextBox}
-                            value={{amount: assetAmount, assetId}}
-                            decimalPlaces={getDecimalPlaces(assetId, assetInfo)}
+                            value={{amount: assetAmount as Amount, assetId: assetId as number}}
+                            decimalPlaces={getDecimalPlaces(assetId as number, assetInfo)}
                             options={assets.filter(a => a.id !== coreAssetId)}
                             onChange={(amountParams: AmountParams) => {
                                 if (amountParams.amountChange) {
@@ -394,7 +394,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                             message={
                                 state.liquidityAction === LiquidityAction.REMOVE
                                     ? `Withdrawable: ${userAssetShareInPool.asString(
-                                          getDecimalPlaces(assetId, assetInfo)
+                                          getDecimalPlaces(assetId as number, assetInfo)
                                       )}`
                                     : `Balance: ${assetBalance || 0}`
                             }
@@ -407,7 +407,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                                     : accountCoreBalance
                             }
                             disableAmount={disabledCoreTextBox}
-                            value={{amount: coreAmount, assetId: coreAssetId}}
+                            value={{amount: coreAmount as Amount, assetId: coreAssetId}}
                             decimalPlaces={getDecimalPlaces(coreAssetId, assetInfo)}
                             options={assets.filter(a => a.id === coreAssetId)}
                             onChange={amountParams => {
@@ -434,13 +434,13 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                         />
                     </Flex2>
                     {poolSummary(
-                        assetPool,
-                        corePool,
-                        userAssetShareInPool.asString(getDecimalPlaces(assetId, assetInfo)),
+                        assetPool as string,
+                        corePool as string,
+                        userAssetShareInPool.asString(getDecimalPlaces(assetId as number, assetInfo)),
                         assetName,
                         userCoreShareInPool.asString(getDecimalPlaces(coreAssetId, assetInfo)),
                         coreName,
-                        exchangeRateMsg,
+                        exchangeRateMsg as string,
                         fee
                     )}
                 </PageInside>
@@ -450,7 +450,7 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                         primary
                         disabled={formErrors.size > 0 || !signingAccount}
                         onClick={() =>
-                            props.openTxDialog(props.form as LiquidityFormData, props.txFee, props.assetInfo)
+                            props.openTxDialog(props.form as LiquidityFormData, props.txFee as IFee, props.assetInfo)
                         }
                     >
                         {state.liquidityAction}
@@ -478,9 +478,9 @@ export const Liquidity: FC<LiquidityProps & LiquidityDispatchProps> = props => {
                     title={'Advanced settings'}
                     selectTitle={'Pay transaction fee with'}
                     spinner={false}
-                    buffer={buffer}
+                    buffer={buffer as number}
                     selectOptions={assets}
-                    selectValue={feeAssetId}
+                    selectValue={feeAssetId as number}
                     assetInfo={assetInfo}
                 />
             </form>

@@ -1,7 +1,7 @@
-import {BlueButton} from 'components/Dialog/DialogButtons';
-import NumberBox from 'components/NumberBox';
 import React, {FC, ReactNode} from 'react';
 import styled from 'styled-components';
+import {BlueButton} from './Dialog/DialogButtons';
+import NumberBox from './NumberBox';
 
 const Container = styled.div`
     display: flex;
@@ -20,7 +20,7 @@ export interface BlueButtonSwitchProps {
     checked: boolean;
 }
 
-const BlueButtonSwitch = styled(BlueButton)<BlueButtonSwitchProps>`
+const BlueButtonSwitch = styled(BlueButton as any)<BlueButtonSwitchProps>`
     border-width: 1px;
     border-color: ${props => (props.checked.toString() === 'true' ? '#B5BABD;' : '#B5BABD;')};
     background-color: ${props => (props.checked.toString() === 'true' ? '#1130ff' : 'white')};
@@ -48,7 +48,7 @@ interface NumberPickerProps {
     // defaultLabel?: ReactNode;
 }
 const NumberPicker: FC<NumberPickerProps> = ({onChange, value, max, min, step, options, suffix}) => {
-    const hasDefault = options.find(o => o.value === value);
+    //@ts-ignore
     const optionsColumns = options.map(option => (
         <Column>
             {option.display && (
@@ -62,7 +62,14 @@ const NumberPicker: FC<NumberPickerProps> = ({onChange, value, max, min, step, o
         <Container>
             {optionsColumns}
             <Column>
-                <NumberBox step={step} max={max} min={min} value={value} suffix={suffix} onChange={onChange} />
+                <NumberBox
+                    step={step as number}
+                    max={max as number}
+                    min={min as number}
+                    value={value}
+                    suffix={suffix}
+                    onChange={onChange}
+                />
             </Column>
         </Container>
     );

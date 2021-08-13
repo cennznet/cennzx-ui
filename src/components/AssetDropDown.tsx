@@ -10,7 +10,7 @@ type AssetDropDownStyledProps = SelectProps<any> & {
 };
 
 const StyledSelect = styled(Select)<AssetDropDownStyledProps>`
-    flex: 1 0 30%
+    flex: 1 0 30%;
     max-width: calc(32px + 2em);
 
     > div {

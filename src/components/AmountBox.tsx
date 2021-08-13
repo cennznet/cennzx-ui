@@ -9,7 +9,7 @@ export type StyledInputProps = InputProps & {
     onChange: (value: React.ChangeEvent) => void;
 };
 
-const StyledInput = styled(Input)<StyledInputProps>`
+const StyledInput = styled(Input as any)<StyledInputProps>`
     background-color: ${props => (props.readOnly ? '#EBECED' : 'white')};
     color: black;
     height: 100%;
@@ -98,8 +98,10 @@ class AmountBox extends React.Component<AmountBoxProps, AmountBoxState> {
                 readOnly={this.props.readOnly}
                 value={this.state.displayValue}
                 onChange={e =>
-                    this.maybeSetValue((e.target as HTMLInputElement).value, this.props.value, this.props.decimalPlaces)
+                    this.maybeSetValue((e.target as HTMLInputElement).value, this.props.value, this.props
+                        .decimalPlaces as number)
                 }
+                children={<></>}
             />
         </StyledInputParent>
     );

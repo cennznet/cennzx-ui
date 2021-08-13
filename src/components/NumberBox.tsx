@@ -1,5 +1,5 @@
 import {Input} from 'centrality-react-core';
-import {InputProps} from 'centrality-react-core/components/input';
+import {InputProps} from 'centrality-react-core/components/Input';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -11,7 +11,7 @@ export type StyledInputProps = Pick<InputProps, Exclude<keyof InputProps, 'value
     min: number;
 };
 
-const StyledInput = styled(Input)<StyledInputProps>`
+const StyledInput = styled(Input as any)<StyledInputProps>`
     background-color: ${props => (props.readOnly ? '#EBECED' : 'white')};
     color: black;
     height: 48px;

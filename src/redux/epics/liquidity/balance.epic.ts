@@ -27,6 +27,7 @@ export const prepareRequestUserBalanceEpic = (
         withLatestFrom(store$),
         filter(
             ([, store]) =>
+                //@ts-ignore
                 store.ui.liquidity.form.assetId &&
                 !!store.ui.liquidity.form.signingAccount &&
                 store.ui.liquidity.form.extrinsic === ADD_LIQUIDITY

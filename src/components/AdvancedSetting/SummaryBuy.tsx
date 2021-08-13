@@ -11,12 +11,12 @@ const Em = styled.span`
 `;
 
 export interface SummaryBuyProps {
-    fromAsset: number;
-    toAsset: number;
-    fromAssetAmount: Amount;
-    toAssetAmount: Amount;
-    method: string;
-    buffer: number;
+    fromAsset: number | undefined;
+    toAsset: number | undefined;
+    fromAssetAmount: Amount | undefined;
+    toAssetAmount: Amount | undefined;
+    method: string | undefined;
+    buffer: number | undefined;
     recipientAddress?: string;
     assetInfo: AssetDetails[];
 }
@@ -45,10 +45,10 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
     switch (method) {
         case SWAP_OUTPUT: {
             const [assetB, assetA, amountB, amountA] = [fromAsset, toAsset, fromAssetAmount, toAssetAmount];
-            const assetADecimalPlaces = assetInfo[assetA].decimalPlaces;
-            const assetASymbol = assetInfo[assetA].symbol;
-            const assetBDecimalPlaces = assetInfo[assetB].decimalPlaces;
-            const assetBSymbol = assetInfo[assetB].symbol;
+            const assetADecimalPlaces = assetInfo[assetA as number].decimalPlaces;
+            const assetASymbol = assetInfo[assetA as number].symbol;
+            const assetBDecimalPlaces = assetInfo[assetB as number].decimalPlaces;
+            const assetBSymbol = assetInfo[assetB as number].symbol;
             return (
                 <div>
                     <p>
@@ -65,8 +65,9 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                     <p>
                         If the amount of {assetBSymbol} used sits outside{' '}
                         <Em>
-                            {buffer * 100}% ({new Amount(amountB.muln(1 - buffer)).asString(assetBDecimalPlaces)}-
-                            {new Amount(amountB.muln(1 + buffer)).asString(assetBDecimalPlaces)} CPAY)
+                            {(buffer as number) * 100}% (
+                            {new Amount(amountB.muln(1 - (buffer as number))).asString(assetBDecimalPlaces)}-
+                            {new Amount(amountB.muln(1 + (buffer as number))).asString(assetBDecimalPlaces)} CPAY)
                         </Em>
                         , the transaction will fail.
                     </p>
@@ -75,10 +76,10 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
         }
         case SWAP_INPUT: {
             const [assetB, assetA, amountA, amountB] = [fromAsset, toAsset, toAssetAmount, fromAssetAmount];
-            const assetADecimalPlaces = assetInfo[assetA].decimalPlaces;
-            const assetASymbol = assetInfo[assetA].symbol;
-            const assetBDecimalPlaces = assetInfo[assetB].decimalPlaces;
-            const assetBSymbol = assetInfo[assetB].symbol;
+            const assetADecimalPlaces = assetInfo[assetA as number].decimalPlaces;
+            const assetASymbol = assetInfo[assetA as number].symbol;
+            const assetBDecimalPlaces = assetInfo[assetB as number].decimalPlaces;
+            const assetBSymbol = assetInfo[assetB as number].symbol;
             return (
                 <div>
                     <p>
@@ -95,8 +96,10 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                     <p>
                         If the amount of {assetASymbol} received sits outside{' '}
                         <Em>
-                            {buffer * 100}% ({new Amount(amountA.muln(1 - buffer)).asString(assetADecimalPlaces)}-
-                            {new Amount(amountA.muln(1 + buffer)).asString(assetADecimalPlaces)} {assetASymbol})
+                            {(buffer as number) * 100}% (
+                            {new Amount(amountA.muln(1 - (buffer as number))).asString(assetADecimalPlaces)}-
+                            {new Amount(amountA.muln(1 + (buffer as number))).asString(assetADecimalPlaces)}{' '}
+                            {assetASymbol})
                         </Em>
                         , the transaction will fail.
                     </p>
@@ -106,10 +109,10 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
 
         case REMOVE_LIQUIDITY: {
             const [assetA, assetB, amountA, amountB] = [fromAsset, toAsset, toAssetAmount, fromAssetAmount];
-            const assetADecimalPlaces = assetInfo[assetA].decimalPlaces;
-            const assetASymbol = assetInfo[assetA].symbol;
-            const assetBDecimalPlaces = assetInfo[assetB].decimalPlaces;
-            const assetBSymbol = assetInfo[assetB].symbol;
+            const assetADecimalPlaces = assetInfo[assetA as number].decimalPlaces;
+            const assetASymbol = assetInfo[assetA as number].symbol;
+            const assetBDecimalPlaces = assetInfo[assetB as number].decimalPlaces;
+            const assetBSymbol = assetInfo[assetB as number].symbol;
             return (
                 <div>
                     <p>
@@ -130,10 +133,13 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                         </Em>{' '}
                         received sits outside{' '}
                         <Em>
-                            {buffer * 100}% ({new Amount(amountA.muln(1 - buffer)).asString(assetADecimalPlaces)}-
-                            {new Amount(amountA.muln(1 + buffer)).asString(assetADecimalPlaces)} {assetASymbol}, or{' '}
-                            {new Amount(amountB.muln(1 - buffer)).asString(assetBDecimalPlaces)}-
-                            {new Amount(amountB.muln(1 + buffer)).asString(assetBDecimalPlaces)} {assetBSymbol})
+                            {(buffer as number) * 100}% (
+                            {new Amount(amountA.muln(1 - (buffer as number))).asString(assetADecimalPlaces)}-
+                            {new Amount(amountA.muln(1 + (buffer as number))).asString(assetADecimalPlaces)}{' '}
+                            {assetASymbol}, or{' '}
+                            {new Amount(amountB.muln(1 - (buffer as number))).asString(assetBDecimalPlaces)}-
+                            {new Amount(amountB.muln(1 + (buffer as number))).asString(assetBDecimalPlaces)}{' '}
+                            {assetBSymbol})
                         </Em>
                         , the transaction will fail.
                     </p>
@@ -148,10 +154,10 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                 toAssetAmount,
                 fromAssetAmount,
             ];
-            const investmentAssetDecimalPlaces = assetInfo[investmentAsset].decimalPlaces;
-            const investmentAssetSymbol = assetInfo[investmentAsset].symbol;
-            const coreAssetDecimalPlaces = assetInfo[coreAsset].decimalPlaces;
-            const coreAssetSymbol = assetInfo[coreAsset].symbol;
+            const investmentAssetDecimalPlaces = assetInfo[investmentAsset as number].decimalPlaces;
+            const investmentAssetSymbol = assetInfo[investmentAsset as number].symbol;
+            const coreAssetDecimalPlaces = assetInfo[coreAsset as number].decimalPlaces;
+            const coreAssetSymbol = assetInfo[coreAsset as number].symbol;
             return (
                 <div>
                     <p>
@@ -173,13 +179,18 @@ export const SummaryBuy: FC<SummaryBuyProps> = ({
                         </Em>{' '}
                         deposited sits outside{' '}
                         <Em>
-                            {buffer * 100}% (
-                            {new Amount(investmentAmount.muln(1 - buffer)).asString(investmentAssetDecimalPlaces)}-
-                            {new Amount(investmentAmount.muln(1 + buffer)).asString(investmentAssetDecimalPlaces)}{' '}
+                            {(buffer as number) * 100}% (
+                            {new Amount(investmentAmount.muln(1 - (buffer as number))).asString(
+                                investmentAssetDecimalPlaces
+                            )}
+                            -
+                            {new Amount(investmentAmount.muln(1 + (buffer as number))).asString(
+                                investmentAssetDecimalPlaces
+                            )}{' '}
                             {investmentAssetSymbol},{' '}
-                            {new Amount(coreAmount.muln(1 - buffer)).asString(coreAssetDecimalPlaces)}-
-                            {new Amount(coreAmount.muln(1 + buffer)).asString(coreAssetDecimalPlaces)} {coreAssetSymbol}
-                            )
+                            {new Amount(coreAmount.muln(1 - (buffer as number))).asString(coreAssetDecimalPlaces)}-
+                            {new Amount(coreAmount.muln(1 + (buffer as number))).asString(coreAssetDecimalPlaces)}{' '}
+                            {coreAssetSymbol})
                         </Em>
                         , the transaction will fail.
                     </p>

@@ -3,7 +3,7 @@ import {combineEpics} from 'redux-observable';
 const epicsContext = require['context']('./', true, /\.epic\.ts$/);
 const multipleEpicsContext = require['context']('./', true, /\.epics\.ts$/);
 
-const epics = [];
+const epics: any = [];
 
 epicsContext.keys().forEach(key => {
     epics.push(epicsContext(key).default);

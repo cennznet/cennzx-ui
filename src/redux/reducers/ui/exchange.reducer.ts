@@ -35,6 +35,7 @@ export interface ExchangeState {
 }
 
 export const initialState: ExchangeState = {
+    //@ts-ignore
     form: {buffer: typeof window !== 'undefined' ? process.env.FEE_BUFFER : 0.05},
     exchangePool: [],
     userAssetBalance: [],
@@ -87,6 +88,7 @@ export default handleActions<ExchangeState, any>(
             draft.form.fromAsset = undefined;
             draft.form.toAsset = undefined;
             draft.form.signingAccount = undefined;
+            //@ts-ignore
             draft.form.buffer = typeof window !== 'undefined' ? process.env.FEE_BUFFER : 0.05;
             draft.userAssetBalance = [];
             draft.error = [];

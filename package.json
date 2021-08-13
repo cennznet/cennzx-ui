@@ -2,11 +2,11 @@
   "name": "SpotX",
   "private": true,
   "engines": {
-    "node": ">=10.13.0",
+    "node": "v14",
     "yarn": "^1.10.1"
   },
   "scripts": {
-    "start": "react-static start",
+    "start": "react-scripts start",
     "stage": "react-static build --staging",
     "build": "react-static build",
     "build:staging": "env-cmd -f .env.staging react-static build",
@@ -22,7 +22,7 @@
     "@cennznet/api": "1.4.1",
     "@cennznet/types": "1.4.1",
     "@fortawesome/free-solid-svg-icons": "^5.9.0",
-    "@polkadot/extension-dapp": "^0.36.1",
+    "@polkadot/extension-dapp": "^0.38.8",
     "@polkadot/keyring": "4.2.1",
     "@polkadot/react-identicon": "^0.61.2-7",
     "@polkadot/ts": "^0.3.59",
@@ -48,6 +48,7 @@
     "react-localize-redux": "^3.5.3",
     "react-modal": "^3.8.1",
     "react-redux": "^7.0.3",
+    "react-scripts": "^4.0.3",
     "react-slider": "^1.1.2",
     "react-spinners": "^0.10.6",
     "react-static": "7.5.3",
@@ -80,11 +81,11 @@
     "@types/react": "^16.8.2",
     "@types/react-dom": "^16.8.0",
     "@types/react-redux": "^7.1.1",
-    "babel-jest": "^24.8.0",
+    "babel-jest": "26.6.0",
     "babel-plugin-conditional-compile": "^0.0.5",
     "gh-pages": "^3.2.3",
     "husky": "^2.7.0",
-    "jest": "^24.8.0",
+    "jest": "26.6.0",
     "prettier": "^1.13.5",
     "prettier-eslint": "^8.8.2",
     "pretty-quick": "^1.11.1",
@@ -96,5 +97,11 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged --pattern 'src/**/*' && npx tslint -c tslint.json --project ."
     }
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   }
 }

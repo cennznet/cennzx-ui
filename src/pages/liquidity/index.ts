@@ -1,3 +1,4 @@
+import {FeeRate} from '@cennznet/types/interfaces/cennzx';
 import {stat} from 'fs';
 import {connect} from 'react-redux';
 import {Dispatch} from 'redux';
@@ -17,7 +18,7 @@ import {
 } from '../../redux/actions/ui/liquidity.action';
 import {openDialog} from '../../redux/actions/ui/txDialog.action';
 import {AppState} from '../../redux/reducers';
-import {IAccounts, IExtrinsic, IFee, LiquidityFormData} from '../../typings';
+import {IAccounts, IExtrinsic, IFee, IUserShareInPool, LiquidityFormData} from '../../typings';
 import {Amount} from '../../util/Amount';
 import {ADD_LIQUIDITY, prepareExchangeExtrinsicParamsWithBuffer, REMOVE_LIQUIDITY} from '../../util/extrinsicUtil';
 import {Liquidity, LiquidityAction, LiquidityProps} from './liquidity';
@@ -34,7 +35,7 @@ import {
 } from './selectors';
 
 const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
-    let errInstance = null;
+    let errInstance: null | EmptyPool = null;
     error.forEach(function(err) {
         if (err instanceof EmptyPool) {
             const emptyPoolForAsset = (err as EmptyPool).asset.id;
@@ -48,22 +49,22 @@ const errorInstanceForPreviousEmptyPool = (error: BaseError[], assetId) => {
 
 const mapStateToProps = (state: AppState): LiquidityProps => ({
     ...state.ui.liquidity,
-    coreAssetId: state.global.coreAssetId,
-    feeRate: state.global.feeRate,
+    coreAssetId: state.global.coreAssetId as number,
+    feeRate: state.global.feeRate as FeeRate,
     assetInfo: state.global.assetInfo,
     assets: getAssets(state),
-    assetReserve: getAssetReserve(state),
-    accountAssetBalance: getAccountAssetBalance(state),
-    accountCoreBalance: getAccountCoreBalance(state),
-    coreReserve: getCoreReserve(state),
+    assetReserve: getAssetReserve(state) as Amount,
+    accountAssetBalance: getAccountAssetBalance(state) as Amount,
+    accountCoreBalance: getAccountCoreBalance(state) as Amount,
+    coreReserve: getCoreReserve(state) as Amount,
     accounts: state.extension.accounts.map((account: IAccounts) => ({
         label: `${account.name}`,
         value: account.address,
     })),
     fee: getFee(state),
     exchangeRateMsg: getExchangeRateMsg(state),
-    txFeeMsg: getTxFeeMessage(state),
-    userShareInPool: getUserPoolShare(state),
+    txFeeMsg: getTxFeeMessage(state) as string,
+    userShareInPool: getUserPoolShare(state) as IUserShareInPool,
     // isDialogOpen: state.ui.txDialog.stage ? true : false,
 });
 

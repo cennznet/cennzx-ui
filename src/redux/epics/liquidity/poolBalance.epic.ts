@@ -32,6 +32,7 @@ export const getAssetPoolBalanceEpic = (
             ([[api, action], store]): Observable<Action<any>> => {
                 const poolAsset = action.payload;
                 const coreAssetId = store.global.coreAssetId;
+                //@ts-ignore
                 if (poolAsset.toString() === coreAssetId.toString()) {
                     return EMPTY;
                 }
@@ -64,8 +65,8 @@ export const getUserPoolShareEpic = (
     action$: Observable<Action<any>>,
     store$: Observable<AppState>,
     {api$}: IEpicDependency
-): Observable<UpdatePoolBalanceAction> =>
-    combineLatest([
+): Observable<UpdatePoolBalanceAction> => {
+    return combineLatest([
         api$,
         action$.pipe(ofType(types.ui.Liquidity.SELECTED_ASSET1_UPDATE, types.ui.Liquidity.SELECTED_ACCOUNT_UPDATE)),
     ]).pipe(
@@ -79,7 +80,7 @@ export const getUserPoolShareEpic = (
                     return EMPTY;
                 }
 
-                return api.rpc.cennzx.liquidityValue(signingAccount, poolAsset).pipe(
+                return (api.rpc as any).cennzx.liquidityValue(signingAccount, poolAsset).pipe(
                     switchMap((liquidityValue: LiquidityValueResponse) => {
                         const liquidity: Amount = new Amount(liquidityValue.liquidity);
                         const userAssetShare: Amount = new Amount(liquidityValue.asset);
@@ -101,6 +102,7 @@ export const getUserPoolShareEpic = (
             }
         )
     );
+};
 
 export const getTotalLiquidityEpic = (
     action$: Observable<Action<any>>,

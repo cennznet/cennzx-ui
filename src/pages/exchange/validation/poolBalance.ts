@@ -13,7 +13,7 @@ function checkPoolBalance(props: ExchangeProps, errors: FormErrors): void {
     if (toAssetAmount && outputReserve && toAssetAmount.gt(outputReserve)) {
         mergeError(
             FormSection.toAssetInput,
-            new PoolBalanceNotEnough(assetInfo[toAsset], toAssetAmount, outputReserve),
+            new PoolBalanceNotEnough(assetInfo[toAsset as number], toAssetAmount, outputReserve),
             errors
         );
     }

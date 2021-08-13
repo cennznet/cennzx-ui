@@ -27,10 +27,10 @@ export const getExchangeRateEpic = (
                 return EMPTY;
             }
             const {assetId, coreAssetId} = store.ui.liquidity.form;
-            const asset = assetInfo ? assetInfo[coreAssetId] : undefined;
+            const asset = assetInfo ? assetInfo[coreAssetId as number] : undefined;
             const assetDecimal = asset ? asset.decimalPlaces : 0;
             const amount = new Amount(1, AmountUnit.DISPLAY, assetDecimal);
-            return api.rpc.cennzx.sellPrice(coreAssetId, amount, assetId).pipe(
+            return (api.rpc as any).cennzx.sellPrice(coreAssetId, amount, assetId).pipe(
                 filter(
                     (exchangeRateFromAPI: PriceResponse) =>
                         !exchangeRate || !new Amount(exchangeRateFromAPI.price.toString()).eq(exchangeRate)

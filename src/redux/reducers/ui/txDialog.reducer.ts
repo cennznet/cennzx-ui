@@ -87,6 +87,7 @@ export default handleActions<TxDialogState, any>(
             }
         ),
         [TxDialogActions.ERROR_RESET]: produce((draft: TxDialogState, action: ResetErrorAction) => {
+            //@ts-ignore
             draft.error = null;
         }),
         [TxDialogActions.TRANSACTION_SUBMIT_SEND]: produce((draft: TxDialogState, action: RequestSubmitSend) => {
@@ -94,6 +95,7 @@ export default handleActions<TxDialogState, any>(
             draft.extrinsic = extrinsic;
             draft.signingAccount = signingAccount;
             draft.feeAssetId = feeAssetId;
+            //@ts-ignore
             draft.feeInFeeAsset = feeInFeeAsset ? feeInFeeAsset.feeInFeeAsset : null;
             draft.fromAssetBalance = fromAssetBalance;
         }),
@@ -104,6 +106,7 @@ export default handleActions<TxDialogState, any>(
                 draft.signingAccount = signingAccount;
                 draft.feeAssetId = feeAssetId;
                 draft.buffer = buffer;
+                //@ts-ignore
                 draft.feeInFeeAsset = feeInFeeAsset ? feeInFeeAsset.feeInFeeAsset : null;
             }
         ),

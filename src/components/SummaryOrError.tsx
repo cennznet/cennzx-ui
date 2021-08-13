@@ -1,14 +1,14 @@
 import BN from 'bn.js';
-import ErrorBox from 'components/Error/ErrorBox';
-import TxSummary, {TxSummaryProps} from 'components/TxSummary/TxSummary';
 import React, {FC} from 'react';
 import {FormSection} from '../pages/exchange/exchange';
 import {Asset} from '../typings';
 import {FormErrors} from './../pages/exchange/validation';
+import TxSummary, {TxSummaryProps} from './AdvancedSetting';
+import ErrorBox from './Error/ErrorBox';
 
 type SummaryOrErrorProps = {
     formErrors: FormErrors;
-    summaryProps?: TxSummaryProps;
+    summaryProps: TxSummaryProps;
     onAssetChange: (assetId: number) => void;
     onBufferChange: (buffer: number) => void;
     assets: Asset[];
@@ -23,7 +23,7 @@ const SummaryOrError: FC<SummaryOrErrorProps> = ({formErrors, summaryProps, onAs
         buffer,
         txFee,
         feeAssetId,
-        coreAsset,
+        coreAssetId,
         extrinsic,
     } = summaryProps;
 
@@ -31,17 +31,17 @@ const SummaryOrError: FC<SummaryOrErrorProps> = ({formErrors, summaryProps, onAs
         return (
             <>
                 <ErrorBox center={true} errors={formErrors.get(FormSection.form)} />
-
                 <TxSummary
+                    // @ts-ignore
                     extrinsic={extrinsic}
                     feeAssetId={feeAssetId}
-                    coreAsset={coreAsset}
+                    coreAssetId={coreAssetId}
                     txFee={txFee}
                     toAssetAmount={toAssetAmount}
                     toAsset={toAsset}
                     fromAssetAmount={fromAssetAmount}
                     fromAsset={fromAsset}
-                    buffer={buffer}
+                    buffer={buffer as number}
                     onAssetChange={onAssetChange}
                     onBufferChange={onBufferChange}
                     assets={assets}
@@ -54,15 +54,16 @@ const SummaryOrError: FC<SummaryOrErrorProps> = ({formErrors, summaryProps, onAs
         if (txFee) {
             return (
                 <TxSummary
+                    // @ts-ignore
                     extrinsic={extrinsic}
                     feeAssetId={feeAssetId}
-                    coreAsset={coreAsset}
+                    coreAsset={coreAssetId}
                     txFee={txFee}
                     toAssetAmount={toAssetAmount}
                     toAsset={toAsset}
                     fromAssetAmount={fromAssetAmount}
                     fromAsset={fromAsset}
-                    buffer={buffer}
+                    buffer={buffer as number}
                     onAssetChange={onAssetChange}
                     onBufferChange={onBufferChange}
                     assets={assets}

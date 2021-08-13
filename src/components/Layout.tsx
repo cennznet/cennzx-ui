@@ -1,9 +1,10 @@
-import {version as extVersion} from '@polkadot/extension-dapp/package-info.json';
+import {packageInfo} from '@polkadot/extension-dapp/packageInfo';
 import {InjectedExtension, MetadataDef} from '@polkadot/extension-inject/types';
 import React, {FC} from 'react';
 import {connect} from 'react-redux';
 import {Routes} from 'react-static';
 import styled from 'styled-components';
+import Exchange from '../pages/exchange';
 import AppDialog from './Dialog/AppDialog';
 import TxDialog from './Dialog/TxDialog';
 import Header from './Header';
@@ -32,11 +33,11 @@ interface LayoutProps {
 }
 
 const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, cennznetExtension, metadata}) => {
-    let metaUpdated = null;
+    let metaUpdated: null | string = null;
     if (typeof localStorage !== 'undefined') {
         const chain = metadata ? metadata.chain : '';
         const specVersion = metadata ? metadata.specVersion : '';
-        metaUpdated = localStorage.getItem(`${extVersion}-${chain}${specVersion}-EXTENSION_META_UPDATED`);
+        metaUpdated = localStorage.getItem(`${packageInfo.version}-${chain}${specVersion}-EXTENSION_META_UPDATED`);
     }
     // tslint:disable-next-line:no-console
     return (
@@ -54,7 +55,8 @@ const Layout: FC<LayoutProps> = ({extensionDetected, extensionConnected, cennzne
                     />
                 ) : null}
                 <React.Suspense fallback={<em>Loading...</em>}>
-                    <Routes path="*" />
+                    {/*<Routes path="*" />*/}
+                    <Exchange />
                 </React.Suspense>
             </Content>
         </React.Fragment>

@@ -3,7 +3,7 @@ import {combineEpics, ofType} from 'redux-observable';
 import {combineLatest, EMPTY, Observable, of} from 'rxjs/index';
 import {catchError, switchMap, takeUntil, withLatestFrom} from 'rxjs/operators';
 import {BaseError, InsufficientFeeForOperation} from '../../../error/error';
-import {IEpicDependency} from '../../../typings';
+import {IEpicDependency, IFee} from '../../../typings';
 import {Amount, AmountUnit} from '../../../util/Amount';
 import {observableEstimatedFee} from '../../../util/feeUtil';
 import types from '../../actions';
@@ -33,15 +33,15 @@ export const calculateTxFeeEpic = (
                 // const minSale = new Amount(amount.muln(1 - buffer)).asString(DECIMALS)
                 let tx;
                 if (extrinsic === 'addLiquidity') {
-                    const min_liquidity = new Amount(assetAmount.muln(1 - buffer));
-                    const max_asset_amount = new Amount(assetAmount.muln(1 + buffer));
+                    const min_liquidity = new Amount(assetAmount.muln(1 - (buffer as number)));
+                    const max_asset_amount = new Amount(assetAmount.muln(1 + (buffer as number)));
                     tx = api.tx.cennzx.addLiquidity(assetId, min_liquidity, max_asset_amount, coreAmount);
                 } else {
-                    const min_asset_withdraw = new Amount(assetAmount.muln(1 - buffer));
-                    const min_core_withdraw = new Amount(coreAmount.muln(1 - buffer));
+                    const min_asset_withdraw = new Amount(assetAmount.muln(1 - (buffer as number)));
+                    const min_core_withdraw = new Amount(coreAmount.muln(1 - (buffer as number)));
                     tx = api.tx.cennzx.removeLiquidity(assetId, assetAmount, min_asset_withdraw, min_core_withdraw);
                 }
-                return observableEstimatedFee(tx, signingAccount, feeAssetId, api).pipe(
+                return observableEstimatedFee(tx, signingAccount as string, feeAssetId as number, api).pipe(
                     switchMap(([cpayFee, feeAssetFee]) => {
                         const feeInCpay = new Amount(cpayFee.toString(), AmountUnit.UN);
                         const feeInFeeAsset = feeAssetFee ? new Amount(feeAssetFee.toString(), AmountUnit.UN) : null;
@@ -53,7 +53,7 @@ export const calculateTxFeeEpic = (
                             (fee.feeInFeeAsset !== null && txFee.feeInFeeAsset === null) ||
                             (fee.feeInFeeAsset && txFee.feeInFeeAsset && !fee.feeInFeeAsset.eq(txFee.feeInFeeAsset))
                         ) {
-                            return of(updateTransactionFee(fee));
+                            return of(updateTransactionFee(fee as IFee));
                         }
                         return EMPTY;
                     }),

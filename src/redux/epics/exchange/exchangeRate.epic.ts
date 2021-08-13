@@ -27,7 +27,7 @@ export const getExchangeRateEpic = (
             const asset = assetInfo ? assetInfo[fromAsset] : undefined;
             const toAssetDecimal = asset ? asset.decimalPlaces : 0;
             const amount = new Amount(1, AmountUnit.DISPLAY, toAssetDecimal);
-            return api.rpc.cennzx.sellPrice(fromAsset, amount, toAsset).pipe(
+            return (api.rpc as any).cennzx.sellPrice(fromAsset, amount, toAsset).pipe(
                 filter(
                     (exchangeRateFromAPI: PriceResponse) =>
                         !exchangeRate || !new Amount(exchangeRateFromAPI.price.toString()).eq(exchangeRate)
@@ -66,6 +66,7 @@ export const requestExchangeRateEpic = (
         withLatestFrom(store$),
         filter(
             ([, store]) =>
+                //@ts-ignore
                 store.ui.exchange.form.fromAsset &&
                 store.ui.exchange.form.toAsset &&
                 !!store.ui.exchange.form.fromAssetAmount

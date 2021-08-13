@@ -1,14 +1,7 @@
 import {Select as SelectCom} from 'centrality-react-core';
 import {SelectProps} from 'centrality-react-core/components/Select';
-import AssetDropDown from 'components/AssetDropDown';
-import TransparentButton from 'components/TransparentButton';
 import React, {FC} from 'react';
 import styled from 'styled-components';
-import {AmountParams, Asset} from '../typings';
-import {Amount} from '../util/Amount';
-import AmountBox from './AmountBox';
-import FlexDiv from './FlexDiv';
-import MessageBox from './MessageBox';
 
 type AssetDropDownStyledProps = SelectProps<any> & {
     showBorder: boolean;
@@ -122,7 +115,7 @@ const Select: FC<AssetInputProps> = ({value, options, onChange}) => {
     return (
         <Trade>
             <StyledSelect
-                value={getOptionByValue(options, value)}
+                value={getOptionByValue(options, value as string)}
                 getOptionLabel={getLabel}
                 options={options}
                 showBorder={true}

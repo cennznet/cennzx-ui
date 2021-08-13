@@ -48,6 +48,7 @@ export const requestTransactionFeeEpic = (
         withLatestFrom(store$),
         filter(
             ([[, action], store]) =>
+                //@ts-ignore
                 store.ui.exchange.form.fromAsset &&
                 store.ui.exchange.form.toAsset &&
                 !!store.ui.exchange.form.fromAssetAmount &&

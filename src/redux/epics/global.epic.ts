@@ -23,6 +23,7 @@ export const getCoreAsset = (action$: Observable<Action<any>>, store$: Observabl
         switchMap(
             ([api]): Observable<Action<any>> => {
                 return api.query.cennzx.coreAssetId().pipe(
+                    //@ts-ignore
                     switchMap((coreAssetId: AssetId) => {
                         // update core asset and second asset on liquidity page
                         return from([
@@ -61,6 +62,7 @@ export const getFeeAsset = (action$: Observable<Action<any>>, store$: Observable
         switchMap(
             ([api]): Observable<Action<any>> => {
                 return api.query.genericAsset.spendingAssetId().pipe(
+                    //@ts-ignore
                     switchMap((feeAssetId: AssetId) => {
                         return from([
                             updateFeeAsset(feeAssetId.toNumber()),
@@ -137,7 +139,9 @@ export const getRegisteredAssets = (
     combineLatest([api$, action$.pipe(ofType(types.INIT_APP))]).pipe(
         switchMap(
             ([api]): Observable<Action<any>> => {
-                return api.rpc.genericAsset.registeredAssets().pipe(map(assets => updateAssetsInfo(assets.toJSON())));
+                return (api.rpc as any).genericAsset
+                    .registeredAssets()
+                    .pipe(map(assets => updateAssetsInfo((assets as any).toJSON())));
             }
         ),
         catchError((err: any) => {

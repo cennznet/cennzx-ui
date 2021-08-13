@@ -1,7 +1,7 @@
 import {Button} from 'centrality-react-core';
 import styled from 'styled-components';
 
-export default styled(Button)`
+export default styled(Button as any)`
     font-size: 14px;
     border: 2px solid transparent;
     color: #7f878d;

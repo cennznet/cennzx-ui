@@ -13,11 +13,15 @@ function checkUserBalance(props: ExchangeProps, errors: FormErrors): void {
     //skip when any error exists on fromAssetInput
     if (existErrors(() => true, errors, FormSection.fromAssetInput)) return;
     if (fromAssetAmount && fromAssetBalance && fromAssetAmount.gt(fromAssetBalance)) {
-        mergeError(FormSection.fromAssetInput, new UserBalanceNotEnough(assetInfo[fromAsset], fromAssetAmount), errors);
+        mergeError(
+            FormSection.fromAssetInput,
+            new UserBalanceNotEnough(assetInfo[fromAsset as number], fromAssetAmount),
+            errors
+        );
     }
 }
 
-function checkUserBalanceForFee(props: ExchangeProps, errors: FormErrors): string {
+function checkUserBalanceForFee(props: ExchangeProps, errors: FormErrors): string | undefined {
     const {
         form: {fromAssetAmount, fromAsset, feeAssetId, signingAccount},
         txFee,
@@ -40,7 +44,7 @@ function checkUserBalanceForFee(props: ExchangeProps, errors: FormErrors): strin
         if (!balRequired || assetBalance.balance.lt(balRequired)) {
             mergeError(
                 FormSection.form,
-                new UserBalanceNotEnoughForFee(assetInfo[feeAssetId], feeAmount, assetBalance.balance),
+                new UserBalanceNotEnoughForFee(assetInfo[feeAssetId as number], feeAmount, assetBalance.balance),
                 errors
             );
         }

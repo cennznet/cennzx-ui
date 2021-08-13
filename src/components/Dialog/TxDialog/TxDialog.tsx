@@ -1,10 +1,10 @@
-import {TxDialogBody} from 'components/Dialog/TxDialog/TxDialogBody';
-import {TxDialogFooter} from 'components/Dialog/TxDialog/TxDialogFooter';
-import {TxDialogTitle} from 'components/Dialog/TxDialog/TxDialogTitle';
 import React, {FC} from 'react';
 import {SubmitType} from '../../../redux/actions/ui/txDialog.action';
 import {TxDialogState} from '../../../redux/reducers/ui/txDialog.reducer';
 import Dialog from '../Dialog';
+import {TxDialogBody} from './TxDialogBody';
+import {TxDialogFooter} from './TxDialogFooter';
+import {TxDialogTitle} from './TxDialogTitle';
 
 export type TxDialogProps = {
     coreAssetId: number;
@@ -55,15 +55,15 @@ export const TxDialog: FC<TxDialogProps> = ({
             body={
                 <TxDialogBody
                     stage={stage}
-                    extrinsic={extrinsic}
+                    extrinsic={extrinsic as any}
                     coreAssetId={coreAssetId}
                     error={error}
                     success={success}
-                    recipientAddress={undefined}
+                    recipientAddress={undefined as any}
                     buffer={title === 'exchange' ? exchange.buffer : liquidity.buffer}
-                    estimatedTxFee={estimatedTxFee}
+                    estimatedTxFee={estimatedTxFee as any}
                     txHash={txHash}
-                    feeAssetId={feeAssetId}
+                    feeAssetId={feeAssetId as any}
                     actualTxFee={actualTxFee}
                     events={events}
                     assetInfo={assetInfo}
@@ -80,6 +80,7 @@ export const TxDialog: FC<TxDialogProps> = ({
                             handleExchangeSubmit({
                                 ...exchange,
                                 extrinsic,
+                                //@ts-ignore
                                 feeInFeeAsset: estimatedTxFee.feeInFeeAsset,
                             });
                         } else if (title === 'liquidity') {
