@@ -8,7 +8,7 @@
   "scripts": {
     "start": "yarn rm-mjs && react-static start",
     "stage": "react-static build --staging",
-    "build": "react-static build",
+    "build": "yarn rm-mjs && react-static build",
     "bundle": "react-static bundle",
     "export": "react-static export",
     "test:epics": "jest --config jest/jest.config.js --coverage",
