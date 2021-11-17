@@ -14,6 +14,7 @@
 
 import {Api} from '@cennznet/api';
 import Keyring from '@polkadot/keyring';
+import {cryptoWaitReady} from '@polkadot/util-crypto';
 import BN from 'bn.js';
 import {Amount} from '../util/Amount';
 
@@ -23,6 +24,7 @@ describe('e2e api create', () => {
 
     beforeAll(async () => {
         jest.setTimeout(80000);
+        await cryptoWaitReady();
         api = await Api.create();
         const keyring = new Keyring({type: 'sr25519'});
         alice = keyring.addFromUri('//Alice');
