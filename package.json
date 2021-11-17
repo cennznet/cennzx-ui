@@ -60,6 +60,9 @@
     "styled-components": "^4.2.1",
     "styled-props": "1.1.2"
   },
+  "resolutions": {
+    "@polkadot/dev": "0.40.19"
+  },
   "devDependencies": {
     "@babel/plugin-proposal-numeric-separator": "^7.10.4",
     "@babel/helper-define-map": "^7.13.12",
@@ -80,8 +83,7 @@
     "pretty-quick": "^1.11.1",
     "react-hot-loader": "^4.9.0",
     "tslint": "^5.12.1",
-    "typescript": "^3.5.3",
-    "webpack": "5.0.0"
+    "typescript": "^3.5.3"
   },
   "husky": {
     "hooks": {
