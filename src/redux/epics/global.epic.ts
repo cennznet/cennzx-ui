@@ -1,14 +1,13 @@
 import {AssetId} from '@cennznet/types';
-import {getSpecTypes} from '@polkadot/types-known';
 import {defaults as addressDefaults} from '@polkadot/util-crypto/address/defaults';
 import {Action} from 'redux-actions';
 import {combineEpics, ofType} from 'redux-observable';
-import {combineLatest, from, Observable, of} from 'rxjs';
+import {combineLatest, EMPTY, from, Observable, of} from 'rxjs';
+import {ajax} from 'rxjs/ajax';
 import {catchError, map, switchMap} from 'rxjs/operators';
 import {IEpicDependency} from '../../typings';
 import {setExchangeError, updateFeeAsset} from '../actions/ui/exchange.action';
 import {updateFeeAsset as updateLiquidityFeeAsset, updateSelectedAsset2} from '../actions/ui/liquidity.action';
-import {cennznetExtensions} from '../cennznetExtensions';
 import {AppState} from '../reducers';
 import types, {
     updateAssetsInfo,
@@ -77,49 +76,48 @@ const getExtensionMetadata = (
     store$: Observable<AppState>,
     {api$}: IEpicDependency
 ) =>
-    combineLatest([api$, action$.pipe(ofType(types.INIT_APP))]).pipe(
+    combineLatest([
+        api$,
+        action$.pipe(ofType(types.INIT_APP)),
+        ajax.getJSON(
+            'https://raw.githubusercontent.com/cennznet/api.js/master/extension-releases/runtimeModuleTypes.json'
+        ),
+    ]).pipe(
         switchMap(
-            ([api]): Observable<Action<any>> => {
+            ([api, , additionalTypes]): Observable<Action<any>> => {
                 return api.rpc.system.chain().pipe(
                     map(systemChain => {
-                        const specTypes = getSpecTypes(
-                            api.registry,
-                            systemChain,
-                            api.runtimeVersion.specName,
-                            api.runtimeVersion.specVersion
-                        );
-                        // remove all the classes from the spectypes
-                        // the metadata that gets updated on the cennznet extension requires types of type (Record<string, string|object>)
-                        const filteredSpecTypes = Object.keys(specTypes)
-                            .filter(key => {
-                                if (typeof specTypes[key] === 'function') {
-                                    // tslint:disable-next-line:no-console
-                                    // console.log('extension meta update - Filtered from spec types:', specTypes[key]);
-                                    return false;
-                                }
-                                return true;
-                            })
-                            .reduce((obj, key) => {
-                                obj[key] = specTypes[key];
-                                return obj;
-                            }, {});
-
-                        const DEFAULT_SS58 = api.registry.createType('u32', addressDefaults.prefix);
-                        const DEFAULT_DECIMALS = api.registry.createType('u32', 4);
-                        const metadata = {
-                            chain: systemChain,
-                            color: '#191a2e',
-                            genesisHash: api.genesisHash.toHex(),
-                            icon: 'CENNZnet',
-                            metaCalls: Buffer.from(api.runtimeMetadata.asCallsOnly.toU8a()).toString('base64'),
-                            specVersion: api.runtimeVersion.specVersion.toNumber(),
-                            ss58Format: DEFAULT_SS58.toNumber(),
-                            tokenDecimals: DEFAULT_DECIMALS.toNumber(),
-                            tokenSymbol: 'CENNZ',
-                            types: (filteredSpecTypes as unknown) as Record<string, string>,
-                            userExtensions: cennznetExtensions,
-                        };
-                        return updateMetadata(metadata);
+                        const genesisHashExpected = api.genesisHash.toHex();
+                        if (additionalTypes) {
+                            let typesForCurrentChain = additionalTypes[genesisHashExpected];
+                            // if not able to find types, take the first element (in case of local node the genesis Hash keep changing)
+                            typesForCurrentChain =
+                                typesForCurrentChain === undefined
+                                    ? Object.values(additionalTypes)[0]
+                                    : typesForCurrentChain;
+                            let specTypes, userExtensions;
+                            if (typesForCurrentChain) {
+                                specTypes = typesForCurrentChain.types;
+                                userExtensions = typesForCurrentChain.userExtensions;
+                            }
+                            const DEFAULT_SS58 = api.registry.createType('u32', addressDefaults.prefix);
+                            const DEFAULT_DECIMALS = api.registry.createType('u32', 4);
+                            const metadata = {
+                                chain: systemChain,
+                                color: '#191a2e',
+                                genesisHash: api.genesisHash.toHex(),
+                                icon: 'CENNZnet',
+                                metaCalls: Buffer.from(api.runtimeMetadata.asCallsOnly.toU8a()).toString('base64'),
+                                specVersion: api.runtimeVersion.specVersion.toNumber(),
+                                ss58Format: DEFAULT_SS58.toNumber(),
+                                tokenDecimals: DEFAULT_DECIMALS.toNumber(),
+                                tokenSymbol: 'CENNZ',
+                                types: specTypes,
+                                userExtensions: userExtensions,
+                            };
+                            return updateMetadata(metadata);
+                        }
+                        return EMPTY;
                     })
                 );
             }
