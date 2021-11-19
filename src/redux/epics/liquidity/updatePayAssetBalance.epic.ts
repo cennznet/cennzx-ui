@@ -17,7 +17,7 @@ import {
 import {AppState} from '../../reducers';
 
 export function fetchBalanceExcludeLock<T>(api, signingAccount, balance: T, assetId): Observable<IAssetBalance> {
-    return api.query.genericAsset.locks(signingAccount).pipe(
+    return api.query.genericAsset.locks(assetId, signingAccount).pipe(
         switchMap(
             (lockBalance: Vec<BalanceLock>): Observable<IAssetBalance> => {
                 const lockBal = lockBalance.toArray();
